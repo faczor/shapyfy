@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=shapyfy
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
