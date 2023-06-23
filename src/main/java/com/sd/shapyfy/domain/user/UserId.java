@@ -1,14 +1,14 @@
-package com.sd.shapyfy.domain.training;
+package com.sd.shapyfy.domain.user;
 
 import lombok.Value;
 
 @Value(staticConstructor = "of")
-public class TrainingId {
+public class UserId {
 
     String value;
 
     @Override
     public String toString() {
-        return "TrainingId::" + value;
+        return "UserId::" + this.value;
     }
 }

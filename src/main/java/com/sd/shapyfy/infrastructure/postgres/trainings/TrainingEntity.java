@@ -2,13 +2,18 @@ package com.sd.shapyfy.infrastructure.postgres.trainings;
 
 import com.sd.shapyfy.infrastructure.postgres.sessions.SessionEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "trainings")
 public class TrainingEntity {
 
