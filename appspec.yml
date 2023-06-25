@@ -1,10 +1,6 @@
 version: 0.0
 os: linux
 hooks:
-  BeforeInstall:
-    - location: scripts/install_dependencies.sh
-      timeout: 300
-      runas: root
   Install:
     - location: start_server.sh
       timeout: 300
