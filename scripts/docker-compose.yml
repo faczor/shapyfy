@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  core:
+    build:
+      context: ..
+      dockerfile: ../Dockerfile
+    container_name: shapyfy_core
+    ports:
+      - "8080:8080"
