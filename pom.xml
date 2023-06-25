@@ -10,11 +10,11 @@
     </parent>
     <groupId>com.sd</groupId>
     <artifactId>Shapyfy</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Shapyfy</name>
     <description>Shapyfy</description>
     <properties>
-        <java.version>20</java.version>
+        <java.version>19</java.version>
     </properties>
     <dependencies>
         <!--SPRING-->
