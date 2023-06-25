@@ -1,4 +1,4 @@
-package com.sd.shapyfy.boundary.trainings.contract;
+package com.sd.shapyfy.boundary.api.trainings.contract;
 
 import lombok.Value;
 

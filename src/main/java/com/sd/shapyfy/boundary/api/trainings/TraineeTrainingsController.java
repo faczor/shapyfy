@@ -1,11 +1,10 @@
-package com.sd.shapyfy.boundary.trainings;
+package com.sd.shapyfy.boundary.api.trainings;
 
-import com.sd.shapyfy.boundary.trainings.contract.CreateTrainingDocument;
-import com.sd.shapyfy.boundary.trainings.contract.TrainingDocument;
+import com.sd.shapyfy.boundary.api.trainings.contract.TrainingDocument;
+import com.sd.shapyfy.boundary.api.trainings.contract.CreateTrainingDocument;
 import com.sd.shapyfy.domain.training.Training;
 import com.sd.shapyfy.domain.training.TrainingAdapter;
 import com.sd.shapyfy.domain.user.UserId;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/trainings")
+@RequestMapping("/v1/trainings")
 public class TraineeTrainingsController {
 
     public final TrainingAdapter trainingAdapter;
@@ -25,9 +24,12 @@ public class TraineeTrainingsController {
     }
 
     @PostMapping
-    public ResponseEntity<TrainingDocument> createTraining(@RequestBody @Valid CreateTrainingDocument document) {
+    public ResponseEntity<TrainingDocument> createTraining(
+            @RequestBody CreateTrainingDocument document,
+            @RequestHeader(name = "Authorization") String authToken) {
+        log.info("Auth token {}", authToken);
         log.info("Attempt to create training {}", document);
-        Training training = trainingAdapter.createTraining(UserId.of(document.getId()));
+        Training training = trainingAdapter.createTraining(UserId.of(document.getUserId()));
         return ResponseEntity.ok(TrainingDocument.from(training));
     }
 }

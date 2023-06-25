@@ -5,3 +5,7 @@ spring:
     password: postgres
   jpa:
     show-sql: true
+  flyway:
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=shapyfy
+    user: postgres
+    password: postgres

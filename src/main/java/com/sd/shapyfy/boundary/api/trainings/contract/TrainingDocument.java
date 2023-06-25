@@ -1,4 +1,4 @@
-package com.sd.shapyfy.boundary.trainings.contract;
+package com.sd.shapyfy.boundary.api.trainings.contract;
 
 import com.sd.shapyfy.domain.training.Training;
 import jakarta.validation.constraints.NotNull;

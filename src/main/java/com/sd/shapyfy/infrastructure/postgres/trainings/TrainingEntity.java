@@ -1,14 +1,14 @@
 package com.sd.shapyfy.infrastructure.postgres.trainings;
 
-import com.sd.shapyfy.infrastructure.postgres.sessions.SessionEntity;
+import com.sd.shapyfy.infrastructure.postgres.sessions.TrainingDayEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -22,12 +22,9 @@ public class TrainingEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
-    @Column(name = "name")
-    private String name;
-
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @OneToMany(mappedBy = "training")
-    private Set<SessionEntity> sessions = new HashSet<>();
+    private Set<TrainingDayEntity> days = new HashSet<>();
 }

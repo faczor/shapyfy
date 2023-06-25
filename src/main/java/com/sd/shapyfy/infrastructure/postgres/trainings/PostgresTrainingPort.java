@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,8 +31,7 @@ public class PostgresTrainingPort implements TrainingPort {
         private TrainingEntity toEntity(Training training) {
             return new TrainingEntity(
                     Optional.ofNullable(training.getId()).map(TrainingId::getValue).orElse(null),
-                    null,
-                    training.getUserId().getValue(),
+                    UUID.fromString(training.getUserId().getValue()),
                     new HashSet<>()
             );
         }
@@ -39,7 +39,7 @@ public class PostgresTrainingPort implements TrainingPort {
         private Training toDomain(TrainingEntity trainingEntity) {
             return new Training(
                     TrainingId.of(trainingEntity.getId()),
-                    UserId.of(trainingEntity.getUserId())
+                    UserId.of(trainingEntity.getUserId().toString())
             );
         }
 

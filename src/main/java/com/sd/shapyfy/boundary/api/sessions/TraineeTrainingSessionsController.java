@@ -1,7 +1,7 @@
-package com.sd.shapyfy.boundary.sessions;
+package com.sd.shapyfy.boundary.api.sessions;
 
-import com.sd.shapyfy.boundary.sessions.contract.CreateSessionDocument;
-import com.sd.shapyfy.boundary.sessions.contract.SessionAddExercisesDocument;
+import com.sd.shapyfy.boundary.api.sessions.contract.CreateSessionDocument;
+import com.sd.shapyfy.boundary.api.sessions.contract.SessionAddExercisesDocument;
 import com.sd.shapyfy.domain.training.TrainingId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

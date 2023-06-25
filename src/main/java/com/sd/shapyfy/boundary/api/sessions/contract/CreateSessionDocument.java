@@ -1,4 +1,4 @@
-package com.sd.shapyfy.boundary.sessions.contract;
+package com.sd.shapyfy.boundary.api.sessions.contract;
 
 import com.sd.shapyfy.domain.session.SessionType;
 import lombok.Value;
