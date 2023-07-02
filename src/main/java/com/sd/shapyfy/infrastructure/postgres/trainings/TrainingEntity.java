@@ -1,30 +1,34 @@
 package com.sd.shapyfy.infrastructure.postgres.trainings;
 
-import com.sd.shapyfy.infrastructure.postgres.sessions.TrainingDayEntity;
+import com.sd.shapyfy.infrastructure.postgres.trainingDay.TrainingDayEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-@Data
+
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "trainings")
+@NoArgsConstructor
+@AllArgsConstructor
 public class TrainingEntity {
 
     @Id
     @Column(name = "training_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "user_id")
-    private UUID userId;
+    private String userId;
 
-    @OneToMany(mappedBy = "training")
-    private Set<TrainingDayEntity> days = new HashSet<>();
+    @Column(name = "name")
+    private String name;
+
+    @OneToMany(mappedBy = "training", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<TrainingDayEntity> days;
 }

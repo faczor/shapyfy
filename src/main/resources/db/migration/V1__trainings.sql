@@ -3,7 +3,8 @@
 CREATE TABLE shapyfy.trainings
 (
     training_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id     UUID         NOT NULL
+    user_id     VARCHAR(64) NOT NULL,
+    name        varchar(256)
 );
 
 CREATE TABLE shapyfy.training_days
@@ -11,9 +12,9 @@ CREATE TABLE shapyfy.training_days
     training_day_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name            VARCHAR(256) NOT NULL,
     training_id     UUID         NOT NULL,
-    -- type        VARCHAR(32)  NOT NULL,
+    is_off          BOOL         NOT NULL,
     day             VARCHAR(32)  NOT NULL,
-    execution_order           INTEGER      NOT NULL,
+    execution_order INTEGER      NOT NULL,
     CONSTRAINT fk_training FOREIGN KEY (training_id) REFERENCES shapyfy.trainings (training_id)
 );
 

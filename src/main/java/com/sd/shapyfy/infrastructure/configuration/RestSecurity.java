@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class RestSecurity{
+public class RestSecurity {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -20,10 +20,10 @@ public class RestSecurity{
         return http
                 .csrf().disable()
                 .authorizeHttpRequests((request) -> request
-                .requestMatchers("/**").permitAll()
-                .requestMatchers("/v1/**").permitAll()
-                .anyRequest().authenticated()
-        ).build();
+                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/v1/**").permitAll()
+                        .anyRequest().authenticated()
+                ).build();
     }
 
     @Bean

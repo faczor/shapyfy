@@ -1,4 +1,4 @@
-package com.sd.shapyfy.domain.session;
+package com.sd.shapyfy.domain.trainingDay;
 
 public enum SessionType {
     REST_DAY,

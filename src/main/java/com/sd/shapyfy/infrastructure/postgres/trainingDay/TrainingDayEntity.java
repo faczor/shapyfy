@@ -1,27 +1,27 @@
-package com.sd.shapyfy.infrastructure.postgres.sessions;
+package com.sd.shapyfy.infrastructure.postgres.trainingDay;
 
 import com.sd.shapyfy.infrastructure.postgres.trainings.TrainingEntity;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.DayOfWeek;
+import java.util.UUID;
 
-@Data
 @Entity
+@Getter
+@Setter
 @Table(name = "training_days")
+@NoArgsConstructor
+@AllArgsConstructor
 public class TrainingDayEntity {
 
     @Id
     @Column(name = "training_day_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "name", nullable = false)
-    private String email;
-
-    // @Enumerated(EnumType.STRING)
-    // @Column(name = "type", nullable = false)
-    // private TrainingDayType trainingDayType;
+    private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "day", nullable = false)
@@ -30,6 +30,10 @@ public class TrainingDayEntity {
     @Column(name = "execution_order", nullable = false)
     private int order;
 
-    @ManyToOne
+    @Column(name = "is_off")
+    private boolean isOff;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "training_id")
     private TrainingEntity training;
 }
