@@ -1,11 +1,16 @@
 package com.sd.shapyfy.infrastructure.postgres.trainingDay;
 
+import com.sd.shapyfy.infrastructure.postgres.trainingDayExercises.TrainingDayExerciseEntity;
 import com.sd.shapyfy.infrastructure.postgres.trainings.TrainingEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.DayOfWeek;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
+import static jakarta.persistence.FetchType.EAGER;
 
 @Entity
 @Getter
@@ -33,7 +38,10 @@ public class TrainingDayEntity {
     @Column(name = "is_off")
     private boolean isOff;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "training_id")
     private TrainingEntity training;
+
+    @OneToMany(mappedBy = "trainingDay", fetch = EAGER)
+    private List<TrainingDayExerciseEntity> trainingDayExercise = new ArrayList<>();
 }

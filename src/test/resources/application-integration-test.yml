@@ -7,6 +7,7 @@ spring:
     url: ${integration-test.postgres.url}
     user: ${integration-test.postgres.username}
     password: ${integration-test.postgres.password}
+    locations: classpath:/db/migration,classpath:/services/postgres
   jpa:
     show-sql: true
     properties:

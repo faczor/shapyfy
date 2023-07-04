@@ -1,11 +1,8 @@
 package com.sd.shapyfy.boundary.api.trainings.contract;
 
-import lombok.Value;
-
 import java.util.List;
 
-@Value
-public class TrainingListDocument {
+public record TrainingListDocument(
+        List<TrainingDocument> items) {
 
-    List<TrainingDocument> items;
 }

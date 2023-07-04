@@ -10,12 +10,12 @@ public class TrainingToDomainConverter {
 
     public TrainingAdapter.TrainingInitialConfiguration convertForCreation(CreateTrainingDocument document) {
         return TrainingAdapter.TrainingInitialConfiguration.of(
-                document.getName(),
-                document.getDayConfigurations().stream()
+                document.name(),
+                document.dayConfigurations().stream()
                         .map(dayConfiguration -> SessionDayConfiguration.of(
-                                dayConfiguration.getName(),
-                                dayConfiguration.getDayOfWeek(),
-                                dayConfiguration.getType()
+                                dayConfiguration.name(),
+                                dayConfiguration.dayOfWeek(),
+                                dayConfiguration.type()
                                 )
                         ).toList());
     }

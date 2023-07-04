@@ -9,7 +9,7 @@ public class TrainingDayId {
 
     UUID value;
 
-    public TrainingDayId of(String value) {
+    public static TrainingDayId of(String value) {
         return TrainingDayId.of(UUID.fromString(value));
     }
 

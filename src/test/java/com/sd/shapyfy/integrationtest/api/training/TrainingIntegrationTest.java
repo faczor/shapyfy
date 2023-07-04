@@ -2,7 +2,7 @@ package com.sd.shapyfy.integrationtest.api.training;
 
 import com.sd.shapyfy.infrastructure.postgres.trainings.PostgresTrainingRepository;
 import com.sd.shapyfy.integrationTestTool.AbstractIntegrationTest;
-import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,6 +12,7 @@ import java.util.UUID;
 import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.DEFAULT;
 import static java.time.DayOfWeek.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 import static org.hamcrest.Matchers.*;
 
 public class TrainingIntegrationTest extends AbstractIntegrationTest {
@@ -20,6 +21,7 @@ public class TrainingIntegrationTest extends AbstractIntegrationTest {
     PostgresTrainingRepository trainingRepository;
 
     @Test
+    @DisplayName("Trainee create training EP[POST:/v1/trainings]")
     void initializeTraining() {
 
         String trainingId = as(DEFAULT.getTestUser()).assertRequest($ -> $
@@ -89,10 +91,10 @@ public class TrainingIntegrationTest extends AbstractIntegrationTest {
                             //
                             .extracting("name", "day", "order", "isOff")
                             .containsAll(List.of(
-                                    Tuple.tuple("PUSH A", MONDAY, 0, false),
-                                    Tuple.tuple("PULL A", TUESDAY, 1, false),
-                                    Tuple.tuple("LEGS A", WEDNESDAY, 2, false),
-                                    Tuple.tuple("REST_DAY", THURSDAY, 3, true)
+                                    tuple("PUSH A", MONDAY, 0, false),
+                                    tuple("PULL A", TUESDAY, 1, false),
+                                    tuple("LEGS A", WEDNESDAY, 2, false),
+                                    tuple("REST_DAY", THURSDAY, 3, true)
                             ));
                 });
 
