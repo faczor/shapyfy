@@ -3,10 +3,10 @@ package com.sd.shapyfy.boundary.api.trainingDays;
 import com.sd.shapyfy.boundary.api.ApiV1;
 import com.sd.shapyfy.boundary.api.trainingDays.contract.SelectExercisesToTrainingDayDocument;
 import com.sd.shapyfy.boundary.api.trainingDays.contract.SelectedExercisesDocument;
-import com.sd.shapyfy.boundary.api.trainingDays.contract.TrainingDayToDomainConverter;
+import com.sd.shapyfy.boundary.api.trainingDays.converter.TrainingDayToDomainConverter;
+import com.sd.shapyfy.domain.TrainingManagementAdapter;
 import com.sd.shapyfy.domain.training.Training;
 import com.sd.shapyfy.domain.trainingDay.TrainingDayId;
-import com.sd.shapyfy.domain.trainingDay.TrainingDaysAdapter;
 import com.sd.shapyfy.domain.user.UserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import static com.sd.shapyfy.boundary.api.TokenUtils.currentUserId;
 @ApiV1("/v1/training_days")
 public class TrainingDaysController {
 
-    private final TrainingDaysAdapter trainingDaysAdapter;
+    private final TrainingManagementAdapter trainingManagementAdapter;
 
     private final TrainingDayToDomainConverter trainingDayToDomainConverter;
 
@@ -35,8 +35,8 @@ public class TrainingDaysController {
             @RequestBody @Valid SelectExercisesToTrainingDayDocument selectExercisesToTrainingDayDocument) {
         log.info("Attempt to fill training day {} with {}", trainingDayId, selectExercisesToTrainingDayDocument);
         UserId userId = currentUserId();
-        List<TrainingDaysAdapter.ExerciseDetails> selectExerciseDetails = trainingDayToDomainConverter.convertToSelection(selectExercisesToTrainingDayDocument);
-        Training.TrainingDay trainingDay = trainingDaysAdapter.selectExercises(userId, TrainingDayId.of(trainingDayId), selectExerciseDetails);
+        List<TrainingManagementAdapter.SelectedExercise> selectedExercises = trainingDayToDomainConverter.convertToSelection(selectExercisesToTrainingDayDocument);
+        Training.TrainingDay trainingDay = trainingManagementAdapter.exercisesSelection(TrainingDayId.of(trainingDayId), selectedExercises, userId);
 
         return ResponseEntity.ok(SelectedExercisesDocument.from(trainingDay));
     }

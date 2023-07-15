@@ -2,6 +2,7 @@ package com.sd.shapyfy.boundary.api.trainingDays.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.boundary.api.exercises.contract.ExerciseDocument;
+import com.sd.shapyfy.domain.session.model.Session;
 import com.sd.shapyfy.domain.training.Training;
 
 import java.util.List;
@@ -12,9 +13,8 @@ public record SelectedExercisesDocument(
         List<SelectedExercise> selectedExercises) {
 
     public static SelectedExercisesDocument from(Training.TrainingDay trainingDay) {
-        return new SelectedExercisesDocument(
-                trainingDay.getExercises().stream().map(SelectedExercise::from).toList()
-        );
+        //TODO instead of get(0) create method upcomingSession / draftSession / closestSession or even TrainingDayContext - to be considered
+        return new SelectedExercisesDocument(trainingDay.getSessions().get(0).getSessionExercises().stream().map(SelectedExercise::from).toList());
     }
 
     private record SelectedExercise(
@@ -24,13 +24,13 @@ public record SelectedExercisesDocument(
             @JsonProperty(value = "exercise_training_attributes")
             ExerciseTraining exerciseTraining) {
 
-        public static SelectedExercise from(Training.TrainingDay.TrainingDayExercise trainingDayExercise) {
+        public static SelectedExercise from(Session.SessionExercise sessionExercise) {
             return new SelectedExercise(
-                    ExerciseDocument.from(trainingDayExercise.getExercise()),
+                    ExerciseDocument.from(sessionExercise.getExercise()),
                     new ExerciseTraining(
-                            trainingDayExercise.getSets(),
-                            trainingDayExercise.getReps(),
-                            trainingDayExercise.getWeight().orElse(null)
+                            sessionExercise.getSets(),
+                            sessionExercise.getReps(),
+                            sessionExercise.getWeight().orElse(null)
                     )
             );
         }

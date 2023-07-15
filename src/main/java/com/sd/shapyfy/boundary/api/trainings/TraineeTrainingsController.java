@@ -4,6 +4,7 @@ import com.sd.shapyfy.boundary.api.ApiV1;
 import com.sd.shapyfy.boundary.api.trainings.contract.CreateTrainingDocument;
 import com.sd.shapyfy.boundary.api.trainings.contract.TrainingDocument;
 import com.sd.shapyfy.boundary.api.trainings.converter.TrainingToDomainConverter;
+import com.sd.shapyfy.domain.TrainingManagement;
 import com.sd.shapyfy.domain.training.Training;
 import com.sd.shapyfy.domain.training.TrainingAdapter;
 import com.sd.shapyfy.domain.user.UserId;
@@ -22,7 +23,7 @@ import static com.sd.shapyfy.boundary.api.TokenUtils.currentUserId;
 @RequiredArgsConstructor
 public class TraineeTrainingsController {
 
-    public final TrainingAdapter trainingAdapter;
+    public final TrainingManagement trainingAdapter;
 
     public final TrainingToDomainConverter trainingToDomainConverter;
 
@@ -31,7 +32,7 @@ public class TraineeTrainingsController {
         log.info("Attempt to create training {}", document);
         UserId userId = currentUserId();
 
-        Training training = trainingAdapter.createTraining(trainingToDomainConverter.convertForCreation(document), userId);
+        Training training = trainingAdapter.create(trainingToDomainConverter.convertForCreation(document), userId);
         return ResponseEntity.ok(TrainingDocument.from(training));
     }
 

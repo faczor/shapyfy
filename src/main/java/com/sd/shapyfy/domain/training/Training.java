@@ -1,8 +1,8 @@
 package com.sd.shapyfy.domain.training;
 
-import com.sd.shapyfy.domain.exercises.Exercise;
-import com.sd.shapyfy.domain.exercises.ExerciseId;
-import com.sd.shapyfy.domain.training.TrainingAdapter.TrainingInitialConfiguration.SessionDayConfiguration;
+import com.sd.shapyfy.domain.TrainingManagementAdapter;
+import com.sd.shapyfy.domain.session.model.Session;
+import com.sd.shapyfy.domain.TrainingManagementAdapter.TrainingInitialConfiguration.SessionDayConfiguration;
 import com.sd.shapyfy.domain.trainingDay.TrainingDayId;
 import com.sd.shapyfy.domain.trainingDay.TrainingDayType;
 import com.sd.shapyfy.domain.user.UserId;
@@ -10,12 +10,12 @@ import lombok.Value;
 
 import java.time.DayOfWeek;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.stream.Collectors.joining;
 
 @Value
 public class Training {
+
     TrainingId id;
 
     UserId userId;
@@ -24,7 +24,7 @@ public class Training {
 
     List<TrainingDay> trainingDays;
 
-    public static Training initialize(UserId userId, TrainingAdapter.TrainingInitialConfiguration trainingInitialConfiguration) {
+    public static Training initialize(UserId userId, TrainingManagementAdapter.TrainingInitialConfiguration trainingInitialConfiguration) {
         return new Training(
                 null,
                 userId,
@@ -44,28 +44,10 @@ public class Training {
 
         TrainingDayType dayType;
 
-        List<TrainingDayExercise> exercises;
+        List<Session> sessions;
 
         private static TrainingDay create(String name, DayOfWeek day, TrainingDayType trainingDayType) {
             return new TrainingDay(null, name, day, trainingDayType, List.of());
-        }
-
-        @Value
-        public static class TrainingDayExercise {
-
-            TrainingDayExerciseId id;
-
-            int sets;
-
-            int reps;
-
-            Double weight;
-
-            Exercise exercise;
-
-            public Optional<Double> getWeight() {
-                return Optional.ofNullable(weight);
-            }
         }
     }
 }

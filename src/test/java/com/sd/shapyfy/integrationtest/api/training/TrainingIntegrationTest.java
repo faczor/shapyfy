@@ -1,6 +1,6 @@
 package com.sd.shapyfy.integrationtest.api.training;
 
-import com.sd.shapyfy.infrastructure.postgres.trainings.PostgresTrainingRepository;
+import com.sd.shapyfy.infrastructure.services.postgres.trainings.PostgresTrainingRepository;
 import com.sd.shapyfy.integrationTestTool.AbstractIntegrationTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -89,12 +89,12 @@ public class TrainingIntegrationTest extends AbstractIntegrationTest {
                     assertThat(training.getDays().size()).isEqualTo(4);
                     assertThat(training.getDays()).asList()
                             //
-                            .extracting("name", "day", "order", "isOff")
+                            .extracting("name", "day", "isOff")
                             .containsAll(List.of(
-                                    tuple("PUSH A", MONDAY, 0, false),
-                                    tuple("PULL A", TUESDAY, 1, false),
-                                    tuple("LEGS A", WEDNESDAY, 2, false),
-                                    tuple("REST_DAY", THURSDAY, 3, true)
+                                    tuple("PUSH A", MONDAY, false),
+                                    tuple("PULL A", TUESDAY, false),
+                                    tuple("LEGS A", WEDNESDAY, false),
+                                    tuple("REST_DAY", THURSDAY, true)
                             ));
                 });
 
