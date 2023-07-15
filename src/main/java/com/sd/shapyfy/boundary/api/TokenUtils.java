@@ -21,7 +21,6 @@ public class TokenUtils {
     private static final Decoder URL_DECODER = getUrlDecoder();
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    //user_id
     public static UserId currentUserId() {
         try {
             String authorization = extractTokenFromHeader();
