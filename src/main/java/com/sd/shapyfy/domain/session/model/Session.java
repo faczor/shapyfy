@@ -15,6 +15,14 @@ public class Session {
 
     List<SessionExercise> sessionExercises;
 
+    public boolean isActive() {
+        return sessionType == SessionType.ACTIVE;
+    }
+
+    public boolean isDraft() {
+        return sessionType == SessionType.DRAFT;
+    }
+
     @Value
     public static class SessionExercise {
 

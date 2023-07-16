@@ -1,5 +1,6 @@
 package com.sd.shapyfy.boundary.api;
 
+import com.sd.shapyfy.domain.NotProperResourceState;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body(ValidationErrorDocument.from(ex.getBindingResult().getAllErrors()));
+    }
+
+    @ExceptionHandler(NotProperResourceState.class)
+    public ResponseEntity<Object> handleNotProperResourceState(NotProperResourceState ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(ex.getMessage());
     }
 
     private static String extractCurrentRequestURI() {

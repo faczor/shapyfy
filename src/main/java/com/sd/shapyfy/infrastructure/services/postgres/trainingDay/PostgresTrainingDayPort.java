@@ -35,7 +35,7 @@ public class PostgresTrainingDayPort implements TrainingDaysPort {
 
     private final PostgresSessionExerciseRepository sessionExerciseRepository;
 
-    //TODO Fix returnal
+    //TODO Fix returnal (setting and adding to saved entities)
     @Override
     public Training.TrainingDay selectExercises(TrainingDayId trainingDayId, List<TrainingManagementAdapter.SelectedExercise> selectedExerciseDetails) {
         TrainingDayEntity trainingDayEntity = trainingDayRepository.findById(trainingDayId.getValue()).orElseThrow(() -> new TrainingDayNotFound("Not found resource " + trainingDayId));

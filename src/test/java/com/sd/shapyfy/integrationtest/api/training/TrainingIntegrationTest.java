@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.UUID;
 
-import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.DEFAULT;
+import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.USER_WITH_INITIALIZED_EMPTY_TRAINING;
 import static java.time.DayOfWeek.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -24,7 +24,7 @@ public class TrainingIntegrationTest extends AbstractIntegrationTest {
     @DisplayName("Trainee create training EP[POST:/v1/trainings]")
     void initializeTraining() {
 
-        String trainingId = as(DEFAULT.getTestUser()).assertRequest($ -> $
+        String trainingId = as(USER_WITH_INITIALIZED_EMPTY_TRAINING.getTestUser()).assertRequest($ -> $
                         .body("""
                                 {
                                   "name": null,

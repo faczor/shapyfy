@@ -13,8 +13,7 @@ public record SelectedExercisesDocument(
         List<SelectedExercise> selectedExercises) {
 
     public static SelectedExercisesDocument from(Training.TrainingDay trainingDay) {
-        //TODO instead of get(0) create method upcomingSession / draftSession / closestSession or even TrainingDayContext - to be considered
-        return new SelectedExercisesDocument(trainingDay.getSessions().get(0).getSessionExercises().stream().map(SelectedExercise::from).toList());
+        return new SelectedExercisesDocument(trainingDay.mostCurrentSession().getSessionExercises().stream().map(SelectedExercise::from).toList());
     }
 
     private record SelectedExercise(

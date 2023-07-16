@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,4 +14,5 @@ public interface PostgresTrainingRepository extends JpaRepository<TrainingEntity
     @Query(value = "SELECT t FROM TrainingEntity AS t JOIN t.days td WHERE td.id = :trainingDayId")
     Optional<TrainingEntity> findByDaysId(UUID trainingDayId);
 
+    Collection<TrainingEntity> findAllByUserId(String userId);
 }
