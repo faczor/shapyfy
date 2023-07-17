@@ -1,13 +1,10 @@
 package com.sd.shapyfy.domain;
 
-import com.sd.shapyfy.domain.exercises.ExerciseId;
-import com.sd.shapyfy.domain.training.Training;
-import com.sd.shapyfy.domain.trainingDay.TrainingDayId;
-import com.sd.shapyfy.domain.trainingDay.TrainingDayType;
-import com.sd.shapyfy.domain.user.UserId;
+import com.sd.shapyfy.domain.model.*;
 import lombok.Value;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +12,9 @@ public interface TrainingManagementAdapter {
 
     Training create(TrainingInitialConfiguration initialConfiguration, UserId userId);
 
-    Training.TrainingDay exercisesSelection(TrainingDayId trainingDayId, List<SelectedExercise> selectedExercises, UserId userId);
+    TrainingDay exercisesSelection(TrainingDayId trainingDayId, List<SelectedExercise> selectedExercises, UserId userId);
+
+    void activate(TrainingId trainingId, TrainingDayId startWithDayId, LocalDate startDate);
 
 
     @Value

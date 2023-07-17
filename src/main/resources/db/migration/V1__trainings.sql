@@ -35,6 +35,7 @@ CREATE TABLE shapyfy.sessions
 (
     session_id      UUID PRIMARY KEY     DEFAULT gen_random_uuid(),
     state           varchar(32) NOT NULL,
+    session_date     timestamp,
     createdAt       timestamp   NOT NULL default now(),
     updatedAt       timestamp   NOT NULL default now(),
     --

@@ -1,9 +1,7 @@
 package com.sd.shapyfy.boundary.api.trainings.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sd.shapyfy.domain.training.Training;
-import jakarta.validation.constraints.NotNull;
-import lombok.Value;
+import com.sd.shapyfy.domain.model.Training;
 
 import java.util.List;
 import java.util.UUID;

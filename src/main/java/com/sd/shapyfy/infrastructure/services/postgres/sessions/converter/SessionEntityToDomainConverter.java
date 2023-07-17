@@ -1,8 +1,7 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.converter;
 
-import com.sd.shapyfy.domain.session.model.Session;
-import com.sd.shapyfy.domain.session.model.SessionId;
-import com.sd.shapyfy.domain.session.model.SessionType;
+import com.sd.shapyfy.domain.model.Session;
+import com.sd.shapyfy.domain.model.SessionId;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.SessionEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,8 @@ public class SessionEntityToDomainConverter {
     public Session convert(SessionEntity session) {
         return new Session(
                 SessionId.of(session.getId()),
-                SessionType.valueOf(session.getState()),
+                session.getState(),
+                session.getDate(),
                 session.getSessionExercises().stream().map(sessionExerciseEntityToDomainConverter::convert).toList()
         );
     }

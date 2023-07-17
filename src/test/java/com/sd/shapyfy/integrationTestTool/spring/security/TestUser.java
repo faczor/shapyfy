@@ -14,7 +14,7 @@ public class TestUser {
 
         NEW_USER(TestUser.of("00000000000000000")),
         USER_WITH_INITIALIZED_EMPTY_TRAINING(TestUser.of("00000000000000001")),
-        USER_WITH_ACTIVE_TRAINING(TestUser.of("00000000000000002"));
+        USER_WITH_DRAFT_TRAINING(TestUser.of("00000000000000002"));
 
         @Getter
         private final TestUser testUser;

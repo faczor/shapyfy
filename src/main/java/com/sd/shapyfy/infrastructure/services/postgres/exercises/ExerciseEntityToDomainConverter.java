@@ -1,7 +1,7 @@
 package com.sd.shapyfy.infrastructure.services.postgres.exercises;
 
-import com.sd.shapyfy.domain.exercises.Exercise;
-import com.sd.shapyfy.domain.exercises.ExerciseId;
+import com.sd.shapyfy.domain.model.Exercise;
+import com.sd.shapyfy.domain.model.ExerciseId;
 import org.springframework.stereotype.Component;
 
 @Component

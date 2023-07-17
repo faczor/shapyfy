@@ -2,8 +2,8 @@ package com.sd.shapyfy.boundary.api.trainingDays.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.boundary.api.exercises.contract.ExerciseDocument;
-import com.sd.shapyfy.domain.session.model.Session;
-import com.sd.shapyfy.domain.training.Training;
+import com.sd.shapyfy.domain.model.Session;
+import com.sd.shapyfy.domain.model.TrainingDay;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public record SelectedExercisesDocument(
         @JsonProperty(value = "items")
         List<SelectedExercise> selectedExercises) {
 
-    public static SelectedExercisesDocument from(Training.TrainingDay trainingDay) {
+    public static SelectedExercisesDocument from(TrainingDay trainingDay) {
         return new SelectedExercisesDocument(trainingDay.mostCurrentSession().getSessionExercises().stream().map(SelectedExercise::from).toList());
     }
 

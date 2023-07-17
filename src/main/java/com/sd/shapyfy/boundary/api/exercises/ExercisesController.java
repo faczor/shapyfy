@@ -2,7 +2,7 @@ package com.sd.shapyfy.boundary.api.exercises;
 
 import com.sd.shapyfy.boundary.api.ApiV1;
 import com.sd.shapyfy.boundary.api.exercises.contract.ExercisesListingDocument;
-import com.sd.shapyfy.domain.exercises.ExerciseAdapter;
+import com.sd.shapyfy.domain.ExerciseAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

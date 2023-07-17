@@ -1,15 +1,21 @@
 package com.sd.shapyfy.integrationtest.api.training;
 
+import com.sd.shapyfy.domain.model.SessionState;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.SessionEntity;
+import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.TrainingDayEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.PostgresTrainingRepository;
 import com.sd.shapyfy.integrationTestTool.AbstractIntegrationTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.USER_WITH_INITIALIZED_EMPTY_TRAINING;
+import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.NEW_USER;
+import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.USER_WITH_DRAFT_TRAINING;
 import static java.time.DayOfWeek.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -24,7 +30,7 @@ public class TrainingIntegrationTest extends AbstractIntegrationTest {
     @DisplayName("Trainee create training EP[POST:/v1/trainings]")
     void initializeTraining() {
 
-        String trainingId = as(USER_WITH_INITIALIZED_EMPTY_TRAINING.getTestUser()).assertRequest($ -> $
+        String trainingId = as(NEW_USER.getTestUser()).assertRequest($ -> $
                         .body("""
                                 {
                                   "name": null,
@@ -98,5 +104,57 @@ public class TrainingIntegrationTest extends AbstractIntegrationTest {
                             ));
                 });
 
+    }
+
+    @Test
+    @DisplayName("Trainee activate EP[PUT:/v1/trainings/{trainingId}/activations]")
+    void activateTraining() {
+        UUID trainingId = UUID.fromString("00000000-0000-0000-0000-000000000200");
+        as(USER_WITH_DRAFT_TRAINING.getTestUser()).assertRequest($ -> $
+                        .body("""
+                                {
+                                  "start_date": "2023-01-01",
+                                  "initialize_training_with_day_id": "00000000-0000-0000-0000-000000000201"
+                                }
+                                """)
+                        .put("/v1/trainings/{trainingId}/activations", trainingId))
+                //
+                .statusCode(200);
+
+        assertThat(trainingRepository.findById(trainingId))
+                .isPresent()
+                .get()
+                .satisfies(training -> {
+                    List<SessionEntity> activatedSessions = training.getDays().stream().map(TrainingDayEntity::getSessions)
+                            .flatMap(Collection::stream)
+                            .filter(s -> s.getState() == SessionState.ACTIVE)
+                            .toList();
+
+                    assertThat(activatedSessions).asList()
+                            //
+                            .extracting("date")
+                            .containsAll(List.of(
+                                    date(1, 1),
+                                    date(2, 1),
+                                    date(3, 1)
+                            ));
+
+                    List<SessionEntity> followUpSessions = training.getDays().stream().map(TrainingDayEntity::getSessions)
+                            .flatMap(Collection::stream)
+                            .filter(s -> s.getState() == SessionState.FOLLOW_UP)
+                            .toList();
+                    assertThat(followUpSessions).asList()
+                            //
+                            .extracting("date")
+                            .containsAll(List.of(
+                                    date(5, 1),
+                                    date(6, 1),
+                                    date(7, 1)
+                            ));
+                });
+    }
+
+    LocalDate date(int day, int month) {
+        return LocalDate.of(2023, month, day);
     }
 }

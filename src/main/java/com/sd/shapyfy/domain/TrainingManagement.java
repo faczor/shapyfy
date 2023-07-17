@@ -1,17 +1,19 @@
 package com.sd.shapyfy.domain;
 
-import com.sd.shapyfy.domain.training.Training;
-import com.sd.shapyfy.domain.training.TrainingPort;
-import com.sd.shapyfy.domain.trainingDay.TrainingDayId;
-import com.sd.shapyfy.domain.trainingDay.TrainingDaysPort;
-import com.sd.shapyfy.domain.user.UserId;
+import com.google.common.collect.Iterables;
+import com.sd.shapyfy.domain.model.*;
+import com.sd.shapyfy.domain.model.exception.TrainingNotFilledProperlyException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Slf4j
 @Component
@@ -21,6 +23,10 @@ public class TrainingManagement implements TrainingManagementAdapter {
     private final TrainingPort trainingPort;
 
     private final TrainingDaysPort trainingDaysPort;
+
+    private final SessionsCreator sessionsCreator;
+
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public Training create(TrainingInitialConfiguration initialConfiguration, UserId userId) {
@@ -32,11 +38,35 @@ public class TrainingManagement implements TrainingManagementAdapter {
     }
 
     @Override
-    public Training.TrainingDay exercisesSelection(TrainingDayId trainingDayId, List<SelectedExercise> selectedExercises, UserId userId) {
+    public TrainingDay exercisesSelection(TrainingDayId trainingDayId, List<SelectedExercise> selectedExercises, UserId userId) {
         log.info("Attempt to select exercises {} {} with exercises {}", userId, trainingDayId, selectedExercises);
         Training training = trainingPort.fetchFor(trainingDayId);
         validateIfTrainingIsOwnedByUser(userId, trainingDayId, training);
         return trainingDaysPort.selectExercises(trainingDayId, selectedExercises);
+    }
+
+    @Override
+    public void activate(TrainingId trainingId, TrainingDayId trainingDayId, LocalDate startDate) {
+        log.info("Attempt to activate training {} with day {} and start date {}", trainingId, trainingDayId, startDate);
+        Training training = trainingPort.fetchFor(trainingId);
+        validateIfTrainingIsFilledProperly(training.getTrainingDays());
+
+        List<TrainingPort.ActivateSession> sessionForActivation = sessionsCreator.createForActivation(training, trainingDayId, startDate);
+        trainingPort.updateTrainingSessions(sessionForActivation);
+
+        applicationEventPublisher.publishEvent(new StartedTrainingEvent(this, training, Iterables.getLast(sessionForActivation).date()));
+    }
+
+    private void validateIfTrainingIsFilledProperly(List<TrainingDay> trainingDays) {
+        List<TrainingDay> trainingDaysWithoutExercises = trainingDays.stream()
+                .filter(TrainingDay::isTrainingDay)
+                .filter(trainingDay -> isEmpty(trainingDay.draftSession().getSessionExercises()))
+                .toList();
+
+        if (isNotEmpty(trainingDaysWithoutExercises)) {
+            log.info("Training is not filled properly. Training days without exercises: {}", trainingDaysWithoutExercises);
+            throw new TrainingNotFilledProperlyException(trainingDaysWithoutExercises.stream().map(TrainingDay::getId).toList());
+        }
     }
 
     private static void validateIfTrainingIsOwnedByUser(UserId userId, TrainingDayId trainingDayId, Training training) {

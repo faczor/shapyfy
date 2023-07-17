@@ -1,14 +1,14 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainingDay.converter;
 
-import com.sd.shapyfy.domain.training.Training;
-import com.sd.shapyfy.domain.trainingDay.TrainingDayId;
+import com.sd.shapyfy.domain.model.TrainingDay;
+import com.sd.shapyfy.domain.model.TrainingDayId;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.converter.SessionEntityToDomainConverter;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.TrainingDayEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static com.sd.shapyfy.domain.trainingDay.TrainingDayType.OFF;
-import static com.sd.shapyfy.domain.trainingDay.TrainingDayType.TRAINING;
+import static com.sd.shapyfy.domain.model.TrainingDayType.OFF;
+import static com.sd.shapyfy.domain.model.TrainingDayType.TRAINING;
 
 @Component
 @RequiredArgsConstructor
@@ -16,8 +16,8 @@ public class TrainingDayEntityToDomainConverter {
 
     private final SessionEntityToDomainConverter sessionEntityToDomainConverter;
 
-    public Training.TrainingDay convert(TrainingDayEntity entity) {
-        return new Training.TrainingDay(
+    public TrainingDay convert(TrainingDayEntity entity) {
+        return new TrainingDay(
                 TrainingDayId.of(entity.getId()),
                 entity.getName(),
                 entity.getDay(),

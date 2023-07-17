@@ -1,8 +1,8 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainings.converter;
 
-import com.sd.shapyfy.domain.training.Training;
-import com.sd.shapyfy.domain.training.TrainingId;
-import com.sd.shapyfy.domain.user.UserId;
+import com.sd.shapyfy.domain.model.Training;
+import com.sd.shapyfy.domain.model.TrainingId;
+import com.sd.shapyfy.domain.model.UserId;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.converter.TrainingDayEntityToDomainConverter;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.TrainingEntity;
 import lombok.RequiredArgsConstructor;

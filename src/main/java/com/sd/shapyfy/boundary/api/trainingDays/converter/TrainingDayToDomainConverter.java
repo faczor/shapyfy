@@ -2,7 +2,7 @@ package com.sd.shapyfy.boundary.api.trainingDays.converter;
 
 import com.sd.shapyfy.boundary.api.trainingDays.contract.SelectExercisesToTrainingDayDocument;
 import com.sd.shapyfy.domain.TrainingManagementAdapter;
-import com.sd.shapyfy.domain.exercises.ExerciseId;
+import com.sd.shapyfy.domain.model.ExerciseId;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

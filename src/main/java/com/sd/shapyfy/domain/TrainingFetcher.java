@@ -1,8 +1,8 @@
 package com.sd.shapyfy.domain;
 
 
-import com.sd.shapyfy.domain.training.Training;
-import com.sd.shapyfy.domain.user.UserId;
+import com.sd.shapyfy.domain.model.Training;
+import com.sd.shapyfy.domain.model.UserId;
 
 import java.util.List;
 

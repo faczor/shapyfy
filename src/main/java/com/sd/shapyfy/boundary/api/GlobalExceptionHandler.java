@@ -1,6 +1,9 @@
 package com.sd.shapyfy.boundary.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.domain.NotProperResourceState;
+import com.sd.shapyfy.domain.model.exception.TrainingNotFilledProperlyException;
+import com.sd.shapyfy.domain.model.TrainingDayId;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,10 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 @Slf4j
 @RestControllerAdvice
@@ -41,6 +41,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(TrainingNotFilledProperlyException.class)
+    public ResponseEntity<Object> handleTrainingNotFilledProperly(TrainingNotFilledProperlyException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(TrainingValidationErrorDocument.from(ex.getTrainingDayIds()));
     }
 
     private static String extractCurrentRequestURI() {
@@ -70,6 +77,26 @@ public class GlobalExceptionHandler {
             String field;
 
             String message;
+        }
+    }
+
+    private record TrainingValidationErrorDocument(
+            List<TrainingDayError> errors
+    ) {
+
+        public static TrainingValidationErrorDocument from(List<TrainingDayId> trainingDayIds) {
+            return new TrainingValidationErrorDocument(
+                    trainingDayIds.stream().map(id -> new TrainingDayError(id.getValue().toString(), "Training day not filled properly")).toList());
+        }
+
+        private record TrainingDayError(
+
+                @JsonProperty("training_day_id")
+                String dayId,
+
+                @JsonProperty("message")
+                String message
+        ) {
         }
     }
 }

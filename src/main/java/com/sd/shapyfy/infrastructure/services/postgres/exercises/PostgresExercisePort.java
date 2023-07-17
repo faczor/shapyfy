@@ -1,8 +1,8 @@
 package com.sd.shapyfy.infrastructure.services.postgres.exercises;
 
-import com.sd.shapyfy.domain.exercises.Exercise;
-import com.sd.shapyfy.domain.exercises.ExerciseId;
-import com.sd.shapyfy.domain.exercises.ExercisePort;
+import com.sd.shapyfy.domain.model.Exercise;
+import com.sd.shapyfy.domain.model.ExerciseId;
+import com.sd.shapyfy.domain.ExercisePort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

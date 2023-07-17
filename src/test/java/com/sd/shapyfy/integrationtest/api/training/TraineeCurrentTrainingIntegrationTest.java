@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.NEW_USER;
-import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.USER_WITH_ACTIVE_TRAINING;
+import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.USER_WITH_DRAFT_TRAINING;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
@@ -15,7 +15,7 @@ public class TraineeCurrentTrainingIntegrationTest extends AbstractIntegrationTe
     @Test
     @DisplayName("Trainnee display current training EP[POST:/v1/current-trainings]")
     void fetchCurrentTraining() {
-        as(USER_WITH_ACTIVE_TRAINING.getTestUser()).assertRequest($ -> $.get("/v1/current-trainings"))
+        as(USER_WITH_DRAFT_TRAINING.getTestUser()).assertRequest($ -> $.get("/v1/current-trainings"))
                 //
                 .statusCode(200)
                 //
@@ -80,7 +80,6 @@ public class TraineeCurrentTrainingIntegrationTest extends AbstractIntegrationTe
                 .body("training_days[2].training_exercises[0].sets", is(3))
                 .body("training_days[2].training_exercises[0].reps", is(8))
                 .body("training_days[2].training_exercises[0].weight", is(25.5f))
-                //
                 //
                 //
                 .body("training_days[3].training_day_id", is("00000000-0000-0000-0000-000000000204"))

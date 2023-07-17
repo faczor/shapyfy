@@ -1,12 +1,7 @@
 package com.sd.shapyfy.domain;
 
-import com.sd.shapyfy.domain.session.model.Session;
-import com.sd.shapyfy.domain.training.CurrentTrainingNotFound;
-import com.sd.shapyfy.domain.training.Training;
-import com.sd.shapyfy.domain.training.TrainingId;
-import com.sd.shapyfy.domain.trainingDay.TrainingDayId;
-import com.sd.shapyfy.domain.trainingDay.TrainingDayType;
-import com.sd.shapyfy.domain.user.UserId;
+import com.sd.shapyfy.domain.model.*;
+import com.sd.shapyfy.domain.model.exception.CurrentTrainingNotFound;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -49,7 +44,7 @@ public class TrainingLookup {
                 DayOfWeek dayOfWeek,
                 Session session
         ) {
-            public static Day from(Training.TrainingDay trainingDay) {
+            public static Day from(TrainingDay trainingDay) {
                 return new Day(
                         trainingDay.getId(),
                         trainingDay.getName(),

@@ -1,7 +1,7 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.converter;
 
-import com.sd.shapyfy.domain.session.model.Session.SessionExercise;
-import com.sd.shapyfy.domain.session.model.SessionExerciseId;
+import com.sd.shapyfy.domain.model.Session.SessionExercise;
+import com.sd.shapyfy.domain.model.SessionExerciseId;
 import com.sd.shapyfy.infrastructure.services.postgres.exercises.ExerciseEntityToDomainConverter;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.SessionExerciseEntity;
 import lombok.RequiredArgsConstructor;

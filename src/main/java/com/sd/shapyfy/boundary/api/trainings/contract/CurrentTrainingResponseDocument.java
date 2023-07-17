@@ -2,8 +2,8 @@ package com.sd.shapyfy.boundary.api.trainings.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.domain.TrainingLookup;
-import com.sd.shapyfy.domain.session.model.Session;
-import com.sd.shapyfy.domain.trainingDay.TrainingDayType;
+import com.sd.shapyfy.domain.model.Session;
+import com.sd.shapyfy.domain.model.TrainingDayType;
 
 import java.time.DayOfWeek;
 import java.util.List;

@@ -5,9 +5,9 @@ import com.sd.shapyfy.boundary.api.trainingDays.contract.SelectExercisesToTraini
 import com.sd.shapyfy.boundary.api.trainingDays.contract.SelectedExercisesDocument;
 import com.sd.shapyfy.boundary.api.trainingDays.converter.TrainingDayToDomainConverter;
 import com.sd.shapyfy.domain.TrainingManagementAdapter;
-import com.sd.shapyfy.domain.training.Training;
-import com.sd.shapyfy.domain.trainingDay.TrainingDayId;
-import com.sd.shapyfy.domain.user.UserId;
+import com.sd.shapyfy.domain.model.TrainingDay;
+import com.sd.shapyfy.domain.model.TrainingDayId;
+import com.sd.shapyfy.domain.model.UserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class TrainingDaysController {
         log.info("Attempt to fill training day {} with {}", trainingDayId, selectExercisesToTrainingDayDocument);
         UserId userId = currentUserId();
         List<TrainingManagementAdapter.SelectedExercise> selectedExercises = trainingDayToDomainConverter.convertToSelection(selectExercisesToTrainingDayDocument);
-        Training.TrainingDay trainingDay = trainingManagementAdapter.exercisesSelection(TrainingDayId.of(trainingDayId), selectedExercises, userId);
+        TrainingDay trainingDay = trainingManagementAdapter.exercisesSelection(TrainingDayId.of(trainingDayId), selectedExercises, userId);
 
         return ResponseEntity.ok(SelectedExercisesDocument.from(trainingDay));
     }

@@ -1,10 +1,10 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainingDay;
 
 import com.sd.shapyfy.domain.TrainingManagementAdapter;
-import com.sd.shapyfy.domain.training.Training;
-import com.sd.shapyfy.domain.trainingDay.TrainingDayId;
-import com.sd.shapyfy.domain.trainingDay.TrainingDayType;
-import com.sd.shapyfy.domain.trainingDay.TrainingDaysPort;
+import com.sd.shapyfy.domain.model.TrainingDay;
+import com.sd.shapyfy.domain.model.TrainingDayId;
+import com.sd.shapyfy.domain.model.TrainingDayType;
+import com.sd.shapyfy.domain.TrainingDaysPort;
 import com.sd.shapyfy.infrastructure.services.postgres.exercises.ExerciseEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.exercises.PostgresExercisePort;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.PostgresSessionRepository;
@@ -37,7 +37,7 @@ public class PostgresTrainingDayPort implements TrainingDaysPort {
 
     //TODO Fix returnal (setting and adding to saved entities)
     @Override
-    public Training.TrainingDay selectExercises(TrainingDayId trainingDayId, List<TrainingManagementAdapter.SelectedExercise> selectedExerciseDetails) {
+    public TrainingDay selectExercises(TrainingDayId trainingDayId, List<TrainingManagementAdapter.SelectedExercise> selectedExerciseDetails) {
         TrainingDayEntity trainingDayEntity = trainingDayRepository.findById(trainingDayId.getValue()).orElseThrow(() -> new TrainingDayNotFound("Not found resource " + trainingDayId));
         SessionEntity session = Optional.ofNullable(trainingDayEntity.getSessions()).filter(CollectionUtils::isNotEmpty).map(sessions -> sessions.get(0)).orElse(SessionEntity.init(trainingDayEntity));
 
@@ -65,7 +65,7 @@ public class PostgresTrainingDayPort implements TrainingDaysPort {
         );
     }
 
-    public List<TrainingDayEntity> createDays(TrainingEntity training, List<Training.TrainingDay> trainingDays) {
+    public List<TrainingDayEntity> createDays(TrainingEntity training, List<TrainingDay> trainingDays) {
         return trainingDays.stream().map(day -> new TrainingDayEntity(
                 null,
                 Optional.ofNullable(day.getName()).orElse("REST_DAY"),

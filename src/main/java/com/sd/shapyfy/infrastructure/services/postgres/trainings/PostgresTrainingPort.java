@@ -1,9 +1,10 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainings;
 
-import com.sd.shapyfy.domain.training.Training;
-import com.sd.shapyfy.domain.training.TrainingId;
-import com.sd.shapyfy.domain.training.TrainingPort;
-import com.sd.shapyfy.domain.trainingDay.TrainingDayId;
+import com.sd.shapyfy.domain.model.Training;
+import com.sd.shapyfy.domain.model.TrainingId;
+import com.sd.shapyfy.domain.TrainingPort;
+import com.sd.shapyfy.domain.model.TrainingDayId;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.SessionsService;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.converter.TrainingToEntityConverter;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.PostgresTrainingDayPort;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.TrainingDayEntity;
@@ -27,6 +28,7 @@ public class PostgresTrainingPort implements TrainingPort {
 
     private final TrainingEntityToDomainConverter trainingEntityToDomainConverter;
 
+    private final SessionsService sessionsService;
 
     @Override
     public Training create(Training training) {
@@ -53,5 +55,17 @@ public class PostgresTrainingPort implements TrainingPort {
                 .orElseThrow(() -> new TrainingNotFound("Training not found for " + trainingId));
 
         return trainingEntityToDomainConverter.convert(trainingEntity);
+    }
+
+    @Override
+    public void updateTrainingSessions(List<ActivateSession> sessionToActivate) {
+        log.info("Attempt to activate {}", sessionToActivate);
+        sessionToActivate.forEach(sessionsService::activateSession);
+    }
+
+    @Override
+    public void createFollowUpSessions(List<FollowUpTrainingSession> followUpTrainingSessions) {
+        log.info("Attempt to create follow up sessions by {}", followUpTrainingSessions);
+        followUpTrainingSessions.forEach(sessionsService::createFollowUpSession);
     }
 }

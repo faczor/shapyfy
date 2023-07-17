@@ -1,8 +1,8 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainings;
 
 import com.sd.shapyfy.domain.TrainingFetcher;
-import com.sd.shapyfy.domain.training.Training;
-import com.sd.shapyfy.domain.user.UserId;
+import com.sd.shapyfy.domain.model.Training;
+import com.sd.shapyfy.domain.model.UserId;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.converter.TrainingEntityToDomainConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
