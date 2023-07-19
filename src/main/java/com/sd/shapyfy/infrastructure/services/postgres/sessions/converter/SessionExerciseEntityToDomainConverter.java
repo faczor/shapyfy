@@ -19,6 +19,7 @@ public class SessionExerciseEntityToDomainConverter {
                 sessionExerciseEntity.getSetsAmount(),
                 sessionExerciseEntity.getRepsAmount(),
                 sessionExerciseEntity.getWeightAmount(),
+                sessionExerciseEntity.isFinished(),
                 exerciseEntityToDomainConverter.convert(sessionExerciseEntity.getExercise())
         );
     }

@@ -28,7 +28,7 @@ public record CurrentTrainingResponseDocument(
         );
     }
 
-    private record DayDocument(
+    public record DayDocument(
             @JsonProperty(value = "training_day_id", required = true)
             String id,
             //
@@ -54,7 +54,8 @@ public record CurrentTrainingResponseDocument(
             );
         }
 
-        private record TrainingExercise(
+        //TODO extract to common package
+        public record TrainingExercise(
 
                 @JsonProperty(value = "exercise_id", required = true)
                 String exerciseId,

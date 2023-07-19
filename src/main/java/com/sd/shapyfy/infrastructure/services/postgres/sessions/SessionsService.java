@@ -1,8 +1,9 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions;
 
-import com.sd.shapyfy.domain.model.SessionState;
+import com.sd.shapyfy.domain.model.*;
 import com.sd.shapyfy.domain.model.exception.SessionNotFound;
 import com.sd.shapyfy.domain.TrainingPort;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.converter.SessionEntityToDomainConverter;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.PostgresSessionExerciseRepository;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.PostgresTrainingDayRepository;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.TrainingDayEntity;
@@ -11,10 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
-import static com.sd.shapyfy.domain.model.SessionState.DRAFT;
 import static com.sd.shapyfy.domain.model.SessionState.FOLLOW_UP;
 
 @Slf4j
@@ -27,6 +27,8 @@ public class SessionsService {
     private final PostgresTrainingDayRepository trainingDayRepository;
 
     private final PostgresSessionExerciseRepository sessionExerciseRepository;
+
+    private final SessionEntityToDomainConverter sessionEntityToDomainConverter;
 
     public SessionEntity activateSession(TrainingPort.ActivateSession activateSession) {
         SessionEntity sessionEntity = sessionRepository.findById(activateSession.sessionId().getValue())
@@ -45,7 +47,7 @@ public class SessionsService {
                     .orElseThrow(() -> new TrainingDayNotFound(String.format("Training day not found %s", followUpTrainingSession.trainingDayId())));
 
             SessionEntity mostActiveSession = trainingDay.getSessions().stream()
-                    .filter(session -> session.getState() == SessionState.ACTIVE || session.getState() == DRAFT).findFirst()
+                    .filter(session -> session.getState().isFuture()).findFirst()
                     .orElseThrow();
 
             SessionEntity followUpSession = sessionRepository.save(new SessionEntity(
@@ -64,6 +66,13 @@ public class SessionsService {
         }
     }
 
+    public void runSession(SessionId id) {
+        //TODO create method
+        SessionEntity sessionEntity = sessionRepository.findById(id.getValue()).orElseThrow();
+        sessionEntity.setState(SessionState.RUNNING);
+        sessionRepository.save(sessionEntity);
+    }
+
     private void copyExercisesFromMostActiveSession(SessionEntity mostActiveSession, SessionEntity followUpSession) {
         mostActiveSession.getSessionExercises().stream().map(sessionExercise -> {
             SessionExerciseEntity sessionExerciseEntity = new SessionExerciseEntity();
@@ -74,5 +83,25 @@ public class SessionsService {
             sessionExerciseEntity.setSession(followUpSession);
             return sessionExerciseEntity;
         }).forEachOrdered(sessionExerciseRepository::save);
+    }
+
+    //TODO move method
+    public void updateExercises(SessionExerciseId exerciseId, boolean isFinished, TrainingPort.ExerciseAttributes exerciseAttributes) {
+        SessionExerciseEntity sessionExercise = sessionExerciseRepository.findById(exerciseId.getValue()).orElseThrow();
+        sessionExercise.setFinished(isFinished);
+        Optional.ofNullable(exerciseAttributes.weight()).ifPresent(sessionExercise::setWeightAmount);
+        sessionExerciseRepository.save(sessionExercise);
+    }
+
+    //TODO exception move
+    public Session fetch(SessionId sessionId) {
+        SessionEntity sessionEntity = sessionRepository.findById(sessionId.getValue()).orElseThrow();
+        return sessionEntityToDomainConverter.convert(sessionEntity);
+    }
+
+    public void finishSession(SessionId sessionId) {
+        SessionEntity sessionEntity = sessionRepository.findById(sessionId.getValue()).orElseThrow();
+        sessionEntity.setState(SessionState.FINISHED);
+        sessionRepository.save(sessionEntity);
     }
 }

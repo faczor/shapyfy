@@ -6,6 +6,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.toList;
+
 @Value
 public class Session {
 
@@ -18,11 +21,21 @@ public class Session {
     List<SessionExercise> sessionExercises;
 
     public boolean isActive() {
-        return sessionState == SessionState.ACTIVE;
+        return sessionState.isActive();
     }
 
     public boolean isDraft() {
-        return sessionState == SessionState.DRAFT;
+        return sessionState.isDraft();
+    }
+
+    public boolean isRunning() {
+        return sessionState.isRunning();
+    }
+
+    public List<SessionExercise> notFinishedExercises() {
+        return sessionExercises.stream()
+                .filter(not(SessionExercise::isFinished))
+                .toList();
     }
 
     @Value
@@ -35,6 +48,8 @@ public class Session {
         int reps;
 
         Double weight;
+
+        boolean isFinished;
 
         Exercise exercise;
 

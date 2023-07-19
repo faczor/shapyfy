@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +37,13 @@ public class TrainingLookup {
             TrainingId trainingId,
             String name,
             List<Day> days) {
+
+        //TODO proper exception
+        public Session sessionFor(LocalDate localDate) {
+            return days.stream().map(Day::session).filter(session -> session.getDate().equals(localDate))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Session not found for " + localDate));
+        }
 
         public record Day(
                 TrainingDayId trainingDayId,
