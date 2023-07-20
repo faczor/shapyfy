@@ -8,13 +8,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface TrainingManagementAdapter {
+public interface PlanManagementAdapter {
 
     Training create(TrainingInitialConfiguration initialConfiguration, UserId userId);
 
     TrainingDay exercisesSelection(TrainingDayId trainingDayId, List<SelectedExercise> selectedExercises, UserId userId);
 
-    void activate(TrainingId trainingId, TrainingDayId startWithDayId, LocalDate startDate);
+    void activate(PlanId planId, TrainingDayId startWithDayId, LocalDate startDate);
 
 
     @Value

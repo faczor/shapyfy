@@ -1,6 +1,6 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainingDay;
 
-import com.sd.shapyfy.domain.TrainingManagementAdapter;
+import com.sd.shapyfy.domain.PlanManagementAdapter;
 import com.sd.shapyfy.domain.model.TrainingDay;
 import com.sd.shapyfy.domain.model.TrainingDayId;
 import com.sd.shapyfy.domain.model.TrainingDayType;
@@ -37,7 +37,7 @@ public class PostgresTrainingDayPort implements TrainingDaysPort {
 
     //TODO Fix returnal (setting and adding to saved entities)
     @Override
-    public TrainingDay selectExercises(TrainingDayId trainingDayId, List<TrainingManagementAdapter.SelectedExercise> selectedExerciseDetails) {
+    public TrainingDay selectExercises(TrainingDayId trainingDayId, List<PlanManagementAdapter.SelectedExercise> selectedExerciseDetails) {
         TrainingDayEntity trainingDayEntity = trainingDayRepository.findById(trainingDayId.getValue()).orElseThrow(() -> new TrainingDayNotFound("Not found resource " + trainingDayId));
         SessionEntity session = Optional.ofNullable(trainingDayEntity.getSessions()).filter(CollectionUtils::isNotEmpty).map(sessions -> sessions.get(0)).orElse(SessionEntity.init(trainingDayEntity));
 
@@ -51,7 +51,7 @@ public class PostgresTrainingDayPort implements TrainingDaysPort {
         return trainingDayEntityToDomainConverter.convert(trainingDayEntity);
     }
 
-    private SessionExerciseEntity buildSessionExercises(TrainingManagementAdapter.SelectedExercise selectedExercise, SessionEntity session) {
+    private SessionExerciseEntity buildSessionExercises(PlanManagementAdapter.SelectedExercise selectedExercise, SessionEntity session) {
         ExerciseEntity exercise = exercisePort.fetchFor(selectedExercise.getExerciseId());
 
         return new SessionExerciseEntity(

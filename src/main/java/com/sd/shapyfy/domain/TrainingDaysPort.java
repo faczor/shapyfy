@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface TrainingDaysPort {
 
-    TrainingDay selectExercises(TrainingDayId trainingDayId, List<TrainingManagementAdapter.SelectedExercise> exerciseIdList);
+    TrainingDay selectExercises(TrainingDayId trainingDayId, List<PlanManagementAdapter.SelectedExercise> exerciseIdList);
 }

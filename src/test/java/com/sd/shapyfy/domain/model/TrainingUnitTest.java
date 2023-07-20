@@ -126,7 +126,7 @@ public class TrainingUnitTest {
 
     private Training training_with_sessions(SessionState state) {
         return new Training(
-                TrainingId.of(UUID.randomUUID()),
+                PlanId.of(UUID.randomUUID()),
                 UserId.of("user-id-00001"),
                 "Name",
                 List.of(training_day(state, MONDAY))
@@ -135,7 +135,7 @@ public class TrainingUnitTest {
 
     private Training training_with_days(List<Pair<DayOfWeek, TrainingDayType>> trainingDayParams) {
         return new Training(
-                TrainingId.of(UUID.randomUUID()),
+                PlanId.of(UUID.randomUUID()),
                 UserId.of("user-id-00001"),
                 "Name",
                 trainingDayParams.stream().map(param -> training_day(param.getValue(), param.getKey())).toList()
@@ -144,7 +144,7 @@ public class TrainingUnitTest {
 
     private Training training_without_sessions() {
         return new Training(
-                TrainingId.of(UUID.randomUUID()),
+                PlanId.of(UUID.randomUUID()),
                 UserId.of("user-id-00001"),
                 "Name",
                 List.of(training_day_without_sessions())

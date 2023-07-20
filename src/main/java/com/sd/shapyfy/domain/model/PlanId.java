@@ -6,16 +6,16 @@ import lombok.Value;
 import java.util.UUID;
 
 @Value(staticConstructor = "of")
-public class TrainingId {
+public class PlanId {
 
     UUID value;
 
-    public static TrainingId of(String value) {
+    public static PlanId of(String value) {
         return of(UUID.fromString(value));
     }
 
     @Override
     public String toString() {
-        return "TrainingId::" + value;
+        return "PlanId::" + value;
     }
 }

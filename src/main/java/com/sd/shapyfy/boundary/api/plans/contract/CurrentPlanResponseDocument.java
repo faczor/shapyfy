@@ -1,4 +1,4 @@
-package com.sd.shapyfy.boundary.api.trainings.contract;
+package com.sd.shapyfy.boundary.api.plans.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.domain.TrainingLookup;
@@ -8,9 +8,9 @@ import com.sd.shapyfy.domain.model.TrainingDayType;
 import java.time.DayOfWeek;
 import java.util.List;
 
-public record CurrentTrainingResponseDocument(
+public record CurrentPlanResponseDocument(
 
-        @JsonProperty(value = "training_id", required = true)
+        @JsonProperty(value = "id", required = true)
         String id,
         //
         @JsonProperty(value = "name", required = true)
@@ -20,16 +20,16 @@ public record CurrentTrainingResponseDocument(
         List<DayDocument> days
 ) {
 
-    public static CurrentTrainingResponseDocument from(TrainingLookup.CurrentTraining currentTraining) {
-        return new CurrentTrainingResponseDocument(
-                currentTraining.trainingId().getValue().toString(),
+    public static CurrentPlanResponseDocument from(TrainingLookup.CurrentTraining currentTraining) {
+        return new CurrentPlanResponseDocument(
+                currentTraining.planId().getValue().toString(),
                 currentTraining.name(),
                 currentTraining.days().stream().map(DayDocument::from).toList()
         );
     }
 
     public record DayDocument(
-            @JsonProperty(value = "training_day_id", required = true)
+            @JsonProperty(value = "id", required = true)
             String id,
             //
             @JsonProperty(value = "name", required = true)

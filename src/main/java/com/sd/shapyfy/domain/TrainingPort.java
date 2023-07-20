@@ -1,6 +1,5 @@
 package com.sd.shapyfy.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.domain.model.*;
 
 import java.time.LocalDate;
@@ -12,7 +11,7 @@ public interface TrainingPort {
 
     Training fetchFor(TrainingDayId trainingDayId);
 
-    Training fetchFor(TrainingId trainingId);
+    Training fetchFor(PlanId planId);
 
     void updateTrainingSessions(List<ActivateSession> sessionToActivate);
 

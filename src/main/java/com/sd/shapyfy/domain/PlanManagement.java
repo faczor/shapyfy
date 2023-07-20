@@ -18,7 +18,7 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class TrainingManagement implements TrainingManagementAdapter {
+public class PlanManagement implements PlanManagementAdapter {
 
     private final TrainingPort trainingPort;
 
@@ -46,9 +46,9 @@ public class TrainingManagement implements TrainingManagementAdapter {
     }
 
     @Override
-    public void activate(TrainingId trainingId, TrainingDayId trainingDayId, LocalDate startDate) {
-        log.info("Attempt to activate training {} with day {} and start date {}", trainingId, trainingDayId, startDate);
-        Training training = trainingPort.fetchFor(trainingId);
+    public void activate(PlanId planId, TrainingDayId trainingDayId, LocalDate startDate) {
+        log.info("Attempt to activate training {} with day {} and start date {}", planId, trainingDayId, startDate);
+        Training training = trainingPort.fetchFor(planId);
         validateIfTrainingIsFilledProperly(training.getTrainingDays());
 
         List<TrainingPort.ActivateSession> sessionForActivation = sessionsCreator.createForActivation(training, trainingDayId, startDate);

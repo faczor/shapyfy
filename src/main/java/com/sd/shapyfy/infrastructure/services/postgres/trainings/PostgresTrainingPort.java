@@ -56,10 +56,10 @@ public class PostgresTrainingPort implements TrainingPort {
     }
 
     @Override
-    public Training fetchFor(TrainingId trainingId) {
-        log.info("Attempt to fetch training for {}", trainingId);
-        TrainingEntity trainingEntity = trainingRepository.findById(trainingId.getValue())
-                .orElseThrow(() -> new TrainingNotFound("Training not found for " + trainingId));
+    public Training fetchFor(PlanId planId) {
+        log.info("Attempt to fetch training for {}", planId);
+        TrainingEntity trainingEntity = trainingRepository.findById(planId.getValue())
+                .orElseThrow(() -> new TrainingNotFound("Training not found for " + planId));
 
         return trainingEntityToDomainConverter.convert(trainingEntity);
     }

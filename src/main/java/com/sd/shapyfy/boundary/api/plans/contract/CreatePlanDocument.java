@@ -1,4 +1,4 @@
-package com.sd.shapyfy.boundary.api.trainings.contract;
+package com.sd.shapyfy.boundary.api.plans.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.domain.model.TrainingDayType;
@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.DayOfWeek;
 import java.util.List;
 
-public record CreateTrainingDocument(
+public record CreatePlanDocument(
         @JsonProperty(value = "name") String name,
 
         @NotEmpty

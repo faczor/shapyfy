@@ -1,7 +1,7 @@
 package com.sd.shapyfy.domain.model;
 
-import com.sd.shapyfy.domain.TrainingManagementAdapter;
-import com.sd.shapyfy.domain.TrainingManagementAdapter.TrainingInitialConfiguration.SessionDayConfiguration;
+import com.sd.shapyfy.domain.PlanManagementAdapter;
+import com.sd.shapyfy.domain.PlanManagementAdapter.TrainingInitialConfiguration.SessionDayConfiguration;
 import lombok.Value;
 
 import java.util.Collection;
@@ -12,7 +12,7 @@ import static java.util.stream.Collectors.joining;
 @Value
 public class Training {
 
-    TrainingId id;
+    PlanId id;
 
     UserId userId;
 
@@ -20,7 +20,7 @@ public class Training {
 
     List<TrainingDay> trainingDays;
 
-    public static Training initialize(UserId userId, TrainingManagementAdapter.TrainingInitialConfiguration trainingInitialConfiguration) {
+    public static Training initialize(UserId userId, PlanManagementAdapter.TrainingInitialConfiguration trainingInitialConfiguration) {
         return new Training(
                 null,
                 userId,

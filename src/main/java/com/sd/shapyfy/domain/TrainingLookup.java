@@ -34,7 +34,7 @@ public class TrainingLookup {
     }
 
     public record CurrentTraining(
-            TrainingId trainingId,
+            PlanId planId,
             String name,
             List<Day> days) {
 

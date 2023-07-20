@@ -1,11 +1,11 @@
-package com.sd.shapyfy.boundary.api.trainings;
+package com.sd.shapyfy.boundary.api.plans;
 
 import com.sd.shapyfy.SystemTime;
 import com.sd.shapyfy.boundary.api.ApiV1;
 import com.sd.shapyfy.boundary.api.TokenUtils;
-import com.sd.shapyfy.boundary.api.trainings.contract.CurrentSessionDocument;
-import com.sd.shapyfy.boundary.api.trainings.contract.CurrentTrainingResponseDocument;
-import com.sd.shapyfy.boundary.api.trainings.contract.ExerciseAttributesDocument;
+import com.sd.shapyfy.boundary.api.plans.contract.CurrentSessionDocument;
+import com.sd.shapyfy.boundary.api.plans.contract.CurrentPlanResponseDocument;
+import com.sd.shapyfy.boundary.api.plans.contract.ExerciseAttributesDocument;
 import com.sd.shapyfy.domain.TrainingLookup;
 import com.sd.shapyfy.domain.TrainingPort;
 import com.sd.shapyfy.domain.model.Session;
@@ -32,11 +32,11 @@ public class TraineeCurrentTrainingController {
     private final SystemTime systemTime;
 
     @GetMapping
-    public ResponseEntity<CurrentTrainingResponseDocument> trainingDetails() {
+    public ResponseEntity<CurrentPlanResponseDocument> trainingDetails() {
         UserId userId = TokenUtils.currentUserId();
         TrainingLookup.CurrentTraining training = trainingLookup.currentTrainingFor(userId);
 
-        return ResponseEntity.ok(CurrentTrainingResponseDocument.from(training));
+        return ResponseEntity.ok(CurrentPlanResponseDocument.from(training));
     }
 
     @PatchMapping

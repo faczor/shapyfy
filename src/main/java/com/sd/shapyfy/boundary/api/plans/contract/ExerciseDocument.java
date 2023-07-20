@@ -1,4 +1,4 @@
-package com.sd.shapyfy.boundary.api.trainings.contract;
+package com.sd.shapyfy.boundary.api.plans.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
