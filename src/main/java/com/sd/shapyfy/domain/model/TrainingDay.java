@@ -2,6 +2,7 @@ package com.sd.shapyfy.domain.model;
 
 import com.sd.shapyfy.domain.model.exception.ActiveSessionNotFound;
 import com.sd.shapyfy.domain.model.exception.DraftSessionNotFound;
+import com.sd.shapyfy.domain.session.Session;
 import lombok.Value;
 
 import java.time.DayOfWeek;
@@ -16,17 +17,17 @@ public class TrainingDay {
 
     DayOfWeek day;
 
-    TrainingDayType dayType;
+    ConfigurationDayType dayType;
 
     List<Session> sessions;
 
-    public static TrainingDay create(String name, DayOfWeek day, TrainingDayType trainingDayType) {
-        return new TrainingDay(null, name, day, trainingDayType, List.of());
+    public static TrainingDay create(String name, DayOfWeek day, ConfigurationDayType configurationDayType) {
+        return new TrainingDay(null, name, day, configurationDayType, List.of());
     }
 
     //TODO better holding of off day
     public Session mostCurrentSession() {
-        if (dayType == TrainingDayType.OFF) {
+        if (dayType == ConfigurationDayType.REST) {
             return null;
         }
 
@@ -38,7 +39,7 @@ public class TrainingDay {
     }
 
     public boolean isTrainingDay() {
-        return dayType != TrainingDayType.OFF;
+        return dayType != ConfigurationDayType.REST;
     }
 
     private Session activeSession() {

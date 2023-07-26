@@ -7,8 +7,8 @@ import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.TrainingDayEn
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static com.sd.shapyfy.domain.model.TrainingDayType.OFF;
-import static com.sd.shapyfy.domain.model.TrainingDayType.TRAINING;
+import static com.sd.shapyfy.domain.model.ConfigurationDayType.REST;
+import static com.sd.shapyfy.domain.model.ConfigurationDayType.TRAINING;
 
 @Component
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class TrainingDayEntityToDomainConverter {
                 TrainingDayId.of(entity.getId()),
                 entity.getName(),
                 entity.getDay(),
-                entity.isOff() ? OFF : TRAINING,
+                entity.isOff() ? REST : TRAINING,
                 entity.getSessions().stream().map(sessionEntityToDomainConverter::convert).toList()
         );
     }

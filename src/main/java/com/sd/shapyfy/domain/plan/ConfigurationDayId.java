@@ -1,20 +1,20 @@
-package com.sd.shapyfy.domain.model;
+package com.sd.shapyfy.domain.plan;
 
 import lombok.Value;
 
 import java.util.UUID;
 
 @Value(staticConstructor = "of")
-public class SessionPartId {
+public class ConfigurationDayId {
 
     UUID value;
 
-    public static SessionPartId of(String value) {
+    public static ConfigurationDayId of(String value) {
         return of(UUID.fromString(value));
     }
 
     @Override
     public String toString() {
-        return "SessionId::" + value;
+        return "ConfigurationDayId::" + value;
     }
 }

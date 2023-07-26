@@ -1,7 +1,6 @@
 package com.sd.shapyfy.domain.model;
 
-public enum TrainingDayType {
-    OFF,
+public enum ConfigurationDayType {
+    REST,
     TRAINING
-
 }

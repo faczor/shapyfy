@@ -1,17 +1,21 @@
 package com.sd.shapyfy.domain;
 
 import com.sd.shapyfy.domain.model.*;
+import com.sd.shapyfy.domain.plan.PlanId;
+import com.sd.shapyfy.domain.session.Session;
+import com.sd.shapyfy.domain.session.SessionExerciseId;
+import com.sd.shapyfy.domain.session.SessionId;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface TrainingPort {
 
-    Training create(Training training);
+    Plan create(Plan plan);
 
-    Training fetchFor(TrainingDayId trainingDayId);
+    Plan fetchFor(TrainingDayId trainingDayId);
 
-    Training fetchFor(PlanId planId);
+    Plan fetchFor(PlanId planId);
 
     void updateTrainingSessions(List<ActivateSession> sessionToActivate);
 

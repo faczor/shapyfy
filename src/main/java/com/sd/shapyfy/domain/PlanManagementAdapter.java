@@ -1,6 +1,8 @@
 package com.sd.shapyfy.domain;
 
 import com.sd.shapyfy.domain.model.*;
+import com.sd.shapyfy.domain.plan.PlanConfiguration;
+import com.sd.shapyfy.domain.plan.PlanId;
 import lombok.Value;
 
 import java.time.DayOfWeek;
@@ -9,8 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PlanManagementAdapter {
-
-    Training create(TrainingInitialConfiguration initialConfiguration, UserId userId);
 
     TrainingDay exercisesSelection(TrainingDayId trainingDayId, List<SelectedExercise> selectedExercises, UserId userId);
 
@@ -46,8 +46,7 @@ public interface PlanManagementAdapter {
         @Value(staticConstructor = "of")
         public static class SessionDayConfiguration {
             String name;
-            DayOfWeek dayOfWeek;
-            TrainingDayType dayType;
+            ConfigurationDayType dayType;
         }
     }
 }

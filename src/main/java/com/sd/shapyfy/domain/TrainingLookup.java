@@ -2,6 +2,8 @@ package com.sd.shapyfy.domain;
 
 import com.sd.shapyfy.domain.model.*;
 import com.sd.shapyfy.domain.model.exception.CurrentTrainingNotFound;
+import com.sd.shapyfy.domain.plan.PlanId;
+import com.sd.shapyfy.domain.session.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,17 +22,17 @@ public class TrainingLookup {
 
     public CurrentTraining currentTrainingFor(UserId userId) {
         log.info("Attempt to fetch current training for {}", userId);
-        List<Training> userTrainings = trainingFetcher.fetchFor(userId);
+        List<Plan> userPlans = trainingFetcher.fetchFor(userId);
 
-        Training activeTraining = findActiveTraining(userTrainings).orElseThrow(() -> new CurrentTrainingNotFound(userId));
+        Plan activePlan = findActiveTraining(userPlans).orElseThrow(() -> new CurrentTrainingNotFound(userId));
 
-        return CurrentTraining.from(activeTraining);
+        return CurrentTraining.from(activePlan);
     }
 
-    private Optional<Training> findActiveTraining(List<Training> userTrainings) {
-        return userTrainings.stream().filter(Training::isActive)
+    private Optional<Plan> findActiveTraining(List<Plan> userPlans) {
+        return userPlans.stream().filter(Plan::isActive)
                 .findAny()
-                .or(() -> userTrainings.stream().filter(Training::isDraft).findFirst());
+                .or(() -> userPlans.stream().filter(Plan::isDraft).findFirst());
     }
 
     public record CurrentTraining(
@@ -40,7 +42,7 @@ public class TrainingLookup {
 
         //TODO proper exception
         public Session sessionFor(LocalDate localDate) {
-            return days.stream().map(Day::session).filter(session -> session.getDate().equals(localDate))
+            return days.stream().map(Day::session).filter(session -> session.date().equals(localDate))
                     .findFirst()
                     .orElseThrow(() -> new IllegalStateException("Session not found for " + localDate));
         }
@@ -48,7 +50,7 @@ public class TrainingLookup {
         public record Day(
                 TrainingDayId trainingDayId,
                 String name,
-                TrainingDayType dayType,
+                ConfigurationDayType dayType,
                 DayOfWeek dayOfWeek,
                 Session session
         ) {
@@ -63,11 +65,11 @@ public class TrainingLookup {
             }
         }
 
-        public static CurrentTraining from(Training training) {
+        public static CurrentTraining from(Plan plan) {
             return new CurrentTraining(
-                    training.getId(),
-                    training.getName(),
-                    training.getTrainingDays().stream().map(Day::from).toList()
+                    plan.getId(),
+                    plan.getName(),
+                    plan.getTrainingDays().stream().map(Day::from).toList()
             );
         }
     }

@@ -1,6 +1,6 @@
 package com.sd.shapyfy.domain;
 
-import com.sd.shapyfy.domain.model.Training;
+import com.sd.shapyfy.domain.model.Plan;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
@@ -9,13 +9,13 @@ import java.time.LocalDate;
 @Getter
 public class StartedTrainingEvent extends ApplicationEvent {
 
-    Training training;
+    Plan plan;
 
     LocalDate lastTrainingDate;
 
-    public StartedTrainingEvent(Object source, Training training, LocalDate lastTrainingDate) {
+    public StartedTrainingEvent(Object source, Plan plan, LocalDate lastTrainingDate) {
         super(source);
-        this.training = training;
+        this.plan = plan;
         this.lastTrainingDate = lastTrainingDate;
     }
 }

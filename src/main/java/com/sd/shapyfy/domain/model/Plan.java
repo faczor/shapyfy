@@ -2,6 +2,8 @@ package com.sd.shapyfy.domain.model;
 
 import com.sd.shapyfy.domain.PlanManagementAdapter;
 import com.sd.shapyfy.domain.PlanManagementAdapter.TrainingInitialConfiguration.SessionDayConfiguration;
+import com.sd.shapyfy.domain.plan.PlanId;
+import com.sd.shapyfy.domain.session.Session;
 import lombok.Value;
 
 import java.util.Collection;
@@ -10,7 +12,7 @@ import java.util.List;
 import static java.util.stream.Collectors.joining;
 
 @Value
-public class Training {
+public class Plan {
 
     PlanId id;
 
@@ -20,14 +22,7 @@ public class Training {
 
     List<TrainingDay> trainingDays;
 
-    public static Training initialize(UserId userId, PlanManagementAdapter.TrainingInitialConfiguration trainingInitialConfiguration) {
-        return new Training(
-                null,
-                userId,
-                trainingInitialConfiguration.getName().orElse(trainingInitialConfiguration.getSessionDayConfigurations().stream().map(SessionDayConfiguration::getName).collect(joining(","))),
-                trainingInitialConfiguration.getSessionDayConfigurations().stream().map(configuration -> TrainingDay.create(configuration.getName(), configuration.getDayOfWeek(), configuration.getDayType())).toList()
-        );
-    }
+
 
     public boolean isActive() {
         return trainingDays.stream().map(TrainingDay::getSessions)

@@ -3,7 +3,7 @@ package com.sd.shapyfy.infrastructure.services.postgres.trainingDay;
 import com.sd.shapyfy.domain.PlanManagementAdapter;
 import com.sd.shapyfy.domain.model.TrainingDay;
 import com.sd.shapyfy.domain.model.TrainingDayId;
-import com.sd.shapyfy.domain.model.TrainingDayType;
+import com.sd.shapyfy.domain.model.ConfigurationDayType;
 import com.sd.shapyfy.domain.TrainingDaysPort;
 import com.sd.shapyfy.infrastructure.services.postgres.exercises.ExerciseEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.exercises.PostgresExercisePort;
@@ -70,7 +70,7 @@ public class PostgresTrainingDayPort implements TrainingDaysPort {
                 null,
                 Optional.ofNullable(day.getName()).orElse("REST_DAY"),
                 day.getDay(),
-                day.getDayType() == TrainingDayType.OFF,
+                day.getDayType() == ConfigurationDayType.REST,
                 training,
                 List.of()
         )).map(trainingDayRepository::save).toList();

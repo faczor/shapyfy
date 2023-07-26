@@ -1,8 +1,11 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions;
 
-import com.sd.shapyfy.domain.model.*;
 import com.sd.shapyfy.domain.model.exception.SessionNotFound;
 import com.sd.shapyfy.domain.TrainingPort;
+import com.sd.shapyfy.domain.session.Session;
+import com.sd.shapyfy.domain.session.SessionExerciseId;
+import com.sd.shapyfy.domain.session.SessionId;
+import com.sd.shapyfy.domain.session.SessionState;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.converter.SessionEntityToDomainConverter;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.PostgresSessionExerciseRepository;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.PostgresTrainingDayRepository;
@@ -15,7 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static com.sd.shapyfy.domain.model.SessionState.FOLLOW_UP;
+import static com.sd.shapyfy.domain.session.SessionState.FOLLOW_UP;
 
 @Slf4j
 @Service

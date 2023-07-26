@@ -1,6 +1,6 @@
 package com.sd.shapyfy.integrationtest.api.training;
 
-import com.sd.shapyfy.domain.model.SessionState;
+import com.sd.shapyfy.domain.session.SessionState;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.SessionEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.TrainingDayEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.PostgresTrainingRepository;
@@ -21,13 +21,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.hamcrest.Matchers.*;
 
-public class TrainingIntegrationTest extends AbstractIntegrationTest {
+public class PlanIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     PostgresTrainingRepository trainingRepository;
 
     @Test
-    @DisplayName("Trainee create training EP[POST:/v1/trainings]")
+    @DisplayName("Trainee create plan EP[POST:/v1/trainings]")
     void initializeTraining() {
 
         String trainingId = as(NEW_USER.getTestUser()).assertRequest($ -> $
@@ -51,39 +51,35 @@ public class TrainingIntegrationTest extends AbstractIntegrationTest {
                                       "day_of_week": "WEDNESDAY"
                                     },
                                     {
-                                      "type": "OFF",
+                                      "type": "REST",
                                       "day_of_week": "THURSDAY"
                                     }
                                   ]
                                 }
                                 """)
-                        .post("/v1/trainings"))
+                        .post("/v1/plans"))
                 //
                 .statusCode(200)
                 .body("id", notNullValue())
                 //
                 .body("training_days[0].id", notNullValue())
                 .body("training_days[0].name", is("PUSH A"))
-                .body("training_days[0].day_of_week", is("MONDAY"))
                 .body("training_days[0].type", is("TRAINING"))
                 .body("training_days[0].exercises", is(emptyIterable()))
                 //
                 .body("training_days[1].id", notNullValue())
                 .body("training_days[1].name", is("PULL A"))
-                .body("training_days[1].day_of_week", is("TUESDAY"))
                 .body("training_days[1].type", is("TRAINING"))
                 .body("training_days[1].exercises", is(emptyIterable()))
                 //
                 .body("training_days[2].id", notNullValue())
                 .body("training_days[2].name", is("LEGS A"))
-                .body("training_days[2].day_of_week", is("WEDNESDAY"))
                 .body("training_days[2].type", is("TRAINING"))
                 .body("training_days[2].exercises", is(emptyIterable()))
                 //
                 .body("training_days[3].id", notNullValue())
                 .body("training_days[3].name", is("REST_DAY"))
-                .body("training_days[3].day_of_week", is("THURSDAY"))
-                .body("training_days[3].type", is("OFF"))
+                .body("training_days[3].type", is("REST"))
                 .body("training_days[3].exercises", is(emptyIterable()))
                 //
                 .and().extract().body().path("id");
@@ -91,23 +87,23 @@ public class TrainingIntegrationTest extends AbstractIntegrationTest {
         assertThat(trainingRepository.findById(UUID.fromString(trainingId)))
                 .isPresent()
                 .get()
-                .satisfies(training -> {
-                    assertThat(training.getDays().size()).isEqualTo(4);
-                    assertThat(training.getDays()).asList()
+                .satisfies(plan -> {
+                    assertThat(plan.getDays().size()).isEqualTo(4);
+                    assertThat(plan.getDays()).asList()
                             //
-                            .extracting("name", "day", "isOff")
+                            .extracting("name", "isOff")
                             .containsAll(List.of(
-                                    tuple("PUSH A", MONDAY, false),
-                                    tuple("PULL A", TUESDAY, false),
-                                    tuple("LEGS A", WEDNESDAY, false),
-                                    tuple("REST_DAY", THURSDAY, true)
+                                    tuple("PUSH A", false),
+                                    tuple("PULL A", false),
+                                    tuple("LEGS A", false),
+                                    tuple("REST_DAY", true)
                             ));
                 });
 
     }
 
     @Test
-    @DisplayName("Trainee activate EP[PUT:/v1/trainings/{trainingId}/activations]")
+    @DisplayName("Trainee activate EP[PUT:/v1/trainings/{trainingId}/plans]")
     void activateTraining() {
         UUID trainingId = UUID.fromString("00000000-0000-0000-0000-000000000200");
         as(USER_WITH_DRAFT_TRAINING.getTestUser()).assertRequest($ -> $
@@ -117,15 +113,15 @@ public class TrainingIntegrationTest extends AbstractIntegrationTest {
                                   "initialize_training_with_day_id": "00000000-0000-0000-0000-000000000201"
                                 }
                                 """)
-                        .put("/v1/trainings/{trainingId}/activations", trainingId))
+                        .put("/v1/plans/{trainingId}/activations", trainingId))
                 //
                 .statusCode(200);
 
         assertThat(trainingRepository.findById(trainingId))
                 .isPresent()
                 .get()
-                .satisfies(training -> {
-                    List<SessionEntity> activatedSessions = training.getDays().stream().map(TrainingDayEntity::getSessions)
+                .satisfies(plan -> {
+                    List<SessionEntity> activatedSessions = plan.getDays().stream().map(TrainingDayEntity::getSessions)
                             .flatMap(Collection::stream)
                             .filter(s -> s.getState() == SessionState.ACTIVE)
                             .toList();
@@ -139,7 +135,7 @@ public class TrainingIntegrationTest extends AbstractIntegrationTest {
                                     date(3, 1)
                             ));
 
-                    List<SessionEntity> followUpSessions = training.getDays().stream().map(TrainingDayEntity::getSessions)
+                    List<SessionEntity> followUpSessions = plan.getDays().stream().map(TrainingDayEntity::getSessions)
                             .flatMap(Collection::stream)
                             .filter(s -> s.getState() == SessionState.FOLLOW_UP)
                             .toList();

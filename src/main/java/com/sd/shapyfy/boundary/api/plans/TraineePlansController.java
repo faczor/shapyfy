@@ -6,10 +6,11 @@ import com.sd.shapyfy.boundary.api.plans.contract.StartPlanDocument;
 import com.sd.shapyfy.boundary.api.plans.contract.PlanDocument;
 import com.sd.shapyfy.boundary.api.plans.converter.PlanToDomainConverter;
 import com.sd.shapyfy.domain.PlanManagementAdapter;
-import com.sd.shapyfy.domain.model.Training;
-import com.sd.shapyfy.domain.model.PlanId;
+import com.sd.shapyfy.domain.plan.PlanConfiguration;
+import com.sd.shapyfy.domain.plan.PlanId;
 import com.sd.shapyfy.domain.model.TrainingDayId;
 import com.sd.shapyfy.domain.model.UserId;
+import com.sd.shapyfy.domain.plan.TrainingPlanCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,8 @@ public class TraineePlansController {
 
     public final PlanManagementAdapter planManagement;
 
+    public final TrainingPlanCreator trainingPlanCreator;
+
     public final PlanToDomainConverter planToDomainConverter;
 
     @PostMapping
@@ -35,8 +38,8 @@ public class TraineePlansController {
         log.info("Attempt to create training {}", document);
         UserId userId = currentUserId();
 
-        Training training = planManagement.create(planToDomainConverter.convertForCreation(document), userId);
-        return ResponseEntity.ok(PlanDocument.from(training));
+        PlanConfiguration plan = trainingPlanCreator.create(planToDomainConverter.convertForCreation(document), userId);
+        return ResponseEntity.ok(PlanDocument.from(plan));
     }
 
     @PutMapping("/{plan_id}/activations")

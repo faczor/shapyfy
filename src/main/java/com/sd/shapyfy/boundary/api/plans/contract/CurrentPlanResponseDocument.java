@@ -2,8 +2,8 @@ package com.sd.shapyfy.boundary.api.plans.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.domain.TrainingLookup;
-import com.sd.shapyfy.domain.model.Session;
-import com.sd.shapyfy.domain.model.TrainingDayType;
+import com.sd.shapyfy.domain.session.Session;
+import com.sd.shapyfy.domain.model.ConfigurationDayType;
 
 import java.time.DayOfWeek;
 import java.util.List;
@@ -36,7 +36,7 @@ public record CurrentPlanResponseDocument(
             String name,
             //
             @JsonProperty(value = "day_type", required = true)
-            TrainingDayType dayType,
+            ConfigurationDayType dayType,
             //
             @JsonProperty(value = "day_of_week", required = true)
             DayOfWeek dayOfWeek,
@@ -50,7 +50,7 @@ public record CurrentPlanResponseDocument(
                     day.name(),
                     day.dayType(),
                     day.dayOfWeek(),
-                    day.dayType() == TrainingDayType.OFF ? List.of() : day.session().getSessionExercises().stream().map(TrainingExercise::from).toList()
+                    day.dayType() == ConfigurationDayType.REST ? List.of() : day.session().sessionExercises().stream().map(TrainingExercise::from).toList()
             );
         }
 
@@ -74,10 +74,10 @@ public record CurrentPlanResponseDocument(
         ) {
             public static TrainingExercise from(Session.SessionExercise sessionExercise) {
                 return new TrainingExercise(
-                        sessionExercise.getExercise().getId().getValue().toString(),
-                        sessionExercise.getExercise().getName(),
-                        sessionExercise.getSets(),
-                        sessionExercise.getReps(),
+                        sessionExercise.exercise().getId().getValue().toString(),
+                        sessionExercise.exercise().getName(),
+                        sessionExercise.sets(),
+                        sessionExercise.reps(),
                         sessionExercise.getWeight().orElse(null)
                 );
             }

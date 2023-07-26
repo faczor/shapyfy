@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class TrainingDayToDomainConverter {
+public class ApiTrainingDayToDomainConverter {
 
     public List<PlanManagementAdapter.SelectedExercise> convertToSelection(SelectExercisesToTrainingDayDocument selectExercisesToTrainingDayDocument) {
 

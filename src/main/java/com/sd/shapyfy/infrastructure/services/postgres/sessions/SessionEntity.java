@@ -1,6 +1,6 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions;
 
-import com.sd.shapyfy.domain.model.SessionState;
+import com.sd.shapyfy.domain.session.SessionState;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.TrainingDayEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

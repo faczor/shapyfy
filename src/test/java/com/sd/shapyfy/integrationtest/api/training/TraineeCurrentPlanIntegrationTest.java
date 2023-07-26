@@ -9,14 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.UUID;
 
-import static com.sd.shapyfy.domain.model.SessionState.*;
+import static com.sd.shapyfy.domain.session.SessionState.*;
 import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 
-public class TraineeCurrentTrainingIntegrationTest extends AbstractIntegrationTest {
+public class TraineeCurrentPlanIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private PostgresSessionRepository sessionRepository;
@@ -31,10 +31,10 @@ public class TraineeCurrentTrainingIntegrationTest extends AbstractIntegrationTe
                 //
                 .statusCode(200)
                 //
-                .body("training_id", is("00000000-0000-0000-0000-000000000200"))
+                .body("id", is("00000000-0000-0000-0000-000000000200"))
                 .body("name", is("PUSH A,PULL A,LEGS A,null,PUSH B,PULL B,LEGS B,null"))
                 //
-                .body("training_days[0].training_day_id", is("00000000-0000-0000-0000-000000000201"))
+                .body("training_days[0].id", is("00000000-0000-0000-0000-000000000201"))
                 .body("training_days[0].name", is("PUSH A"))
                 .body("training_days[0].day_type", is("TRAINING"))
                 .body("training_days[0].day_of_week", is("MONDAY"))
@@ -58,7 +58,7 @@ public class TraineeCurrentTrainingIntegrationTest extends AbstractIntegrationTe
                 .body("training_days[0].training_exercises[2].weight", nullValue())
                 //
                 //
-                .body("training_days[1].training_day_id", is("00000000-0000-0000-0000-000000000202"))
+                .body("training_days[1].id", is("00000000-0000-0000-0000-000000000202"))
                 .body("training_days[1].name", is("PULL A"))
                 .body("training_days[1].day_type", is("TRAINING"))
                 .body("training_days[1].day_of_week", is("TUESDAY"))
@@ -82,7 +82,7 @@ public class TraineeCurrentTrainingIntegrationTest extends AbstractIntegrationTe
                 .body("training_days[1].training_exercises[2].weight", nullValue())
                 //
                 //
-                .body("training_days[2].training_day_id", is("00000000-0000-0000-0000-000000000203"))
+                .body("training_days[2].id", is("00000000-0000-0000-0000-000000000203"))
                 .body("training_days[2].name", is("LEGS A"))
                 .body("training_days[2].day_type", is("TRAINING"))
                 .body("training_days[2].day_of_week", is("WEDNESDAY"))
@@ -94,9 +94,9 @@ public class TraineeCurrentTrainingIntegrationTest extends AbstractIntegrationTe
                 .body("training_days[2].training_exercises[0].weight", is(25.5f))
                 //
                 //
-                .body("training_days[3].training_day_id", is("00000000-0000-0000-0000-000000000204"))
+                .body("training_days[3].id", is("00000000-0000-0000-0000-000000000204"))
                 .body("training_days[3].name", is("REST_DAY"))
-                .body("training_days[3].day_type", is("OFF"))
+                .body("training_days[3].day_type", is("REST"))
                 .body("training_days[3].day_of_week", is("THURSDAY"))
                 .body("training_days[3].training_exercises", is(emptyIterable()))
         ;

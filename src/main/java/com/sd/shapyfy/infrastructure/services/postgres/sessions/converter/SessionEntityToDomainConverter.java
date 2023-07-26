@@ -1,7 +1,7 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.converter;
 
-import com.sd.shapyfy.domain.model.Session;
-import com.sd.shapyfy.domain.model.SessionId;
+import com.sd.shapyfy.domain.session.Session;
+import com.sd.shapyfy.domain.session.SessionId;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.SessionEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

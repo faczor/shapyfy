@@ -15,7 +15,7 @@ import static org.assertj.core.groups.Tuple.tuple;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-public class TrainingDaysIntegrationTest extends AbstractIntegrationTest {
+public class PlanDaysIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     PostgresTrainingDayRepository trainingDayRepository;

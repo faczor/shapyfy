@@ -2,6 +2,7 @@ package com.sd.shapyfy.boundary.api.plans.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.boundary.api.plans.contract.CurrentPlanResponseDocument.DayDocument.TrainingExercise;
+import com.sd.shapyfy.domain.session.Session;
 
 import java.util.List;
 
@@ -14,10 +15,10 @@ public record CurrentSessionDocument(
         List<TrainingExercise> trainingExercises
 ) {
 
-    public static CurrentSessionDocument from(com.sd.shapyfy.domain.model.Session session) {
+    public static CurrentSessionDocument from(Session session) {
         return new CurrentSessionDocument(
-                session.getId().getValue().toString(),
-                session.getSessionExercises().stream().map(TrainingExercise::from).toList()
+                session.id().getValue().toString(),
+                session.sessionExercises().stream().map(TrainingExercise::from).toList()
         );
     }
 }

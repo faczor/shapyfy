@@ -1,4 +1,4 @@
-package com.sd.shapyfy.domain.model;
+package com.sd.shapyfy.domain.session;
 
 public enum SessionState {
     DRAFT, FINISHED, ACTIVE, RUNNING, FOLLOW_UP, HISTORICAL;

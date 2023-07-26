@@ -2,7 +2,7 @@ package com.sd.shapyfy.boundary.api.trainingDays.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.boundary.api.exercises.contract.ExerciseDocument;
-import com.sd.shapyfy.domain.model.Session;
+import com.sd.shapyfy.domain.session.Session;
 import com.sd.shapyfy.domain.model.TrainingDay;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public record SelectedExercisesDocument(
         List<SelectedExercise> selectedExercises) {
 
     public static SelectedExercisesDocument from(TrainingDay trainingDay) {
-        return new SelectedExercisesDocument(trainingDay.mostCurrentSession().getSessionExercises().stream().map(SelectedExercise::from).toList());
+        return new SelectedExercisesDocument(trainingDay.mostCurrentSession().sessionExercises().stream().map(SelectedExercise::from).toList());
     }
 
     private record SelectedExercise(
@@ -25,10 +25,10 @@ public record SelectedExercisesDocument(
 
         public static SelectedExercise from(Session.SessionExercise sessionExercise) {
             return new SelectedExercise(
-                    ExerciseDocument.from(sessionExercise.getExercise()),
+                    ExerciseDocument.from(sessionExercise.exercise()),
                     new ExerciseTraining(
-                            sessionExercise.getSets(),
-                            sessionExercise.getReps(),
+                            sessionExercise.sets(),
+                            sessionExercise.reps(),
                             sessionExercise.getWeight().orElse(null)
                     )
             );

@@ -3,6 +3,10 @@ package com.sd.shapyfy.infrastructure.services.postgres.trainings;
 import com.sd.shapyfy.domain.TrainingLookup;
 import com.sd.shapyfy.domain.model.*;
 import com.sd.shapyfy.domain.TrainingPort;
+import com.sd.shapyfy.domain.plan.PlanId;
+import com.sd.shapyfy.domain.session.Session;
+import com.sd.shapyfy.domain.session.SessionExerciseId;
+import com.sd.shapyfy.domain.session.SessionId;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.SessionsService;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.converter.TrainingToEntityConverter;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.PostgresTrainingDayPort;
@@ -38,16 +42,16 @@ public class PostgresTrainingPort implements TrainingPort {
     private final TrainingLookup trainingLookup;
 
     @Override
-    public Training create(Training training) {
-        log.info("Saving training {} to postgres repository", training);
-        TrainingEntity savedEntity = trainingRepository.save(trainingDomainEntityConverter.convert(training));
-        List<TrainingDayEntity> sessionsCreated = trainingDayPort.createDays(savedEntity, training.getTrainingDays());
+    public Plan create(Plan plan) {
+        log.info("Saving training {} to postgres repository", plan);
+        TrainingEntity savedEntity = trainingRepository.save(trainingDomainEntityConverter.convert(plan));
+        List<TrainingDayEntity> sessionsCreated = trainingDayPort.createDays(savedEntity, plan.getTrainingDays());
         savedEntity.setDays(sessionsCreated);
         return trainingEntityToDomainConverter.convert(savedEntity);
     }
 
     @Override
-    public Training fetchFor(TrainingDayId trainingDayId) {
+    public Plan fetchFor(TrainingDayId trainingDayId) {
         log.info("Attempt to fetch training for day with {}", trainingDayId);
         TrainingEntity trainingEntity = trainingRepository.findByDaysId(trainingDayId.getValue())
                 .orElseThrow(() -> new TrainingNotFound("Training not found for " + trainingDayId));
@@ -56,7 +60,7 @@ public class PostgresTrainingPort implements TrainingPort {
     }
 
     @Override
-    public Training fetchFor(PlanId planId) {
+    public Plan fetchFor(PlanId planId) {
         log.info("Attempt to fetch training for {}", planId);
         TrainingEntity trainingEntity = trainingRepository.findById(planId.getValue())
                 .orElseThrow(() -> new TrainingNotFound("Training not found for " + planId));
@@ -82,7 +86,7 @@ public class PostgresTrainingPort implements TrainingPort {
         log.info("Attempt to run session for {} on {}", userId, localDate);
         TrainingLookup.CurrentTraining currentTraining = trainingLookup.currentTrainingFor(userId);
         Session session = currentTraining.sessionFor(localDate);
-        sessionsService.runSession(session.getId());
+        sessionsService.runSession(session.id());
 
         return session;
     }

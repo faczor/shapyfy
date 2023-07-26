@@ -1,15 +1,15 @@
-package com.sd.shapyfy.domain.model;
+package com.sd.shapyfy.domain.session;
 
 import lombok.Value;
 
 import java.util.UUID;
 
 @Value(staticConstructor = "of")
-public class SessionExerciseId {
+public class SessionId {
 
     UUID value;
 
-    public static SessionExerciseId of(String value) {
+    public static SessionId of(String value) {
         return of(UUID.fromString(value));
     }
 

@@ -3,7 +3,7 @@ package com.sd.shapyfy.boundary.api.trainingDays;
 import com.sd.shapyfy.boundary.api.ApiV1;
 import com.sd.shapyfy.boundary.api.trainingDays.contract.SelectExercisesToTrainingDayDocument;
 import com.sd.shapyfy.boundary.api.trainingDays.contract.SelectedExercisesDocument;
-import com.sd.shapyfy.boundary.api.trainingDays.converter.TrainingDayToDomainConverter;
+import com.sd.shapyfy.boundary.api.trainingDays.converter.ApiTrainingDayToDomainConverter;
 import com.sd.shapyfy.domain.PlanManagementAdapter;
 import com.sd.shapyfy.domain.model.TrainingDay;
 import com.sd.shapyfy.domain.model.TrainingDayId;
@@ -27,7 +27,7 @@ public class TrainingDaysController {
 
     private final PlanManagementAdapter planManagementAdapter;
 
-    private final TrainingDayToDomainConverter trainingDayToDomainConverter;
+    private final ApiTrainingDayToDomainConverter apiTrainingDayToDomainConverter;
 
     @PatchMapping("/{training_day_id}")
     public ResponseEntity<SelectedExercisesDocument> fillTrainingDay(
@@ -35,7 +35,7 @@ public class TrainingDaysController {
             @RequestBody @Valid SelectExercisesToTrainingDayDocument selectExercisesToTrainingDayDocument) {
         log.info("Attempt to fill training day {} with {}", trainingDayId, selectExercisesToTrainingDayDocument);
         UserId userId = currentUserId();
-        List<PlanManagementAdapter.SelectedExercise> selectedExercises = trainingDayToDomainConverter.convertToSelection(selectExercisesToTrainingDayDocument);
+        List<PlanManagementAdapter.SelectedExercise> selectedExercises = apiTrainingDayToDomainConverter.convertToSelection(selectExercisesToTrainingDayDocument);
         TrainingDay trainingDay = planManagementAdapter.exercisesSelection(TrainingDayId.of(trainingDayId), selectedExercises, userId);
 
         return ResponseEntity.ok(SelectedExercisesDocument.from(trainingDay));

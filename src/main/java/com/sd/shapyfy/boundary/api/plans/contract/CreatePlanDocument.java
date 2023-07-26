@@ -1,7 +1,7 @@
 package com.sd.shapyfy.boundary.api.plans.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sd.shapyfy.domain.model.TrainingDayType;
+import com.sd.shapyfy.domain.model.ConfigurationDayType;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -19,7 +19,7 @@ public record CreatePlanDocument(
     public record DayConfiguration(
             @JsonProperty(value = "name") String name,
             @NotNull
-            @JsonProperty(value = "type") TrainingDayType type,
+            @JsonProperty(value = "type") ConfigurationDayType type,
             @NotNull
             @JsonProperty(value = "day_of_week") DayOfWeek dayOfWeek) {
     }
