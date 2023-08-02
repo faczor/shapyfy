@@ -1,0 +1,93 @@
+package com.sd.shapyfy.infrastructure.services.postgres.sessions.component;
+
+import com.sd.shapyfy.domain.configuration.SessionService;
+import com.sd.shapyfy.domain.configuration.SessionService.EditableSessionParams.SessionExerciseExerciseEditableParam;
+import com.sd.shapyfy.domain.exercise.model.ExerciseId;
+import com.sd.shapyfy.domain.configuration.model.ConfigurationDayId;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
+import com.sd.shapyfy.infrastructure.services.postgres.exercises.model.ExerciseEntity;
+import com.sd.shapyfy.infrastructure.services.postgres.exercises.component.PostgresExerciseRepository;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionEntity;
+import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.component.PostgresTrainingDayRepository;
+import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model.TrainingDayEntity;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+//TODO Rename name and service
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class PostgresqlSessionService implements SessionService {
+
+    private final PostgresSessionRepository sessionRepository;
+
+    private final PostgresTrainingDayRepository trainingDayRepository;
+
+    private final PostgresExerciseRepository postgresExerciseRepository;
+
+    @Override
+    public void createSession(ConfigurationDayId configurationDayId, EditableSessionParams editableSessionParams) {
+        log.info("Create training day {} with params {}", configurationDayId, editableSessionParams);
+        TrainingDayEntity trainingDayEntity = getById(configurationDayId);
+        trainingDayEntity.createNewSession(buildUpdateSessionData(editableSessionParams));
+        trainingDayRepository.save(trainingDayEntity);
+    }
+
+    @Override
+    public void updateSessionWithState(ConfigurationDayId configurationDayId, SessionState state, EditableSessionParams editableSessionParams) {
+        log.info("Update training day {} with session state {} with params {}", configurationDayId, state, editableSessionParams);
+        TrainingDayEntity trainingDayEntity = getById(configurationDayId);
+        SessionEntity sessionToUpdate = trainingDayEntity.sessionWithState(state);
+        sessionToUpdate.update(buildUpdateSessionData(editableSessionParams));
+        sessionRepository.save(sessionToUpdate);
+    }
+
+
+    //TODO proper exception
+    private TrainingDayEntity getById(ConfigurationDayId configurationDayId) {
+        return trainingDayRepository.findById(configurationDayId.getValue()).orElseThrow();
+    }
+
+    //TODO proper exception
+    private ExerciseEntity getById(ExerciseId exerciseId) {
+        return postgresExerciseRepository.findById(exerciseId.getValue()).orElseThrow();
+    }
+
+    private UpdateSessionData buildUpdateSessionData(EditableSessionParams editableSessionParams) {
+        return new UpdateSessionData(
+                editableSessionParams.state(),
+                editableSessionParams.date(),
+                Optional.ofNullable(editableSessionParams.sessionExerciseExerciseEditableParam()).map(this::buildUpdateExerciseData).orElse(null)
+        );
+    }
+
+    private List<UpdateSessionData.UpdateExercise> buildUpdateExerciseData(List<SessionExerciseExerciseEditableParam> sessionExerciseExerciseEditableParams) {
+        return sessionExerciseExerciseEditableParams.stream().map(editableParams -> new UpdateSessionData.UpdateExercise(
+                getById(editableParams.exerciseId()),
+                editableParams.setsAmount(),
+                editableParams.repsAmount(),
+                editableParams.weightAmount(),
+                editableParams.isFinished()
+        )).toList();
+    }
+
+    public record UpdateSessionData(
+            SessionState state,
+            LocalDate date,
+            List<UpdateExercise> updateExercises
+    ) {
+
+        public record UpdateExercise(
+                ExerciseEntity exercise,
+                Integer setsAmount,
+                Integer repsAmount,
+                Double weightAmount,
+                Boolean isFinished) {
+        }
+    }
+}

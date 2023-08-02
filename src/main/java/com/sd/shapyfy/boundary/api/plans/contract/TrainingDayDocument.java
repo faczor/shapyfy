@@ -1,9 +1,8 @@
 package com.sd.shapyfy.boundary.api.plans.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sd.shapyfy.domain.model.TrainingDay;
-import com.sd.shapyfy.domain.model.ConfigurationDayType;
-import com.sd.shapyfy.domain.plan.ConfigurationDay;
+import com.sd.shapyfy.domain.configuration.model.ConfigurationDayType;
+import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
 
 import java.time.DayOfWeek;
 import java.util.List;
@@ -22,7 +21,6 @@ public record TrainingDayDocument(
         return new TrainingDayDocument(
                 configurationDay.id().getValue(),
                 configurationDay.name(),
-                //configurationDay.getDay(),
                 null,
                 configurationDay.type(),
                 List.of()

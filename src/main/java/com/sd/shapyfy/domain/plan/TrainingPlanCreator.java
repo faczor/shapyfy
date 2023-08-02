@@ -1,7 +1,8 @@
 package com.sd.shapyfy.domain.plan;
 
-import com.sd.shapyfy.domain.model.ConfigurationDayType;
-import com.sd.shapyfy.domain.model.UserId;
+import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
+import com.sd.shapyfy.domain.configuration.model.ConfigurationDayType;
+import com.sd.shapyfy.domain.user.model.UserId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

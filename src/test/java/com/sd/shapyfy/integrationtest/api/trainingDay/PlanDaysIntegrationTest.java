@@ -1,6 +1,6 @@
 package com.sd.shapyfy.integrationtest.api.trainingDay;
 
-import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.PostgresTrainingDayRepository;
+import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.component.PostgresTrainingDayRepository;
 import com.sd.shapyfy.integrationTestTool.AbstractIntegrationTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

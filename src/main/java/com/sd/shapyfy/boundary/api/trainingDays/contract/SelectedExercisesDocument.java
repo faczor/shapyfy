@@ -2,9 +2,8 @@ package com.sd.shapyfy.boundary.api.trainingDays.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.boundary.api.exercises.contract.ExerciseDocument;
-import com.sd.shapyfy.domain.plan.ConfigurationDay;
-import com.sd.shapyfy.domain.plan.TrainingExercise;
-import com.sd.shapyfy.domain.session.Session;
+import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
+import com.sd.shapyfy.domain.configuration.model.TrainingExercise;
 
 import java.util.List;
 

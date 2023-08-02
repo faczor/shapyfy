@@ -1,8 +1,7 @@
 package com.sd.shapyfy.boundary.api.plans.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sd.shapyfy.domain.model.Plan;
-import com.sd.shapyfy.domain.plan.PlanConfiguration;
+import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
 
 import java.util.List;
 import java.util.UUID;

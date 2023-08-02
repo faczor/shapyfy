@@ -1,7 +1,7 @@
 package com.sd.shapyfy.boundary.api.exercises.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sd.shapyfy.domain.model.Exercise;
+import com.sd.shapyfy.domain.exercise.model.Exercise;
 
 import java.util.List;
 

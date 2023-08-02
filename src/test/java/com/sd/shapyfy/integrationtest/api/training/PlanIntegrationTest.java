@@ -1,9 +1,9 @@
 package com.sd.shapyfy.integrationtest.api.training;
 
-import com.sd.shapyfy.domain.session.SessionState;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.SessionEntity;
-import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.TrainingDayEntity;
-import com.sd.shapyfy.infrastructure.services.postgres.trainings.PostgresTrainingRepository;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionEntity;
+import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model.TrainingDayEntity;
+import com.sd.shapyfy.infrastructure.services.postgres.trainings.component.PostgresTrainingRepository;
 import com.sd.shapyfy.integrationTestTool.AbstractIntegrationTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -102,7 +102,7 @@ public class PlanIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("Trainee activate EP[PUT:/v1/trainings/{trainingId}/plans]")
+    @DisplayName("Trainee activate EP[PATCH:/v1/trainings/{trainingId}/plans]")
     void activateTraining() {
         UUID trainingId = UUID.fromString("00000000-0000-0000-0000-000000000200");
         as(USER_WITH_DRAFT_TRAINING.getTestUser()).assertRequest($ -> $
@@ -112,7 +112,7 @@ public class PlanIntegrationTest extends AbstractIntegrationTest {
                                   "initialize_training_with_day_id": "00000000-0000-0000-0000-000000000201"
                                 }
                                 """)
-                        .put("/v1/plans/{trainingId}/activations", trainingId))
+                        .patch("/v1/plans/{trainingId}/activations", trainingId))
                 //
                 .statusCode(200);
 

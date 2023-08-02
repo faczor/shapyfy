@@ -5,21 +5,17 @@ import com.sd.shapyfy.boundary.api.plans.contract.CreatePlanDocument;
 import com.sd.shapyfy.boundary.api.plans.contract.StartPlanDocument;
 import com.sd.shapyfy.boundary.api.plans.contract.PlanDocument;
 import com.sd.shapyfy.boundary.api.plans.converter.PlanToDomainConverter;
-import com.sd.shapyfy.domain.PlanManagementAdapter;
-import com.sd.shapyfy.domain.TrainingPlanActivator;
-import com.sd.shapyfy.domain.plan.ConfigurationDayId;
-import com.sd.shapyfy.domain.plan.PlanConfiguration;
-import com.sd.shapyfy.domain.plan.PlanId;
-import com.sd.shapyfy.domain.model.UserId;
+import com.sd.shapyfy.domain.configuration.TrainingPlanActivator;
+import com.sd.shapyfy.domain.configuration.model.ConfigurationDayId;
+import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
+import com.sd.shapyfy.domain.plan.model.PlanId;
+import com.sd.shapyfy.domain.user.model.UserId;
 import com.sd.shapyfy.domain.plan.TrainingPlanCreator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import static com.sd.shapyfy.boundary.api.TokenUtils.currentUserId;
 
@@ -27,8 +23,6 @@ import static com.sd.shapyfy.boundary.api.TokenUtils.currentUserId;
 @ApiV1("/v1/plans")
 @RequiredArgsConstructor
 public class TraineePlansController {
-
-    public final PlanManagementAdapter planManagement;
 
     public final TrainingPlanCreator trainingPlanCreator;
 
@@ -45,7 +39,7 @@ public class TraineePlansController {
         return ResponseEntity.ok(PlanDocument.from(plan));
     }
 
-    @PutMapping("/{plan_id}/activations")
+    @PatchMapping("/{plan_id}/activations")
     public ResponseEntity<Void> finishConfiguration(
             @PathVariable("plan_id") String pathVariablePlanId,
             @Valid @RequestBody StartPlanDocument document) {
