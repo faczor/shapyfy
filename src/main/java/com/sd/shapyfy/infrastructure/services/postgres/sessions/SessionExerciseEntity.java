@@ -1,12 +1,14 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions;
 
 import com.sd.shapyfy.infrastructure.services.postgres.exercises.ExerciseEntity;
+import com.sd.shapyfy.infrastructure.services.postgres.v2.PostgresqlSessionService.UpdateSessionData.UpdateExercise;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Entity
@@ -41,4 +43,15 @@ public class SessionExerciseEntity {
     @ManyToOne
     @JoinColumn(name = "session_id")
     private SessionEntity session;
+
+    public static SessionExerciseEntity from(int sets, int reps, Double weight, ExerciseEntity exercise, SessionEntity session) {
+        return new SessionExerciseEntity(null, sets, reps, weight, false, exercise, session);
+    }
+
+    public void update(UpdateExercise updateExerciseParams) {
+        Optional.ofNullable(updateExerciseParams.setsAmount()).ifPresent(this::setSetsAmount);
+        Optional.ofNullable(updateExerciseParams.repsAmount()).ifPresent(this::setRepsAmount);
+        Optional.ofNullable(updateExerciseParams.weightAmount()).ifPresent(this::setWeightAmount);
+        Optional.ofNullable(updateExerciseParams.isFinished()).ifPresent(this::setFinished);
+    }
 }

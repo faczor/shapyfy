@@ -2,6 +2,7 @@ package com.sd.shapyfy.domain;
 
 import com.sd.shapyfy.domain.model.*;
 import com.sd.shapyfy.domain.model.exception.CurrentTrainingNotFound;
+import com.sd.shapyfy.domain.plan.PlanConfiguration;
 import com.sd.shapyfy.domain.plan.PlanId;
 import com.sd.shapyfy.domain.session.Session;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,11 @@ public class TrainingLookup {
 
     private final TrainingFetcher trainingFetcher;
 
+    public PlanConfiguration configurationFor(PlanId planId) {
+        return trainingFetcher.trainingConfigurationBy(planId);
+    }
+
+    //TODO clean up?
     public CurrentTraining currentTrainingFor(UserId userId) {
         log.info("Attempt to fetch current training for {}", userId);
         List<Plan> userPlans = trainingFetcher.fetchFor(userId);

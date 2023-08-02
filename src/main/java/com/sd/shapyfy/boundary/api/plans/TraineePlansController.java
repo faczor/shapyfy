@@ -6,9 +6,10 @@ import com.sd.shapyfy.boundary.api.plans.contract.StartPlanDocument;
 import com.sd.shapyfy.boundary.api.plans.contract.PlanDocument;
 import com.sd.shapyfy.boundary.api.plans.converter.PlanToDomainConverter;
 import com.sd.shapyfy.domain.PlanManagementAdapter;
+import com.sd.shapyfy.domain.TrainingPlanActivator;
+import com.sd.shapyfy.domain.plan.ConfigurationDayId;
 import com.sd.shapyfy.domain.plan.PlanConfiguration;
 import com.sd.shapyfy.domain.plan.PlanId;
-import com.sd.shapyfy.domain.model.TrainingDayId;
 import com.sd.shapyfy.domain.model.UserId;
 import com.sd.shapyfy.domain.plan.TrainingPlanCreator;
 import jakarta.validation.Valid;
@@ -31,6 +32,8 @@ public class TraineePlansController {
 
     public final TrainingPlanCreator trainingPlanCreator;
 
+    public final TrainingPlanActivator trainingPlanActivator;
+
     public final PlanToDomainConverter planToDomainConverter;
 
     @PostMapping
@@ -49,7 +52,7 @@ public class TraineePlansController {
         PlanId planId = PlanId.of(pathVariablePlanId);
         log.info("Attempt to activate training {} with params {}", planId, document);
 
-        planManagement.activate(planId, TrainingDayId.of(document.trainingDayStartId()), document.startDate());
+        trainingPlanActivator.activate(planId, ConfigurationDayId.of(document.trainingDayStartId()), document.startDate());
 
         return ResponseEntity.ok().build();
     }

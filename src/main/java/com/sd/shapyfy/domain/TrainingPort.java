@@ -29,8 +29,7 @@ public interface TrainingPort {
 
     record ActivateSession(
             SessionId sessionId,
-            LocalDate date
-    ) {
+            LocalDate date    ) {
     }
 
     record FollowUpTrainingSession(

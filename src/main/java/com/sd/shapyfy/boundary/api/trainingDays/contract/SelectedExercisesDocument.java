@@ -2,8 +2,9 @@ package com.sd.shapyfy.boundary.api.trainingDays.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.boundary.api.exercises.contract.ExerciseDocument;
+import com.sd.shapyfy.domain.plan.ConfigurationDay;
+import com.sd.shapyfy.domain.plan.TrainingExercise;
 import com.sd.shapyfy.domain.session.Session;
-import com.sd.shapyfy.domain.model.TrainingDay;
 
 import java.util.List;
 
@@ -12,9 +13,10 @@ public record SelectedExercisesDocument(
         @JsonProperty(value = "items")
         List<SelectedExercise> selectedExercises) {
 
-    public static SelectedExercisesDocument from(TrainingDay trainingDay) {
-        return new SelectedExercisesDocument(trainingDay.mostCurrentSession().sessionExercises().stream().map(SelectedExercise::from).toList());
+    public static SelectedExercisesDocument from(ConfigurationDay trainingDay) {
+        return new SelectedExercisesDocument(trainingDay.exercises().stream().map(SelectedExercise::from).toList());
     }
+
 
     private record SelectedExercise(
             @JsonProperty(value = "exercise")
@@ -23,13 +25,13 @@ public record SelectedExercisesDocument(
             @JsonProperty(value = "exercise_training_attributes")
             ExerciseTraining exerciseTraining) {
 
-        public static SelectedExercise from(Session.SessionExercise sessionExercise) {
+        public static SelectedExercise from(TrainingExercise trainingExercise) {
             return new SelectedExercise(
-                    ExerciseDocument.from(sessionExercise.exercise()),
+                    ExerciseDocument.from(trainingExercise.exercise()),
                     new ExerciseTraining(
-                            sessionExercise.sets(),
-                            sessionExercise.reps(),
-                            sessionExercise.getWeight().orElse(null)
+                            trainingExercise.sets(),
+                            trainingExercise.reps(),
+                            trainingExercise.weight()
                     )
             );
         }
