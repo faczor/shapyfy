@@ -4,7 +4,7 @@ import com.sd.shapyfy.domain.user.model.UserId;
 import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
 import com.sd.shapyfy.domain.plan.TrainingPlanCreator.PlanCreationInitialConfigurationParams;
 import com.sd.shapyfy.domain.plan.TrainingPlanService;
-import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.component.PostgresqlTrainingDayService;
+import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.component.PostgresTrainingDayService;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model.TrainingDayEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.model.TrainingEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.converter.PlanConfigurationToDomainConverter;
@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PostgresqlTrainingPlanService implements TrainingPlanService {
+public class PostgresTrainingPlanService implements TrainingPlanService {
 
     private final PostgresTrainingRepository trainingRepository;
 
@@ -26,7 +26,7 @@ public class PostgresqlTrainingPlanService implements TrainingPlanService {
 
     private final PlanConfigurationToDomainConverter planConfigurationToDomainConverter;
 
-    private final PostgresqlTrainingDayService trainingDayService;
+    private final PostgresTrainingDayService trainingDayService;
 
     @Override
     public PlanConfiguration create(PlanCreationInitialConfigurationParams configurationParams, UserId userId) {

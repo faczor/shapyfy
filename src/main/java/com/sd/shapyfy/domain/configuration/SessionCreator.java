@@ -1,6 +1,7 @@
 package com.sd.shapyfy.domain.configuration;
 
-import com.sd.shapyfy.domain.configuration.SessionService.EditableSessionParams;
+import com.sd.shapyfy.domain.configuration.ConfigurationService.EditableSessionParams;
+import com.sd.shapyfy.domain.configuration.event.OnTrainingActivationEvent;
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
 import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
@@ -17,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SessionCreator {
 
-    private final SessionService sessionService;
+    private final ConfigurationService configurationService;
 
     @EventListener(OnTrainingActivationEvent.class)
     public void createFollowUpsOnTrainingActivation(OnTrainingActivationEvent event) {
@@ -39,14 +40,14 @@ public class SessionCreator {
                         SessionState.FOLLOW_UP,
                         startDate.plusDays(index),
                         configurationDay.exercises().stream().map(trainingExercise -> new EditableSessionParams.SessionExerciseExerciseEditableParam(
-                                trainingExercise.exercise().getId(),
+                                trainingExercise.exercise().id(),
                                 trainingExercise.sets(),
                                 trainingExercise.reps(),
                                 trainingExercise.weight(),
                                 false
                         )).toList()
                 );
-                sessionService.createSession(configurationDay.id(), editableSessionParams);
+                configurationService.createSession(configurationDay.id(), editableSessionParams);
             }
         }
     }

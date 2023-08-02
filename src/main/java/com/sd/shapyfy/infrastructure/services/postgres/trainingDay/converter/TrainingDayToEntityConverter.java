@@ -19,7 +19,6 @@ public class TrainingDayToEntityConverter {
         return new TrainingDayEntity(
                 null,
                 Optional.ofNullable(sessionDayConfiguration.name()).orElse("REST_DAY"),
-                DayOfWeek.MONDAY, //TODO Clean up
                 sessionDayConfiguration.dayType() == ConfigurationDayType.REST,
                 training,
                 List.of()

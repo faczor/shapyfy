@@ -1,7 +1,7 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.model;
 
 import com.sd.shapyfy.infrastructure.services.postgres.exercises.model.ExerciseEntity;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresqlSessionService.UpdateSessionData.UpdateExercise;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresSessionService.UpdateSessionData.UpdateExercise;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

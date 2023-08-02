@@ -6,16 +6,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-//TODO rething naming maybe PlanConfigurationLookup
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class TrainingLookup {
 
-    private final TrainingFetcher trainingFetcher;
+    private final PlanConfigurationFetcher planConfigurationFetcher;
 
     public PlanConfiguration configurationFor(PlanId planId) {
-        return trainingFetcher.trainingConfigurationBy(planId);
+        return planConfigurationFetcher.trainingConfigurationBy(planId);
     }
 
 }

@@ -1,6 +1,9 @@
 package com.sd.shapyfy.domain.configuration;
 
 import com.google.common.collect.Iterables;
+import com.sd.shapyfy.domain.configuration.event.OnTrainingActivationEvent;
+import com.sd.shapyfy.domain.configuration.exception.NotFoundDayInConfiguration;
+import com.sd.shapyfy.domain.configuration.exception.TrainingNotConfiguredProperly;
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDayId;
 import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
@@ -15,7 +18,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO Validate if training is properly configured check comment
+import static com.google.common.collect.Iterables.isEmpty;
+import static java.lang.String.format;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -25,12 +31,12 @@ public class TrainingPlanActivator {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    private final SessionService sessionService;
+    private final ConfigurationService configurationService;
 
     public void activate(PlanId planId, ConfigurationDayId configurationDayId, LocalDate startDate) {
         log.info("Attempt to activate {} by {} on {}", planId, configurationDayId, startDate);
         PlanConfiguration planConfiguration = trainingLookup.configurationFor(planId);
-
+        validateIfTrainingIsFilledProperly(planConfiguration.configurationDays());
         int indexOfConfigurationDay = findIndexOfConfigurationDay(planConfiguration.configurationDays(), configurationDayId);
         List<ActivateSession> sessionsToActive = sessionsToActivate(indexOfConfigurationDay, planConfiguration.configurationDays(), startDate);
 
@@ -41,10 +47,10 @@ public class TrainingPlanActivator {
 
     private void activateSessions(List<ActivateSession> activateSessions) {
         for (ActivateSession activateSession : activateSessions) {
-            sessionService.updateSessionWithState(
+            configurationService.updateSessionWithState(
                     activateSession.id(),
                     SessionState.DRAFT,
-                    new SessionService.EditableSessionParams(
+                    new ConfigurationService.EditableSessionParams(
                             SessionState.ACTIVE,
                             activateSession.date(),
                             null
@@ -64,7 +70,6 @@ public class TrainingPlanActivator {
         return activateSessions;
     }
 
-    //TODO Throw proper exception :)
     private static int findIndexOfConfigurationDay(List<ConfigurationDay> configurationDays, ConfigurationDayId searchingConfigId) {
         for (int index = 0; index < configurationDays.size(); index++) {
             ConfigurationDay configurationDay = configurationDays.get(index);
@@ -73,31 +78,23 @@ public class TrainingPlanActivator {
             }
         }
 
-        throw new IllegalStateException();
+        throw new NotFoundDayInConfiguration(format("ConfigId %s not found in %s", searchingConfigId, configurationDays));
+    }
+
+    private void validateIfTrainingIsFilledProperly(List<ConfigurationDay> configurationDays) {
+        List<ConfigurationDay> trainingDaysWithoutExercises = configurationDays.stream()
+                .filter(ConfigurationDay::isTrainingDay)
+                .filter(trainingDay -> isEmpty(trainingDay.exercises()))
+                .toList();
+
+        if (isNotEmpty(trainingDaysWithoutExercises)) {
+            log.info("Training is not filled properly. Training days without exercises: {}", trainingDaysWithoutExercises);
+            throw new TrainingNotConfiguredProperly(trainingDaysWithoutExercises.stream().map(ConfigurationDay::id).toList());
+        }
     }
 
     record ActivateSession(
             ConfigurationDayId id,
-            LocalDate date
-    ) {
+            LocalDate date) {
     }
-
-    //    private void validateIfTrainingIsFilledProperly(List<TrainingDay> trainingDays) {
-    //        List<TrainingDay> trainingDaysWithoutExercises = trainingDays.stream()
-    //                .filter(TrainingDay::isTrainingDay)
-    //                .filter(trainingDay -> isEmpty(trainingDay.draftSession().sessionExercises()))
-    //                .toList();
-    //
-    //        if (isNotEmpty(trainingDaysWithoutExercises)) {
-    //            log.info("Training is not filled properly. Training days without exercises: {}", trainingDaysWithoutExercises);
-    //            throw new TrainingNotFilledProperlyException(trainingDaysWithoutExercises.stream().map(TrainingDay::getId).toList());
-    //        }
-    //    }
-    //
-    //    private static void validateIfTrainingIsOwnedByUser(UserId userId, TrainingDayId trainingDayId, Plan plan) {
-    //        boolean isUserOwningTraining = plan.getUserId().equals(userId);
-    //        if (FALSE.equals(isUserOwningTraining)) {
-    //            throw new UserNotOwningResourceException(String.format("%s is not owning training %s with day %s", userId, plan.getId(), trainingDayId));
-    //        }
-    //    }
 }

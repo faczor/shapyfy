@@ -1,11 +1,9 @@
 package com.sd.shapyfy.domain.exercise.model;
 
-import lombok.Value;
 
-@Value
-public class Exercise {
+public record Exercise(
 
-    ExerciseId id;
+        ExerciseId id,
 
-    String name;
+        String name) {
 }

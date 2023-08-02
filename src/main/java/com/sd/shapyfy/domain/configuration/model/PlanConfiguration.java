@@ -1,5 +1,6 @@
 package com.sd.shapyfy.domain.configuration.model;
 
+import com.sd.shapyfy.domain.configuration.exception.ConfigurationWithoutTrainingDays;
 import com.sd.shapyfy.domain.plan.model.Plan;
 
 import java.util.List;
@@ -21,7 +22,8 @@ public record PlanConfiguration(
     }
 
     public ConfigurationDay firstTrainingDay() {
-        return configurationDays.stream().filter(ConfigurationDay::isTrainingDay).findFirst().orElseThrow(() -> new IllegalStateException("Training has no training days"));
+        return configurationDays.stream().filter(ConfigurationDay::isTrainingDay).findFirst()
+                .orElseThrow(() -> new ConfigurationWithoutTrainingDays("First training day not found for " + plan.id()));
     }
 
     public ConfigurationDay lastTrainingDay() {
@@ -31,10 +33,6 @@ public record PlanConfiguration(
                 return trainingDay;
             }
         }
-
-        //TODO proper exception
-        throw new IllegalStateException("Training has no training days");
+        throw new ConfigurationWithoutTrainingDays("Last training day not found for " + plan.id());
     }
-
-
 }

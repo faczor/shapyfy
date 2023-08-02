@@ -36,7 +36,9 @@ public class TrainingDayToDomainConverter {
                 new Exercise(ExerciseId.of(sessionExercise.getExercise().getId()), sessionExercise.getExercise().getName()),
                 sessionExercise.getSetsAmount(),
                 sessionExercise.getRepsAmount(),
+                10, //TODO breakBetweenStes
                 sessionExercise.getWeightAmount(),
+
                 sessionExercise.isFinished()
         );
     }

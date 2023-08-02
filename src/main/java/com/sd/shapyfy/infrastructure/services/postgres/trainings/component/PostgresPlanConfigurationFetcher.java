@@ -1,6 +1,6 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainings.component;
 
-import com.sd.shapyfy.domain.configuration.TrainingFetcher;
+import com.sd.shapyfy.domain.configuration.PlanConfigurationFetcher;
 import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
 import com.sd.shapyfy.domain.plan.model.PlanId;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.model.TrainingEntity;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PostgresTrainingFetcher implements TrainingFetcher {
+public class PostgresPlanConfigurationFetcher implements PlanConfigurationFetcher {
 
     private final PostgresTrainingRepository trainingRepository;
 

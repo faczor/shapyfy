@@ -1,8 +1,8 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.model;
 
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model.TrainingDayEntity;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresqlSessionService;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresqlSessionService.UpdateSessionData.UpdateExercise;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresSessionService;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresSessionService.UpdateSessionData.UpdateExercise;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,38 +39,17 @@ public class SessionEntity {
     @OneToMany(mappedBy = "session", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SessionExerciseEntity> sessionExercises = new ArrayList<>();
 
-    public static SessionEntity init(TrainingDayEntity trainingDay) {
-        return new SessionEntity(
-                null,
-                SessionState.DRAFT,
-                null,
-                trainingDay,
-                List.of()
-        );
-    }
-
-    public static SessionEntity draftSession(TrainingDayEntity trainingDay) {
-        return new SessionEntity(
-                null,
-                SessionState.DRAFT,
-                null,
-                trainingDay,
-                List.of()
-        );
-    }
-
-    public void update(PostgresqlSessionService.UpdateSessionData editableSessionParams) {
+    public void update(PostgresSessionService.UpdateSessionData editableSessionParams) {
         Optional.ofNullable(editableSessionParams.state()).ifPresent(s -> this.state = s);
         Optional.ofNullable(editableSessionParams.date()).ifPresent(d -> this.date = d);
-        Optional.ofNullable(editableSessionParams.updateExercises()).ifPresent(this::editExercises);
+        Optional.ofNullable(editableSessionParams.updateExercises()).ifPresent(this::updateSessionExercises);
     }
 
-    //TODO rename
-    private void editExercises(List<UpdateExercise> exercises) {
-        exercises.forEach(this::exerciseEdit);
+    private void updateSessionExercises(List<UpdateExercise> exercises) {
+        exercises.forEach(this::updateSingleSessionExercise);
     }
 
-    private void exerciseEdit(UpdateExercise updateExerciseParams) {
+    private void updateSingleSessionExercise(UpdateExercise updateExerciseParams) {
         SessionExerciseEntity sessionExercise = this.getSessionExercises().stream()
                 .filter(e -> Objects.equals(e.getExercise().getId(), updateExerciseParams.exercise().getId())).findFirst()
                 .orElseGet(() -> {

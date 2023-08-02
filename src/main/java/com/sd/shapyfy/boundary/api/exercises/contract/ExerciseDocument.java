@@ -11,8 +11,8 @@ public record ExerciseDocument(
     //
     public static ExerciseDocument from(Exercise exercise) {
         return new ExerciseDocument(
-                exercise.getId().getValue(),
-                exercise.getName()
+                exercise.id().getValue(),
+                exercise.name()
         );
     }
 }

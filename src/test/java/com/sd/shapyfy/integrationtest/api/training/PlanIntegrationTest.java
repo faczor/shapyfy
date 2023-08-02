@@ -2,6 +2,7 @@ package com.sd.shapyfy.integrationtest.api.training;
 
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionEntity;
+import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.component.PostgresTrainingDayRepository;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model.TrainingDayEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.component.PostgresTrainingRepository;
 import com.sd.shapyfy.integrationTestTool.AbstractIntegrationTest;
@@ -14,8 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.NEW_USER;
-import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.USER_WITH_DRAFT_TRAINING;
+import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.hamcrest.Matchers.*;
@@ -24,6 +24,10 @@ public class PlanIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     PostgresTrainingRepository trainingRepository;
+
+
+    @Autowired
+    PostgresTrainingDayRepository trainingDayRepository;
 
     @Test
     @DisplayName("Trainee create plan EP[POST:/v1/trainings]")
@@ -145,6 +149,78 @@ public class PlanIntegrationTest extends AbstractIntegrationTest {
                                     date(5, 1),
                                     date(6, 1),
                                     date(7, 1)
+                            ));
+                });
+    }
+
+    @Test
+    @DisplayName("Trainee select exercises EP[PATCH:/v1/training_days/{plan_id}/configuration_days/{configuration_id}/selections")
+    void selectExercisesToTraining() {
+        UUID trainingDayId = UUID.fromString("00000000-0000-0000-0000-000000000101");
+
+        as(USER_WITH_INITIALIZED_EMPTY_TRAINING.getTestUser()).assertRequest($ -> $
+                        .body("""
+                                {
+                                  "exercises": [
+                                    {
+                                      "exercise_id": "00000000-0000-0000-0000-000000000001",
+                                      "sets_amount": 3,
+                                      "reps_amount": 8,
+                                      "weight_amount": 25.5
+                                    },
+                                    {
+                                      "exercise_id": "00000000-0000-0000-0000-000000000003",
+                                      "sets_amount": 4,
+                                      "reps_amount": 6
+                                    },
+                                    {
+                                      "exercise_id": "00000000-0000-0000-0000-000000000005",
+                                      "sets_amount": 3,
+                                      "reps_amount": 12,
+                                      "weight_amount": 75
+                                    }
+                                  ]
+                                }
+                                """)
+                        .patch("/v1/plans/{plan_id}/configuration_days/{configuration_id}/selections", "00000000-0000-0000-0000-000000000100", trainingDayId))
+                //
+                .statusCode(200)
+                //
+                .body("id", is("00000000-0000-0000-0000-000000000101"))
+                .body("name", is("PUSH A"))
+                //
+                .body("trainingDayExercises[0].exercise_id", is("00000000-0000-0000-0000-000000000001"))
+                .body("trainingDayExercises[0].exercise_name", is("TEST_EXERCISE_1"))
+                .body("trainingDayExercises[0].sets_amount", is(3))
+                .body("trainingDayExercises[0].reps_amount", is(8))
+                .body("trainingDayExercises[0].weight_amount", is(25.5f))
+                //
+                .body("trainingDayExercises[1].exercise_id", is("00000000-0000-0000-0000-000000000003"))
+                .body("trainingDayExercises[1].exercise_name", is("TEST_EXERCISE_3"))
+                .body("trainingDayExercises[1].sets_amount", is(4))
+                .body("trainingDayExercises[1].reps_amount", is(6))
+                .body("trainingDayExercises[1].weight_amount", nullValue())
+                //
+                .body("trainingDayExercises[2].exercise_id", is("00000000-0000-0000-0000-000000000005"))
+                .body("trainingDayExercises[2].exercise_name", is("TEST_EXERCISE_5"))
+                .body("trainingDayExercises[2].sets_amount", is(3))
+                .body("trainingDayExercises[2].reps_amount", is(12))
+                .body("trainingDayExercises[2].weight_amount", is(75.0f))
+        ;
+
+        assertThat(trainingDayRepository.findById(trainingDayId))
+                .isPresent()
+                .get()
+                .satisfies(trainingDay -> {
+                    assertThat(trainingDay.getSessions().get(0).getSessionExercises().size()).isEqualTo(3);
+                    //
+                    assertThat(trainingDay.getSessions().get(0).getSessionExercises()).asList()
+                            //
+                            .extracting("setsAmount", "repsAmount", "weightAmount")
+                            .containsAll(List.of(
+                                    tuple(3, 8, 25.5),
+                                    tuple(4, 6, null),
+                                    tuple(3, 12, 75.0)
                             ));
                 });
     }

@@ -7,6 +7,7 @@ public record TrainingExercise(
         Exercise exercise,
         int sets,
         int reps,
+        int breakBetweenSets,
         Double weight,
         boolean isFinished) {
 }

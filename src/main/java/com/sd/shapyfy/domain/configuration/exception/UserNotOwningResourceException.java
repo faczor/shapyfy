@@ -1,4 +1,4 @@
-package com.sd.shapyfy.domain;
+package com.sd.shapyfy.domain.configuration.exception;
 
 public class UserNotOwningResourceException extends RuntimeException {
 

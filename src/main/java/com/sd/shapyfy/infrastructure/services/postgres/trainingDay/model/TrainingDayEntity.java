@@ -1,19 +1,29 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model;
 
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.SessionNotFound;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.model.TrainingEntity;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresqlSessionService.UpdateSessionData;
-import jakarta.persistence.*;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresSessionService.UpdateSessionData;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.*;
 
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static jakarta.persistence.FetchType.EAGER;
+import static java.lang.String.format;
 
 @Entity
 @Getter
@@ -31,10 +41,6 @@ public class TrainingDayEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "day", nullable = false)
-    private DayOfWeek day;
-
     @Column(name = "is_off")
     private boolean isOff;
 
@@ -45,9 +51,9 @@ public class TrainingDayEntity {
     @OneToMany(mappedBy = "trainingDay", fetch = EAGER, cascade = CascadeType.ALL)
     private List<SessionEntity> sessions = new ArrayList<>();
 
-    //TODO throw proper exception
     public SessionEntity sessionWithState(SessionState state) {
-        return sessions.stream().filter(session -> session.getState() == state).findFirst().orElseThrow();
+        return sessions.stream().filter(session -> session.getState() == state).findFirst()
+                .orElseThrow(() -> new SessionNotFound(format("Session with state %s not found in trainingDay %s", state, this.id)));
     }
 
     public void createNewSession(UpdateSessionData editableSessionParams) {

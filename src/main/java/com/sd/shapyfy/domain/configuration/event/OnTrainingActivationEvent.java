@@ -1,4 +1,4 @@
-package com.sd.shapyfy.domain.configuration;
+package com.sd.shapyfy.domain.configuration.event;
 
 import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
 import lombok.Value;

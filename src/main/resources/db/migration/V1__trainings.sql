@@ -14,7 +14,6 @@ CREATE TABLE shapyfy.training_days
     training_day_id UUID PRIMARY KEY      DEFAULT gen_random_uuid(),
     name            VARCHAR(256) NOT NULL,
     is_off          BOOL         NOT NULL,
-    day             VARCHAR(32)  NOT NULL,
     createdAt       timestamp    NOT NULL default now(),
     updatedAt       timestamp    NOT NULL default now(),
     --
