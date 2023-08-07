@@ -1,6 +1,7 @@
 package com.sd.shapyfy.domain.configuration;
 
 import com.sd.shapyfy.domain.exercise.model.ExerciseId;
+import com.sd.shapyfy.domain.plan.model.PlanId;
 import com.sd.shapyfy.domain.user.model.UserId;
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDayId;
@@ -18,14 +19,18 @@ public class PlanExerciseSelector {
 
     private final ConfigurationService configurationService;
 
-    public ConfigurationDay select(ConfigurationDayId configurationDayId, List<SelectedExercise> selectedExercises, UserId userId) {
+    public ConfigurationDay select(PlanId planId, ConfigurationDayId configurationDayId, List<SelectedExercise> selectedExercises, UserId userId) {
         log.info("Attempt to select exercises {} for configuration day {} for {}", selectedExercises, configurationDayId, userId);
-        return configurationService.createSession(
-                configurationDayId,
-                new ConfigurationService.EditableSessionParams(
+        return configurationService.updateOrCreateFutureSessionConfiguration(
+                new ConfigurationService.EditTargetQuery(
+                        planId,
+                        configurationDayId,
+                        SessionState.DRAFT),
+                new ConfigurationService.EditParams(
+                        null,
                         SessionState.DRAFT,
                         null,
-                        selectedExercises.stream().map(s -> new ConfigurationService.EditableSessionParams.SessionExerciseExerciseEditableParam(
+                        selectedExercises.stream().map(s -> new ConfigurationService.EditParams.SessionExerciseExerciseEditableParam(
                                 s.exerciseId(), s.sets(), s.reps(), s.weight(), false)).toList())
         );
     }

@@ -1,7 +1,7 @@
 package com.sd.shapyfy.integrationtest.api.training;
 
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionEntity;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.component.PostgresTrainingDayRepository;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model.TrainingDayEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.component.PostgresTrainingRepository;
@@ -124,7 +124,7 @@ public class PlanIntegrationTest extends AbstractIntegrationTest {
                 .isPresent()
                 .get()
                 .satisfies(plan -> {
-                    List<SessionEntity> activatedSessions = plan.getDays().stream().map(TrainingDayEntity::getSessions)
+                    List<SessionPartEntity> activatedSessions = plan.getDays().stream().map(TrainingDayEntity::getSessions)
                             .flatMap(Collection::stream)
                             .filter(s -> s.getState() == SessionState.ACTIVE)
                             .toList();
@@ -138,7 +138,7 @@ public class PlanIntegrationTest extends AbstractIntegrationTest {
                                     date(3, 1)
                             ));
 
-                    List<SessionEntity> followUpSessions = plan.getDays().stream().map(TrainingDayEntity::getSessions)
+                    List<SessionPartEntity> followUpSessions = plan.getDays().stream().map(TrainingDayEntity::getSessions)
                             .flatMap(Collection::stream)
                             .filter(s -> s.getState() == SessionState.FOLLOW_UP)
                             .toList();
@@ -225,6 +225,7 @@ public class PlanIntegrationTest extends AbstractIntegrationTest {
                 });
     }
 
+    //TODO Move to common test
     LocalDate date(int day, int month) {
         return LocalDate.of(2023, month, day);
     }

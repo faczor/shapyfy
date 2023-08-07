@@ -8,6 +8,7 @@ import com.sd.shapyfy.domain.configuration.TrainingPlanActivator;
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDayId;
 import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
+import com.sd.shapyfy.domain.plan.model.Plan;
 import com.sd.shapyfy.domain.plan.model.PlanId;
 import com.sd.shapyfy.domain.user.model.UserId;
 import com.sd.shapyfy.domain.plan.TrainingPlanCreator;
@@ -64,7 +65,7 @@ public class TraineePlansController {
         log.info("Attempt to fill configuration day {} for training plan {} with {} by {}", configurationDayId, planId, configurationDaySelectedExercisesDocument, userId);
 
         List<PlanExerciseSelector.SelectedExercise> selectedExercises = apiPlanToDomainConverter.convertForExercisesSelection(configurationDaySelectedExercisesDocument);
-        ConfigurationDay configurationDay = planExerciseSelector.select(ConfigurationDayId.of(configurationDayId), selectedExercises, userId);
+        ConfigurationDay configurationDay = planExerciseSelector.select(PlanId.of(planId), ConfigurationDayId.of(configurationDayId), selectedExercises, userId);
 
         return ResponseEntity.ok(ConfigurationDayDocument.from(configurationDay));
     }

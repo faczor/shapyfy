@@ -1,5 +1,6 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainings.converter;
 
+import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
 import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model.TrainingDayEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.model.TrainingEntity;
@@ -24,4 +25,5 @@ public class PlanConfigurationToDomainConverter {
                 trainingDayEntities.stream().map(trainingDayToDomainConverter::toConfiguration).toList()
         );
     }
+
 }

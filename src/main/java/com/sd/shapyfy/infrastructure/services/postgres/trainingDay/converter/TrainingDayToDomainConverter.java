@@ -5,6 +5,9 @@ import com.sd.shapyfy.domain.exercise.model.ExerciseId;
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDayId;
 import com.sd.shapyfy.domain.configuration.model.TrainingExercise;
+import com.sd.shapyfy.domain.plan.model.SessionPart;
+import com.sd.shapyfy.domain.plan.model.SessionPartId;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionExerciseEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model.TrainingDayEntity;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,17 @@ public class TrainingDayToDomainConverter {
         );
     }
 
+    public SessionPart toSession(SessionPartEntity sessionPartEntity) {
+        return new SessionPart(
+                SessionPartId.of(sessionPartEntity.getId()),
+                ConfigurationDayId.of(sessionPartEntity.getTrainingDay().getId()),
+                sessionPartEntity.getState(),
+                sessionPartEntity.getDate(),
+                sessionPartEntity.getSessionExercises().stream().map(this::convert).toList()
+        );
+    }
+
+    //TODO move to proper converter
     private TrainingExercise convert(SessionExerciseEntity sessionExercise) {
         return new TrainingExercise(
                 new Exercise(ExerciseId.of(sessionExercise.getExercise().getId()), sessionExercise.getExercise().getName()),
@@ -38,7 +52,6 @@ public class TrainingDayToDomainConverter {
                 sessionExercise.getRepsAmount(),
                 10, //TODO breakBetweenStes
                 sessionExercise.getWeightAmount(),
-
                 sessionExercise.isFinished()
         );
     }

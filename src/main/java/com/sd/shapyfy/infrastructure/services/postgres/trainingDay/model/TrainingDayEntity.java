@@ -1,8 +1,9 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model;
 
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.SessionNotFound;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionEntity;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.model.TrainingEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresSessionService.UpdateSessionData;
 import jakarta.persistence.CascadeType;
@@ -49,23 +50,23 @@ public class TrainingDayEntity {
     private TrainingEntity training;
 
     @OneToMany(mappedBy = "trainingDay", fetch = EAGER, cascade = CascadeType.ALL)
-    private List<SessionEntity> sessions = new ArrayList<>();
+    private List<SessionPartEntity> sessions = new ArrayList<>();
 
-    public SessionEntity sessionWithState(SessionState state) {
-        return sessions.stream().filter(session -> session.getState() == state).findFirst()
-                .orElseThrow(() -> new SessionNotFound(format("Session with state %s not found in trainingDay %s", state, this.id)));
+    public Optional<SessionPartEntity> sessionWithState(SessionState state) {
+        return sessions.stream().filter(session -> session.getState() == state).findFirst();
     }
 
-    public void createNewSession(UpdateSessionData editableSessionParams) {
-        SessionEntity sessionEntity = new SessionEntity();
-        sessionEntity.setTrainingDay(this);
-        sessionEntity.update(editableSessionParams);
+    public void createNewSessionPart(SessionEntity session, UpdateSessionData editableSessionParams) {
+        SessionPartEntity sessionPartEntity = new SessionPartEntity();
+        sessionPartEntity.setTrainingDay(this);
+        sessionPartEntity.setSession(session);
+        sessionPartEntity.update(editableSessionParams);
 
-        this.getSessions().add(sessionEntity);
+        this.getSessions().add(sessionPartEntity);
     }
 
-    public Optional<SessionEntity> getMostCurrentSession() {
-        Optional<SessionEntity> activeSession = sessions.stream().filter(session -> session.getState().isActive()).findFirst();
+    public Optional<SessionPartEntity> getMostCurrentSession() {
+        Optional<SessionPartEntity> activeSession = sessions.stream().filter(session -> session.getState().isActive()).findFirst();
 
         if (activeSession.isEmpty()) {
             return sessions.stream().filter(session -> session.getState().isDraft()).findFirst();

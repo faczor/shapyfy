@@ -1,5 +1,6 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainings.component;
 
+import com.sd.shapyfy.domain.plan.model.PlanId;
 import com.sd.shapyfy.domain.user.model.UserId;
 import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
 import com.sd.shapyfy.domain.plan.TrainingPlanCreator.PlanCreationInitialConfigurationParams;
@@ -36,5 +37,15 @@ public class PostgresTrainingPlanService implements TrainingPlanService {
                 .map(day -> trainingDayService.initializeTrainingDay(day, savedTraining)).toList();
 
         return planConfigurationToDomainConverter.convert(savedTraining, savedTrainingDays);
+    }
+
+    //TODO proper exception
+    public TrainingEntity findById(PlanId planId) {
+        return trainingRepository.findById(planId.getValue())
+                .orElseThrow();
+    }
+
+    public TrainingEntity save(TrainingEntity training) {
+        return trainingRepository.save(training);
     }
 }

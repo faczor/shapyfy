@@ -41,10 +41,10 @@ public class SessionExerciseEntity {
     private ExerciseEntity exercise;
 
     @ManyToOne
-    @JoinColumn(name = "session_id")
-    private SessionEntity session;
+    @JoinColumn(name = "session_part_id")
+    private SessionPartEntity sessionPart;
 
-    public static SessionExerciseEntity from(int sets, int reps, Double weight, ExerciseEntity exercise, SessionEntity session) {
+    public static SessionExerciseEntity from(int sets, int reps, Double weight, ExerciseEntity exercise, SessionPartEntity session) {
         return new SessionExerciseEntity(null, sets, reps, weight, false, exercise, session);
     }
 

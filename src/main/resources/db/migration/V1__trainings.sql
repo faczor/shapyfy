@@ -32,14 +32,26 @@ CREATE TABLE shapyfy.exercises
 
 CREATE TABLE shapyfy.sessions
 (
-    session_id      UUID PRIMARY KEY     DEFAULT gen_random_uuid(),
+    session_id  UUID PRIMARY KEY   DEFAULT gen_random_uuid(),
+    createdAt   timestamp NOT NULL default now(),
+    updatedAt   timestamp NOT NULL default now(),
+    --
+    training_id UUID      NOT NULL,
+    CONSTRAINT fk_training FOREIGN KEY (training_id) REFERENCES shapyfy.trainings (training_id)
+);
+
+CREATE TABLE shapyfy.session_parts
+(
+    session_part_id UUID PRIMARY KEY     DEFAULT gen_random_uuid(),
     state           varchar(32) NOT NULL,
-    session_date     timestamp,
+    session_date    timestamp,
     createdAt       timestamp   NOT NULL default now(),
     updatedAt       timestamp   NOT NULL default now(),
     --
     training_day_id UUID        NOT NULL,
-    CONSTRAINT fk_training_day FOREIGN KEY (training_day_id) REFERENCES shapyfy.training_days (training_day_id)
+    session_id      UUID        NOT NULL,
+    CONSTRAINT fk_training_day FOREIGN KEY (training_day_id) REFERENCES shapyfy.training_days (training_day_id),
+    CONSTRAINT fk_sessions FOREIGN KEY (session_id) REFERENCES shapyfy.sessions (session_id)
 );
 
 CREATE TABLE shapyfy.session_exercises
@@ -52,8 +64,8 @@ CREATE TABLE shapyfy.session_exercises
     createdAt           timestamp NOT NULL default now(),
     updatedAt           timestamp NOT NULL default now(),
     --
-    session_id          UUID      NOT NULL,
+    session_part_id     UUID      NOT NULL,
     exercise_id         UUID      NOT NULL,
-    CONSTRAINT fk_session FOREIGN KEY (session_id) REFERENCES shapyfy.sessions (session_id),
+    CONSTRAINT fk_session FOREIGN KEY (session_part_id) REFERENCES shapyfy.session_parts (session_part_id),
     CONSTRAINT fk_exercise FOREIGN KEY (exercise_id) REFERENCES shapyfy.exercises (exercise_id)
 );

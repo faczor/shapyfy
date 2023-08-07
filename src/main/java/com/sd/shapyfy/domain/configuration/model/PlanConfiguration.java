@@ -21,12 +21,16 @@ public record PlanConfiguration(
         return configurationDays.indexOf(firstTrainingDay);
     }
 
-    public ConfigurationDay firstTrainingDay() {
+    public int daysPlanAmount() {
+        return configurationDays().size();
+    }
+
+    private ConfigurationDay firstTrainingDay() {
         return configurationDays.stream().filter(ConfigurationDay::isTrainingDay).findFirst()
                 .orElseThrow(() -> new ConfigurationWithoutTrainingDays("First training day not found for " + plan.id()));
     }
 
-    public ConfigurationDay lastTrainingDay() {
+    private ConfigurationDay lastTrainingDay() {
         for (int i = configurationDays.size() - 1; i >= 0; i--) {
             ConfigurationDay trainingDay = configurationDays.get(i);
             if (trainingDay.isTrainingDay()) {

@@ -40,23 +40,9 @@ public class TrainingPlanActivator {
         int indexOfConfigurationDay = findIndexOfConfigurationDay(planConfiguration.configurationDays(), configurationDayId);
         List<ActivateSession> sessionsToActive = sessionsToActivate(indexOfConfigurationDay, planConfiguration.configurationDays(), startDate);
 
-        activateSessions(sessionsToActive);
+        activateSessions(planConfiguration.plan().id(), sessionsToActive);
 
         applicationEventPublisher.publishEvent(new OnTrainingActivationEvent(this, planConfiguration, Iterables.getLast(sessionsToActive).date()));
-    }
-
-    private void activateSessions(List<ActivateSession> activateSessions) {
-        for (ActivateSession activateSession : activateSessions) {
-            configurationService.updateSessionWithState(
-                    activateSession.id(),
-                    SessionState.DRAFT,
-                    new ConfigurationService.EditableSessionParams(
-                            SessionState.ACTIVE,
-                            activateSession.date(),
-                            null
-                    )
-            );
-        }
     }
 
     private List<ActivateSession> sessionsToActivate(int indexOfStartingDay, List<ConfigurationDay> configurationDays, LocalDate startDate) {
@@ -64,10 +50,28 @@ public class TrainingPlanActivator {
         for (int index = indexOfStartingDay; index < configurationDays.size(); index++) {
             ConfigurationDay configurationDay = configurationDays.get(index);
             if (configurationDay.isTrainingDay()) {
-                activateSessions.add(new ActivateSession(configurationDay.id(), startDate.plusDays(index)));
+                activateSessions.add(new ActivateSession( configurationDay.id(), startDate.plusDays(index)));
             }
         }
         return activateSessions;
+    }
+
+    private void activateSessions(PlanId planId, List<ActivateSession> activateSessions) {
+        for (ActivateSession activateSession : activateSessions) {
+            configurationService.updateOrCreateFutureSessionConfiguration(
+                    new ConfigurationService.EditTargetQuery(
+                            planId,
+                            activateSession.id(),
+                            SessionState.DRAFT
+                    ),
+                    new ConfigurationService.EditParams(
+                            null,
+                            SessionState.ACTIVE,
+                            activateSession.date(),
+                            null
+                    )
+            );
+        }
     }
 
     private static int findIndexOfConfigurationDay(List<ConfigurationDay> configurationDays, ConfigurationDayId searchingConfigId) {

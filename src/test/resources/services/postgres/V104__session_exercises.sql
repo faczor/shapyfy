@@ -1,5 +1,5 @@
 INSERT INTO shapyfy.session_exercises(session_exercise_id, sets_amount, reps_amount, weight_amount, is_finished,
-                                      session_id, exercise_id)
+                                      session_part_id, exercise_id)
 VALUES ('00000000-0000-0000-0001-000002010101', 3, 8, 25.5, false, '00000000-0000-0000-0000-000000020101',
         '00000000-0000-0000-0000-000000000001'),
        ('00000000-0000-0000-0003-000002010102', 4, 6, 80, false, '00000000-0000-0000-0000-000000020101',
@@ -18,7 +18,7 @@ VALUES ('00000000-0000-0000-0001-000002010101', 3, 8, 25.5, false, '00000000-000
         '00000000-0000-0000-0000-000000000004');
 
 INSERT INTO shapyfy.session_exercises(session_exercise_id, sets_amount, reps_amount, weight_amount, is_finished,
-                                      session_id, exercise_id)
+                                      session_part_id, exercise_id)
 VALUES ('00000000-0000-0000-0001-000003010101', 3, 8, 25.5, false, '00000000-0000-0000-0000-000000030101',
         '00000000-0000-0000-0000-000000000001'),
        ('00000000-0000-0000-0003-000003010102', 4, 6, 80, false, '00000000-0000-0000-0000-000000030101',
@@ -37,7 +37,7 @@ VALUES ('00000000-0000-0000-0001-000003010101', 3, 8, 25.5, false, '00000000-000
         '00000000-0000-0000-0000-000000000004');
 
 INSERT INTO shapyfy.session_exercises(session_exercise_id, sets_amount, reps_amount, weight_amount, is_finished,
-                                      session_id, exercise_id)
+                                      session_part_id, exercise_id)
 VALUES ('00000000-0000-0000-0001-000004010101', 3, 8, 25.5, true, '00000000-0000-0000-0000-000000040101',
         '00000000-0000-0000-0000-000000000001'),
        ('00000000-0000-0000-0003-000004010102', 4, 6, 80, true, '00000000-0000-0000-0000-000000040101',
@@ -47,7 +47,7 @@ VALUES ('00000000-0000-0000-0001-000004010101', 3, 8, 25.5, true, '00000000-0000
 
 
 INSERT INTO shapyfy.session_exercises(session_exercise_id, sets_amount, reps_amount, weight_amount, is_finished,
-                                      session_id, exercise_id)
+                                      session_part_id, exercise_id)
 VALUES ('00000000-0000-0000-0001-000005010101', 3, 8, 25.5, true, '00000000-0000-0000-0000-000000050101',
         '00000000-0000-0000-0000-000000000001'),
        ('00000000-0000-0000-0003-000005010102', 4, 6, 80, true, '00000000-0000-0000-0000-000000050101',

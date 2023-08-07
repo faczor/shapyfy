@@ -16,6 +16,7 @@ public class TrainingPlanToEntityConverter {
                 null,
                 userId.getValue(),
                 name,
+                List.of(),
                 List.of()
         );
     }
