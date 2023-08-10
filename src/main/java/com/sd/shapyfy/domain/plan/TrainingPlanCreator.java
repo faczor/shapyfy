@@ -1,8 +1,9 @@
 package com.sd.shapyfy.domain.plan;
 
-import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
-import com.sd.shapyfy.domain.configuration.model.ConfigurationDayType;
+import com.sd.shapyfy.domain.configuration.model.TrainingConfiguration;
+import com.sd.shapyfy.domain.exercise.model.ExerciseId;
 import com.sd.shapyfy.domain.user.model.UserId;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,22 +17,30 @@ public class TrainingPlanCreator {
 
     private final TrainingPlanService trainingPlanService;
 
-    public PlanConfiguration create(PlanCreationInitialConfigurationParams configurationParams, UserId userId) {
+    public TrainingConfiguration create(PlanConfiguration configurationParams, UserId userId) {
         log.info("Attempt to create training plan for user {} with configuration {}", userId, configurationParams);
-
-        PlanConfiguration planConfiguration = trainingPlanService.create(configurationParams, userId);
-        log.info("Training plan created for user {} with configuration {}", userId, planConfiguration);
-        return planConfiguration;
+        TrainingConfiguration trainingConfiguration = trainingPlanService.create(configurationParams, userId);
+        log.info("Training plan created for user {} with configuration {}", userId, trainingConfiguration);
+        return trainingConfiguration;
     }
 
 
-    public record PlanCreationInitialConfigurationParams(
+    public record PlanConfiguration(
             String name,
             List<SessionDayConfiguration> sessionDayConfigurations) {
 
         public record SessionDayConfiguration(
                 String name,
-                ConfigurationDayType dayType) {
+                SessionPartType dayType,
+                List<SelectedExercise> selectedExercises) {
+
+          public   record SelectedExercise(
+                    ExerciseId exerciseId,
+                    int sets,
+                    int reps,
+                    Double weight,
+                    int secondRestBetweenSets) {
+            }
         }
     }
 }

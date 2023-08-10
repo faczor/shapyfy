@@ -1,13 +1,15 @@
 package com.sd.shapyfy.domain.configuration;
 
 import com.google.common.collect.Iterables;
+import com.sd.shapyfy.domain.configuration.SessionService.EditSessionParams;
+import com.sd.shapyfy.domain.configuration.SessionService.EditSessionParams.EditSessionPart;
 import com.sd.shapyfy.domain.configuration.event.OnTrainingActivationEvent;
 import com.sd.shapyfy.domain.configuration.exception.NotFoundDayInConfiguration;
 import com.sd.shapyfy.domain.configuration.exception.TrainingNotConfiguredProperly;
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
-import com.sd.shapyfy.domain.configuration.model.ConfigurationDayId;
-import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
+import com.sd.shapyfy.domain.configuration.model.TrainingConfiguration;
 import com.sd.shapyfy.domain.plan.model.PlanId;
+import com.sd.shapyfy.domain.plan.model.SessionPartId;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.Iterables.isEmpty;
+import static com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartState.ACTIVE;
+import static com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartState.SKIP;
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
@@ -31,58 +35,55 @@ public class TrainingPlanActivator {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    private final ConfigurationService configurationService;
+    private final SessionService sessionService;
 
-    public void activate(PlanId planId, ConfigurationDayId configurationDayId, LocalDate startDate) {
-        log.info("Attempt to activate {} by {} on {}", planId, configurationDayId, startDate);
-        PlanConfiguration planConfiguration = trainingLookup.configurationFor(planId);
-        validateIfTrainingIsFilledProperly(planConfiguration.configurationDays());
-        int indexOfConfigurationDay = findIndexOfConfigurationDay(planConfiguration.configurationDays(), configurationDayId);
-        List<ActivateSession> sessionsToActive = sessionsToActivate(indexOfConfigurationDay, planConfiguration.configurationDays(), startDate);
+    public void activate(PlanId planId, SessionPartId sessionPartId, LocalDate startDate) {
+        log.info("Attempt to activate {} by {} on {}", planId, sessionPartId, startDate);
+        TrainingConfiguration trainingConfiguration = trainingLookup.configurationFor(planId);
+        validateIfTrainingIsFilledProperly(trainingConfiguration.configurationDays());
+        //
+        int indexOfConfigurationDay = findIndexOfConfigurationDay(trainingConfiguration.configurationDays(), sessionPartId);
+        EditSessionParams sessionEditParamsForActivation = prepareSessionForActivation(indexOfConfigurationDay, trainingConfiguration.configurationDays(), startDate);
+        sessionService.updateSession(trainingConfiguration.sessionId(), sessionEditParamsForActivation);
 
-        activateSessions(planConfiguration.plan().id(), sessionsToActive);
-
-        applicationEventPublisher.publishEvent(new OnTrainingActivationEvent(this, planConfiguration, Iterables.getLast(sessionsToActive).date()));
+        //TODO move event publishing to interface
+        applicationEventPublisher.publishEvent(new OnTrainingActivationEvent(this, trainingConfiguration, Iterables.getLast(sessionEditParamsForActivation.editSessionPart()).editSessionPartParams().date()));
     }
 
-    private List<ActivateSession> sessionsToActivate(int indexOfStartingDay, List<ConfigurationDay> configurationDays, LocalDate startDate) {
-        List<ActivateSession> activateSessions = new ArrayList<>();
-        for (int index = indexOfStartingDay; index < configurationDays.size(); index++) {
-            ConfigurationDay configurationDay = configurationDays.get(index);
-            if (configurationDay.isTrainingDay()) {
-                activateSessions.add(new ActivateSession( configurationDay.id(), startDate.plusDays(index)));
-            }
-        }
-        return activateSessions;
-    }
+    private EditSessionParams prepareSessionForActivation(int indexOfStartingDay, List<ConfigurationDay> configurationDays, LocalDate startDate) {
+        int index = 0;
+        ArrayList<EditSessionPart> partEditParams = new ArrayList<>();
 
-    private void activateSessions(PlanId planId, List<ActivateSession> activateSessions) {
-        for (ActivateSession activateSession : activateSessions) {
-            configurationService.updateOrCreateFutureSessionConfiguration(
-                    new ConfigurationService.EditTargetQuery(
-                            planId,
-                            activateSession.id(),
-                            SessionState.DRAFT
-                    ),
-                    new ConfigurationService.EditParams(
+        for (ConfigurationDay configurationDay : configurationDays) {
+            EditSessionPart editSessionPart = new EditSessionPart(
+                    configurationDay.id(),
+                    new SessionService.EditSessionPartParams(
                             null,
-                            SessionState.ACTIVE,
-                            activateSession.date(),
+                            null,
+                            startDate.plusDays(index),
+                            index < indexOfStartingDay ? SKIP : ACTIVE,
                             null
                     )
             );
+            partEditParams.add(editSessionPart);
+            index++;
         }
+
+
+        return new EditSessionParams(
+                SessionState.ACTIVE,
+                partEditParams
+        );
     }
 
-    private static int findIndexOfConfigurationDay(List<ConfigurationDay> configurationDays, ConfigurationDayId searchingConfigId) {
+    private static int findIndexOfConfigurationDay(List<ConfigurationDay> configurationDays, SessionPartId sessionPartId) {
         for (int index = 0; index < configurationDays.size(); index++) {
             ConfigurationDay configurationDay = configurationDays.get(index);
-            if (configurationDay.id().equals(searchingConfigId)) {
+            if (configurationDay.id().equals(sessionPartId)) {
                 return index;
             }
         }
-
-        throw new NotFoundDayInConfiguration(format("ConfigId %s not found in %s", searchingConfigId, configurationDays));
+        throw new NotFoundDayInConfiguration(format("ConfigId %s not found in %s", sessionPartId, configurationDays));
     }
 
     private void validateIfTrainingIsFilledProperly(List<ConfigurationDay> configurationDays) {
@@ -97,8 +98,4 @@ public class TrainingPlanActivator {
         }
     }
 
-    record ActivateSession(
-            ConfigurationDayId id,
-            LocalDate date) {
-    }
 }

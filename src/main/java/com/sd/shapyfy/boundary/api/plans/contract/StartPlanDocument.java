@@ -6,5 +6,5 @@ import java.time.LocalDate;
 
 public record StartPlanDocument(
         @JsonProperty(value = "start_date") LocalDate startDate,
-        @JsonProperty(value = "initialize_training_with_day_id") String trainingDayStartId) {
+        @JsonProperty(value = "activate_by_session_day_id") String sessionDayId) {
 }

@@ -1,7 +1,7 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.model;
 
 import com.sd.shapyfy.infrastructure.services.postgres.exercises.model.ExerciseEntity;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresSessionService.UpdateSessionData.UpdateExercise;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.UpdateSessionPartData.UpdateExercise;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,6 +33,9 @@ public class SessionExerciseEntity {
     @Column(name = "weight_amount")
     private Double weightAmount;
 
+    @Column(name = "rest_between_sets")
+    private int restBetweenSets;
+
     @Column(name = "is_finished")
     private boolean isFinished;
 
@@ -44,14 +47,15 @@ public class SessionExerciseEntity {
     @JoinColumn(name = "session_part_id")
     private SessionPartEntity sessionPart;
 
-    public static SessionExerciseEntity from(int sets, int reps, Double weight, ExerciseEntity exercise, SessionPartEntity session) {
-        return new SessionExerciseEntity(null, sets, reps, weight, false, exercise, session);
+    public static SessionExerciseEntity from(int sets, int reps, Double weight, int restBetweenSets, ExerciseEntity exercise, SessionPartEntity session) {
+        return new SessionExerciseEntity(null, sets, reps, weight, restBetweenSets, false, exercise, session);
     }
 
     public void update(UpdateExercise updateExerciseParams) {
         Optional.ofNullable(updateExerciseParams.setsAmount()).ifPresent(this::setSetsAmount);
         Optional.ofNullable(updateExerciseParams.repsAmount()).ifPresent(this::setRepsAmount);
         Optional.ofNullable(updateExerciseParams.weightAmount()).ifPresent(this::setWeightAmount);
+        Optional.ofNullable(updateExerciseParams.restBetweenSets()).ifPresent(this::setRestBetweenSets);
         Optional.ofNullable(updateExerciseParams.isFinished()).ifPresent(this::setFinished);
     }
 }

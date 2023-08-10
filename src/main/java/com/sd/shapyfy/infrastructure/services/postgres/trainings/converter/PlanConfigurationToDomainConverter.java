@@ -1,14 +1,13 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainings.converter;
 
-import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
-import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
-import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model.TrainingDayEntity;
+import com.sd.shapyfy.domain.configuration.model.TrainingConfiguration;
+import com.sd.shapyfy.domain.plan.model.SessionId;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.ExistanceType;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.model.TrainingEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.converter.TrainingDayToDomainConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -18,11 +17,13 @@ public class PlanConfigurationToDomainConverter {
 
     private final TrainingDayToDomainConverter trainingDayToDomainConverter;
 
-    public PlanConfiguration convert(TrainingEntity trainingEntity, List<TrainingDayEntity> trainingDayEntities) {
+    public TrainingConfiguration convert(TrainingEntity trainingEntity) {
+        SessionEntity session = trainingEntity.getConfigurationSession();
 
-        return new PlanConfiguration(
+        return new TrainingConfiguration(
                 trainingPlanToDomainConverter.convert(trainingEntity),
-                trainingDayEntities.stream().map(trainingDayToDomainConverter::toConfiguration).toList()
+                SessionId.of(session.getId()),
+                session.getSessionParts().stream().filter(part -> part.getExistanceType() == ExistanceType.CONSTANT).map(trainingDayToDomainConverter::toConfiguration).toList()
         );
     }
 

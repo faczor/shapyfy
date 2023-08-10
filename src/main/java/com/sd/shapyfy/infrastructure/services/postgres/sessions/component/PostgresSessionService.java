@@ -1,26 +1,19 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.component;
 
-import com.sd.shapyfy.domain.configuration.ConfigurationService;
-import com.sd.shapyfy.domain.configuration.ConfigurationService.EditParams.SessionExerciseExerciseEditableParam;
-import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
-import com.sd.shapyfy.domain.configuration.model.ConfigurationDayId;
+import com.sd.shapyfy.domain.configuration.SessionService;
+import com.sd.shapyfy.domain.configuration.SessionService.EditSessionPartParams.SessionExerciseExerciseEditableParam;
 import com.sd.shapyfy.domain.plan.model.PlanId;
+import com.sd.shapyfy.domain.plan.model.SessionId;
 import com.sd.shapyfy.infrastructure.services.postgres.exercises.component.PostgresExerciseFetcher;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionEntity;
-import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.TrainingDayNotFound;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
-import com.sd.shapyfy.infrastructure.services.postgres.exercises.model.ExerciseEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartEntity;
-import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.component.PostgresTrainingDayRepository;
-import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.converter.TrainingDayToDomainConverter;
-import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model.TrainingDayEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.component.PostgresTrainingPlanService;
+import com.sd.shapyfy.infrastructure.services.postgres.trainings.converter.TrainingToDomainConverter;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.model.TrainingEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,14 +21,9 @@ import java.util.Optional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PostgresSessionService implements ConfigurationService {
+public class PostgresSessionService implements SessionService {
 
-    //TODO fixup dependencies ;)
-    private final PostgresSessionPartRepository sessionPartRepository;
-
-    private final PostgresTrainingDayRepository trainingDayRepository;
-
-    private final TrainingDayToDomainConverter trainingDayToDomainConverter;
+    private final TrainingToDomainConverter trainingToDomainConverter;
 
     private final PostgresExerciseFetcher exerciseFetcher;
 
@@ -44,72 +32,61 @@ public class PostgresSessionService implements ConfigurationService {
     private final PostgresTrainingPlanService trainingPlanService;
 
     @Override
-    public void createSession(PlanId planId, List<EditParams> editParams) {
-        log.info("Create session for {} with params {}", planId, editParams);
+    public void createSession(PlanId planId, EditSessionParams editSessionParams) {
+        log.info("Create session for {} with params {}", planId, editSessionParams);
         TrainingEntity training = trainingPlanService.findById(planId);
         SessionEntity newSession = sessionRepository.save(training.createNewSession());
+        newSession.update(editSessionParams.state());
 
-        editParams.forEach(param -> {
-            TrainingDayEntity trainingDay = getById(param.configurationDayId());
-            trainingDay.createNewSessionPart(newSession, buildUpdateSessionData(param));
+        editSessionParams.editSessionPart().forEach(param -> {
+            UpdateSessionPartData updateSessionPartData = buildUpdateSessionPartData(param.editSessionPartParams());
+            newSession
+                    .createPart(updateSessionPartData.name(), updateSessionPartData.type())
+                    .update(updateSessionPartData);
         });
 
         trainingPlanService.save(training);
     }
 
     @Override
-    public ConfigurationDay updateOrCreateFutureSessionConfiguration(EditTargetQuery query, EditParams editParams) {
-        TrainingDayEntity trainingDayEntity = getById(query.configurationDayId());
-        TrainingEntity training = trainingDayEntity.getTraining();
-        //TODO Move validation to sql query above
-        if (!Objects.equals(training.getId(), query.planId().getValue())) {
-            throw new IllegalStateException();
-        }
+    public void updateSession(SessionId sessionId, EditSessionParams editSessionParams) {
+        log.info("Update session for {} with params {}", sessionId, editSessionParams);
+        SessionEntity sessionEntity = getById(sessionId);
+        sessionEntity.update(editSessionParams.state());
 
-        SessionEntity sessionToUpdate = training.findSessionWithState(query.state()).orElseGet(() -> sessionRepository.save(training.createNewSession()));
-        SessionPartEntity sessionPartToUpdate = sessionToUpdate.findSessionWithState(trainingDayEntity, query.state()).orElseGet(() -> sessionToUpdate.createPart(query.state(), trainingDayEntity));
+        editSessionParams.editSessionPart().forEach(editSessionPart -> {
+            SessionPartEntity sessionPart = sessionEntity.getSessionParts().stream()
+                    .filter(part -> Objects.equals(part.getId(), editSessionPart.sessionPartId().getValue())).findFirst().orElseThrow();
+            sessionPart.update(buildUpdateSessionPartData(editSessionPart.editSessionPartParams()));
+        });
 
-        sessionPartToUpdate.update(buildUpdateSessionData(editParams));
-        TrainingDayEntity trainingDay = trainingDayRepository.save(trainingDayEntity);
-
-        return trainingDayToDomainConverter.toConfiguration(trainingDay);
+        sessionRepository.save(sessionEntity);
     }
 
-
-
-    private TrainingDayEntity getById(ConfigurationDayId configurationDayId) {
-        return trainingDayRepository.findById(configurationDayId.getValue()).orElseThrow(() -> new TrainingDayNotFound("Training day not found "));
+    private SessionEntity getById(SessionId sessionId) {
+        return sessionRepository.findById(sessionId.getValue())
+                //TODO proper exception
+                .orElseThrow();
     }
 
-    private UpdateSessionData buildUpdateSessionData(EditParams editParams) {
-        return new UpdateSessionData(
-                editParams.state(),
-                editParams.date(),
-                Optional.ofNullable(editParams.sessionExerciseExerciseEditableParam()).map(this::buildUpdateExerciseData).orElse(null)
+    private UpdateSessionPartData buildUpdateSessionPartData(EditSessionPartParams editSessionPartParams) {
+        return new UpdateSessionPartData(
+                editSessionPartParams.type(),
+                editSessionPartParams.date(),
+                null,
+                Optional.ofNullable(editSessionPartParams.sessionExerciseExerciseEditableParam()).map(this::buildUpdateExerciseData).orElse(null)
         );
     }
 
-    private List<UpdateSessionData.UpdateExercise> buildUpdateExerciseData(List<SessionExerciseExerciseEditableParam> sessionExerciseExerciseEditableParams) {
-        return sessionExerciseExerciseEditableParams.stream().map(editableParams -> new UpdateSessionData.UpdateExercise(
+    private List<UpdateSessionPartData.UpdateExercise> buildUpdateExerciseData(List<SessionExerciseExerciseEditableParam> sessionExerciseExerciseEditableParams) {
+        return sessionExerciseExerciseEditableParams.stream().map(editableParams -> new UpdateSessionPartData.UpdateExercise(
                 exerciseFetcher.fetchFor(editableParams.exerciseId()),
                 editableParams.setsAmount(),
                 editableParams.repsAmount(),
                 editableParams.weightAmount(),
+                editableParams.restBetweenSets(),
                 editableParams.isFinished()
         )).toList();
     }
 
-    public record UpdateSessionData(
-            SessionState state,
-            LocalDate date,
-            List<UpdateExercise> updateExercises) {
-
-        public record UpdateExercise(
-                ExerciseEntity exercise,
-                Integer setsAmount,
-                Integer repsAmount,
-                Double weightAmount,
-                Boolean isFinished) {
-        }
-    }
 }

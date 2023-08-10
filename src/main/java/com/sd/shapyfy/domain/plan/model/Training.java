@@ -2,13 +2,17 @@ package com.sd.shapyfy.domain.plan.model;
 
 import com.sd.shapyfy.domain.DateRange;
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
-import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
+import com.sd.shapyfy.domain.configuration.model.TrainingConfiguration;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartType;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 public record Training(
-        PlanConfiguration configuration,
+        TrainingConfiguration configuration,
         List<Session> sessions) {
 
     public StateForDate stateFor(LocalDate date) {
@@ -28,6 +32,10 @@ public record Training(
 
     }
 
+    public boolean isActive() {
+        return sessions().stream().anyMatch(Session::isActive);
+    }
+
     private StateForDate futureState(LocalDate lastSessionDate, LocalDate searchDate) {
         LocalDate startDateOfSessionForDate = startDateOfSessionForDate(lastSessionDate, searchDate);
         List<LocalDate> datesWithinRange = new DateRange(startDateOfSessionForDate, searchDate).datesWithinRange().toList();
@@ -45,9 +53,12 @@ public record Training(
     }
 
     private StateForDate stateFromSession(Session session, LocalDate date) {
-        return session.sessionParts().stream().filter(part -> part.date().equals(date)).findFirst()
-                .map(part -> new StateForDate(part.date(), true, true, configuration.configurationDays().stream().filter(configDay -> configDay.id().equals(part.configurationDayId())).findFirst().orElseThrow()))
-                .orElse(new StateForDate(date, true, false, null));
+        SessionPart sessionPart = session.partFor(date);
+        return new StateForDate(
+                date,
+                true,
+                sessionPart.state() == SessionPartType.TRAINING_DAY,
+                configuration().configurationDays().stream().filter(configurationDay -> configurationDay.id().equals(sessionPart.sessionPartId())).findFirst().orElseThrow());
     }
 
     private LocalDate getLastSessionDate() {

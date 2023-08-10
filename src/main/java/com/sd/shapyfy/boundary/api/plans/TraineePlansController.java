@@ -1,24 +1,24 @@
 package com.sd.shapyfy.boundary.api.plans;
 
 import com.sd.shapyfy.boundary.api.ApiV1;
-import com.sd.shapyfy.boundary.api.plans.contract.*;
+import com.sd.shapyfy.boundary.api.plans.contract.CreatePlanDocument;
+import com.sd.shapyfy.boundary.api.plans.contract.PlanDocument;
+import com.sd.shapyfy.boundary.api.plans.contract.StartPlanDocument;
 import com.sd.shapyfy.boundary.api.plans.converter.ApiPlanToDomainConverter;
-import com.sd.shapyfy.domain.configuration.PlanExerciseSelector;
 import com.sd.shapyfy.domain.configuration.TrainingPlanActivator;
-import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
-import com.sd.shapyfy.domain.configuration.model.ConfigurationDayId;
-import com.sd.shapyfy.domain.configuration.model.PlanConfiguration;
-import com.sd.shapyfy.domain.plan.model.Plan;
-import com.sd.shapyfy.domain.plan.model.PlanId;
-import com.sd.shapyfy.domain.user.model.UserId;
+import com.sd.shapyfy.domain.configuration.model.TrainingConfiguration;
 import com.sd.shapyfy.domain.plan.TrainingPlanCreator;
+import com.sd.shapyfy.domain.plan.model.PlanId;
+import com.sd.shapyfy.domain.plan.model.SessionPartId;
+import com.sd.shapyfy.domain.user.model.UserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import static com.sd.shapyfy.boundary.api.TokenUtils.currentUserId;
 
@@ -31,8 +31,6 @@ public class TraineePlansController {
 
     private final TrainingPlanActivator trainingPlanActivator;
 
-    private final PlanExerciseSelector planExerciseSelector;
-
     private final ApiPlanToDomainConverter apiPlanToDomainConverter;
 
     @PostMapping
@@ -40,7 +38,7 @@ public class TraineePlansController {
         log.info("Attempt to create training {}", document);
         UserId userId = currentUserId();
 
-        PlanConfiguration plan = trainingPlanCreator.create(apiPlanToDomainConverter.convertForCreation(document), userId);
+        TrainingConfiguration plan = trainingPlanCreator.create(apiPlanToDomainConverter.convertForCreation(document), userId);
         return ResponseEntity.ok(PlanDocument.from(plan));
     }
 
@@ -51,22 +49,8 @@ public class TraineePlansController {
         PlanId planId = PlanId.of(pathVariablePlanId);
         log.info("Attempt to activate training {} with params {}", planId, document);
 
-        trainingPlanActivator.activate(planId, ConfigurationDayId.of(document.trainingDayStartId()), document.startDate());
+        trainingPlanActivator.activate(planId, SessionPartId.of(document.sessionDayId()), document.startDate());
 
         return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/{plan_id}/configuration_days/{configuration_id}/selections")
-    public ResponseEntity<ConfigurationDayDocument> selectExercisesToConfiguration(
-            @PathVariable(name = "plan_id") String planId,
-            @PathVariable(name = "configuration_id") String configurationDayId,
-            @RequestBody @Valid ConfigurationDaySelectedExercisesDocument configurationDaySelectedExercisesDocument) {
-        UserId userId = currentUserId();
-        log.info("Attempt to fill configuration day {} for training plan {} with {} by {}", configurationDayId, planId, configurationDaySelectedExercisesDocument, userId);
-
-        List<PlanExerciseSelector.SelectedExercise> selectedExercises = apiPlanToDomainConverter.convertForExercisesSelection(configurationDaySelectedExercisesDocument);
-        ConfigurationDay configurationDay = planExerciseSelector.select(PlanId.of(planId), ConfigurationDayId.of(configurationDayId), selectedExercises, userId);
-
-        return ResponseEntity.ok(ConfigurationDayDocument.from(configurationDay));
     }
 }

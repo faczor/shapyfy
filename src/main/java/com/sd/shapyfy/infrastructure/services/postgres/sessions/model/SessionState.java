@@ -1,7 +1,9 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.model;
 
+import java.util.EnumSet;
+
 public enum SessionState {
-    DRAFT, FINISHED, ACTIVE, RUNNING, FOLLOW_UP, HISTORICAL;
+    DRAFT, FINISHED, ACTIVE, SKIPPED, RUNNING, FOLLOW_UP, HISTORICAL;
 
     public boolean isDraft() {
         return this == DRAFT;
@@ -11,11 +13,7 @@ public enum SessionState {
         return this == ACTIVE || this == RUNNING || this == FINISHED;
     }
 
-    public boolean isFuture() {
-        return this == FOLLOW_UP || isDraft() || isActive();
-    }
-
-    public boolean isRunning() {
-        return this == RUNNING;
+    public boolean haveTrainingDate() {
+        return EnumSet.complementOf(EnumSet.of(DRAFT)).contains(this);
     }
 }

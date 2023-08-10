@@ -38,25 +38,25 @@ public class DashboardIntegrationTest extends AbstractIntegrationTest {
                 .body("day_states[1].state", is("TRAINING_DAY"))
                 //
                 .body("day_states[2].date", is("2023-01-03"))
-                .body("day_states[2].state", is("TRAINING_DAY"))
+                .body("day_states[2].state", is("REST_DAY"))
                 //
                 .body("day_states[3].date", is("2023-01-04"))
-                .body("day_states[3].state", is("NO_TRAINING")) //TODO change implementation
+                .body("day_states[3].state", is("TRAINING_DAY"))
                 //
                 .body("day_states[4].date", is("2023-01-05"))
                 .body("day_states[4].state", is("TRAINING_DAY"))
                 //
                 .body("day_states[5].date", is("2023-01-06"))
-                .body("day_states[5].state", is("TRAINING_DAY"))
+                .body("day_states[5].state", is("REST_DAY"))
                 //
                 .body("day_states[6].date", is("2023-01-07"))
                 .body("day_states[6].state", is("TRAINING_DAY"))
                 //
                 .body("day_states[7].date", is("2023-01-08"))
-                .body("day_states[7].state", is("REST_DAY"))
+                .body("day_states[7].state", is("TRAINING_DAY"))
                 //
                 .body("day_states[8].date", is("2023-01-09"))
-                .body("day_states[8].state", is("TRAINING_DAY"))
+                .body("day_states[8].state", is("REST_DAY"))
                 //
                 .body("day_states[9].date", is("2023-01-10"))
                 .body("day_states[9].state", is("TRAINING_DAY"))

@@ -1,44 +1,35 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainingDay.converter;
 
+import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
+import com.sd.shapyfy.domain.configuration.model.TrainingExercise;
 import com.sd.shapyfy.domain.exercise.model.Exercise;
 import com.sd.shapyfy.domain.exercise.model.ExerciseId;
-import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
-import com.sd.shapyfy.domain.configuration.model.ConfigurationDayId;
-import com.sd.shapyfy.domain.configuration.model.TrainingExercise;
+import com.sd.shapyfy.domain.plan.model.SessionId;
 import com.sd.shapyfy.domain.plan.model.SessionPart;
 import com.sd.shapyfy.domain.plan.model.SessionPartId;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionExerciseEntity;
-import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model.TrainingDayEntity;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-
-import static com.sd.shapyfy.domain.configuration.model.ConfigurationDayType.REST;
-import static com.sd.shapyfy.domain.configuration.model.ConfigurationDayType.TRAINING;
 
 @Component
 @RequiredArgsConstructor
 public class TrainingDayToDomainConverter {
 
 
-    public ConfigurationDay toConfiguration(TrainingDayEntity trainingDayEntity) {
+    public ConfigurationDay toConfiguration(SessionPartEntity sessionPart) {
         return new ConfigurationDay(
-                ConfigurationDayId.of(trainingDayEntity.getId()),
-                trainingDayEntity.isOff() ? REST : TRAINING,
-                trainingDayEntity.getName(),
-                trainingDayEntity.getMostCurrentSession()
-                        .map(mostCurrentSession -> mostCurrentSession.getSessionExercises().stream().map(this::convert).toList())
-                        .orElse(List.of())
-        );
+                SessionPartId.of(sessionPart.getId()),
+                sessionPart.getType(),
+                sessionPart.getName(),
+                sessionPart.getSessionExercises().stream().map(this::convert).toList());
     }
 
     public SessionPart toSession(SessionPartEntity sessionPartEntity) {
         return new SessionPart(
                 SessionPartId.of(sessionPartEntity.getId()),
-                ConfigurationDayId.of(sessionPartEntity.getTrainingDay().getId()),
-                sessionPartEntity.getState(),
+                SessionId.of(sessionPartEntity.getSession().getId()),
+                sessionPartEntity.getType(),
                 sessionPartEntity.getDate(),
                 sessionPartEntity.getSessionExercises().stream().map(this::convert).toList()
         );
@@ -50,7 +41,7 @@ public class TrainingDayToDomainConverter {
                 new Exercise(ExerciseId.of(sessionExercise.getExercise().getId()), sessionExercise.getExercise().getName()),
                 sessionExercise.getSetsAmount(),
                 sessionExercise.getRepsAmount(),
-                10, //TODO breakBetweenStes
+                sessionExercise.getRestBetweenSets(),
                 sessionExercise.getWeightAmount(),
                 sessionExercise.isFinished()
         );

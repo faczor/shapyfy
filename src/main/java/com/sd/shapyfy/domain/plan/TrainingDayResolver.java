@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 //Maybe this should be moved to the Lookup?
 //Maybe this should be moved to the Converter?
@@ -23,15 +24,11 @@ public class TrainingDayResolver {
 
     public List<StateForDate> resolveForDates(LocalDate from, LocalDate to, UserId userId) {
         List<Training> trainings = trainingLookup.trainingsFor(userId);
-        //TODO select proper training?
-        if (trainings.isEmpty()) {
-            return List.of();
-        }
 
-        Training training = trainings.get(0);
+        Optional<Training> possibleTraining = trainings.stream().filter(Training::isActive).findFirst();
 
+        return possibleTraining.map(training -> new DateRange(from, to).datesWithinRange().map(training::stateFor).toList()).orElseGet(List::of);
 
-        return new DateRange(from, to).datesWithinRange().map(training::stateFor).toList();
     }
 
 }

@@ -1,8 +1,7 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.model;
 
-import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.model.TrainingDayEntity;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresSessionService;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresSessionService.UpdateSessionData.UpdateExercise;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.UpdateSessionPartData;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.UpdateSessionPartData.UpdateExercise;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,16 +28,23 @@ public class SessionPartEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "name")
+    private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private SessionPartType type;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "state")
-    private SessionState state;
+    private SessionPartState state;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "existence_type")
+    private ExistanceType existanceType;
 
     @Column(name = "session_date")
     private LocalDate date;
-
-    @ManyToOne
-    @JoinColumn(name = "training_day_id")
-    private TrainingDayEntity trainingDay;
 
     @ManyToOne
     @JoinColumn(name = "session_id")
@@ -47,8 +53,7 @@ public class SessionPartEntity {
     @OneToMany(mappedBy = "sessionPart", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SessionExerciseEntity> sessionExercises = new ArrayList<>();
 
-    public void update(PostgresSessionService.UpdateSessionData editableSessionParams) {
-        Optional.ofNullable(editableSessionParams.state()).ifPresent(s -> this.state = s);
+    public void update(UpdateSessionPartData editableSessionParams) {
         Optional.ofNullable(editableSessionParams.date()).ifPresent(d -> this.date = d);
         Optional.ofNullable(editableSessionParams.updateExercises()).ifPresent(this::updateSessionExercises);
     }
