@@ -40,6 +40,7 @@ CREATE TABLE shapyfy.exercises
     exercise_id UUID PRIMARY KEY             DEFAULT gen_random_uuid(),
     name        VARCHAR(256) UNIQUE NOT NULL,
     videoUrl    VARCHAR(256),
+    creator     VARCHAR(32)         NOT NULL,
     createdAt   timestamp           NOT NULL default now(),
     updatedAt   timestamp           NOT NULL default now()
 );

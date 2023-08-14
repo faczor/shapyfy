@@ -1,13 +1,8 @@
 package com.sd.shapyfy.infrastructure.services.postgres.exercises.model;
 
+import com.sd.shapyfy.boundary.api.exercises.Creator;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionExerciseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +28,19 @@ public class ExerciseEntity {
     @Column(name = "name")
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "creator")
+    private Creator creator;
+
     @OneToMany(mappedBy = "exercise")
     private List<SessionExerciseEntity> sessionExercises = new ArrayList<>();
+
+    public static ExerciseEntity create(String name, Creator creator) {
+        return new ExerciseEntity(
+                null,
+                name,
+                creator,
+                new ArrayList<>()
+        );
+    }
 }
