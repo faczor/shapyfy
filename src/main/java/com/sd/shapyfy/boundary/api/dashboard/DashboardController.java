@@ -3,8 +3,10 @@ package com.sd.shapyfy.boundary.api.dashboard;
 import com.sd.shapyfy.boundary.api.ApiV1;
 import com.sd.shapyfy.boundary.api.dashboard.contact.UserDashboardContract;
 import com.sd.shapyfy.boundary.api.dashboard.converter.DayStateToRestConverter;
+import com.sd.shapyfy.domain.configuration.TrainingLookup;
 import com.sd.shapyfy.domain.plan.model.StateForDate;
 import com.sd.shapyfy.domain.plan.TrainingDayResolver;
+import com.sd.shapyfy.domain.plan.model.Training;
 import com.sd.shapyfy.domain.user.model.UserId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,8 @@ public class DashboardController {
 
     private final DayStateToRestConverter dayStateToRestConverter;
 
+    private final TrainingLookup trainingLookup;
+
     @GetMapping
     public ResponseEntity<UserDashboardContract> displayPlanForEachDay(
             @RequestParam(name = "from-date") LocalDate from,
@@ -33,7 +37,7 @@ public class DashboardController {
         UserId userId = currentUserId();
         log.info("Attempt to display calendar by {} with from {} to {}", userId, from, to);
         List<StateForDate> stateForDates = trainingDayResolver.resolveForDates(from, to, userId);
-
-        return ResponseEntity.ok(dayStateToRestConverter.convertToDashboard(stateForDates));
+        List<Training> trainings = trainingLookup.trainingsFor(userId);
+        return ResponseEntity.ok(dayStateToRestConverter.convertToDashboard(trainings, stateForDates));
     }
 }

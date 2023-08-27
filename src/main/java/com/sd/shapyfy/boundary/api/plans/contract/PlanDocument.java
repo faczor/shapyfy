@@ -8,12 +8,14 @@ import java.util.UUID;
 
 public record PlanDocument(
         @JsonProperty(value = "id", required = true) UUID id,
+        @JsonProperty(value = "name", required = true) String name,
         @JsonProperty(value = "state", required = true) PlanState state,
         @JsonProperty(value = "training_days", required = true) List<TrainingDayDocument> trainingDays) {
 
     public static PlanDocument from(TrainingConfiguration trainingConfiguration) {
         return new PlanDocument(
                 trainingConfiguration.plan().id().getValue(),
+                trainingConfiguration.plan().name(),
                 PlanState.NOT_STARTED, //TODO
                 trainingConfiguration.configurationDays().stream().map(TrainingDayDocument::from).toList()
         );

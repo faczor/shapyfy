@@ -8,6 +8,7 @@ public record StateForDate(
         LocalDate date,
         boolean isSessionExisting,
         boolean isTrainingDay,
+        Session session,
         ConfigurationDay configurationDay) {
 
     public static StateForDate noTraining(LocalDate date) {
@@ -15,6 +16,7 @@ public record StateForDate(
                 date,
                 false,
                 false,
+                null,
                 null
         );
     }

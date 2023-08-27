@@ -61,7 +61,7 @@ public class TrainingPlanActivator {
                             null,
                             null,
                             startDate.plusDays(index),
-                            index < indexOfStartingDay ? SKIP : ACTIVE,
+                            ACTIVE, //TODO
                             null
                     )
             );

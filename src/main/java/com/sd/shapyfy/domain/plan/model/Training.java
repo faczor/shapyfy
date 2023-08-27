@@ -46,6 +46,7 @@ public record Training(
                         searchDate,
                         false,
                         configurationDay.isTrainingDay(),
+                        null,
                         configurationDay);
             }
         }
@@ -58,6 +59,7 @@ public record Training(
                 date,
                 true,
                 sessionPart.state() == SessionPartType.TRAINING_DAY,
+                session,
                 configuration().configurationDays().stream().filter(configurationDay -> configurationDay.id().equals(sessionPart.sessionPartId())).findFirst().orElseThrow());
     }
 

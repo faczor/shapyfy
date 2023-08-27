@@ -1,6 +1,7 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainingDay.converter;
 
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
+import com.sd.shapyfy.domain.configuration.model.TrainingConfiguration;
 import com.sd.shapyfy.domain.configuration.model.TrainingExercise;
 import com.sd.shapyfy.domain.exercise.model.Exercise;
 import com.sd.shapyfy.domain.exercise.model.ExerciseId;
@@ -25,9 +26,10 @@ public class TrainingDayToDomainConverter {
                 sessionPart.getSessionExercises().stream().map(this::convert).toList());
     }
 
-    public SessionPart toSession(SessionPartEntity sessionPartEntity) {
+    public SessionPart toSession(TrainingConfiguration configuration, SessionPartEntity sessionPartEntity) {
+        SessionPartId configurationId = configuration.configurationDays().stream().filter(day -> day.name().equals(sessionPartEntity.getName())).findFirst().map(ConfigurationDay::id).orElseThrow();
         return new SessionPart(
-                SessionPartId.of(sessionPartEntity.getId()),
+                configurationId,
                 SessionId.of(sessionPartEntity.getSession().getId()),
                 sessionPartEntity.getType(),
                 sessionPartEntity.getDate(),

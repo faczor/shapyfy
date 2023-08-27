@@ -1,6 +1,7 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainings.converter;
 
 import com.sd.shapyfy.domain.DateRange;
+import com.sd.shapyfy.domain.configuration.model.TrainingConfiguration;
 import com.sd.shapyfy.domain.plan.model.Session;
 import com.sd.shapyfy.domain.plan.model.SessionId;
 import com.sd.shapyfy.domain.plan.model.Training;
@@ -29,14 +30,16 @@ public class TrainingToDomainConverter {
     private final PlanConfigurationToDomainConverter planConfigurationToDomainConverter;
 
     public Training convert(TrainingEntity training) {
+        TrainingConfiguration configuration = planConfigurationToDomainConverter.convert(training);
+
         return new Training(
                 planConfigurationToDomainConverter.convert(training),
-                training.getSessions().stream().map(this::toSessionConfiguration).toList()
+                training.getSessions().stream().map(s -> toSessionConfiguration(configuration, s)).toList()
         );
     }
 
     //TODO move to proper converter :)
-    public Session toSessionConfiguration(SessionEntity sessionEntity) {
+    public Session toSessionConfiguration(TrainingConfiguration configuration, SessionEntity sessionEntity) {
         List<SessionPartEntity> days = sessionEntity.getSessionParts().stream().filter(part -> part.getExistanceType() == ExistanceType.CONSTANT).toList();
 
         DateRange dateRange = sessionEntity.getState().haveTrainingDate()
@@ -46,7 +49,7 @@ public class TrainingToDomainConverter {
         return new Session(
                 SessionId.of(sessionEntity.getId()),
                 sessionEntity.getState(),
-                sessionEntity.getSessionParts().stream().map(trainingDayToDomainConverter::toSession).toList(),
+                sessionEntity.getSessionParts().stream().map(sPart -> trainingDayToDomainConverter.toSession(configuration, sPart)).toList(),
                 dateRange);
 
     }
