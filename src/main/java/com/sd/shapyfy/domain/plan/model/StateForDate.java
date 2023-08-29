@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 public record StateForDate(
         LocalDate date,
+        PlanId planId,
         boolean isSessionExisting,
         boolean isTrainingDay,
         Session session,
@@ -14,6 +15,7 @@ public record StateForDate(
     public static StateForDate noTraining(LocalDate date) {
         return new StateForDate(
                 date,
+                null,
                 false,
                 false,
                 null,

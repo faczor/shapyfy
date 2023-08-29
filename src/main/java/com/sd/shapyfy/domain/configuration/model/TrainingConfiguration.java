@@ -7,7 +7,7 @@ import java.util.List;
 
 public record TrainingConfiguration(
         Plan plan,
-        SessionId sessionId,
+        SessionId sessionId, //SessionId === ConfigurationId :)
         List<ConfigurationDay> configurationDays) {
 
     public int daysPlanAmount() {

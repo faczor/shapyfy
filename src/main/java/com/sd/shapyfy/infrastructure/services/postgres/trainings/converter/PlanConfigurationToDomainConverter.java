@@ -5,7 +5,7 @@ import com.sd.shapyfy.domain.plan.model.SessionId;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.ExistanceType;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.model.TrainingEntity;
-import com.sd.shapyfy.infrastructure.services.postgres.trainingDay.converter.TrainingDayToDomainConverter;
+import com.sd.shapyfy.infrastructure.services.postgres.training_day.converter.TrainingDayToDomainConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -27,8 +27,12 @@ public class TrainingDayResolver {
 
         Optional<Training> possibleTraining = trainings.stream().filter(Training::isActive).findFirst();
 
-        return possibleTraining.map(training -> new DateRange(from, to).datesWithinRange().map(training::stateFor).toList()).orElseGet(List::of);
+        return possibleTraining.map(training -> new DateRange(from, to).datesWithinRange().map(training::stateFor).toList()).orElse(empty(from, to));
 
     }
 
+
+    private List<StateForDate> empty(LocalDate from, LocalDate to) {
+        return new DateRange(from, to).datesWithinRange().map(StateForDate::noTraining).toList();
+    }
 }

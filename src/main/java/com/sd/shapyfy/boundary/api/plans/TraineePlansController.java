@@ -1,10 +1,7 @@
 package com.sd.shapyfy.boundary.api.plans;
 
 import com.sd.shapyfy.boundary.api.ApiV1;
-import com.sd.shapyfy.boundary.api.plans.contract.CreatePlanDocument;
-import com.sd.shapyfy.boundary.api.plans.contract.PlanDocument;
-import com.sd.shapyfy.boundary.api.plans.contract.PlanDocuments;
-import com.sd.shapyfy.boundary.api.plans.contract.StartPlanDocument;
+import com.sd.shapyfy.boundary.api.plans.contract.*;
 import com.sd.shapyfy.boundary.api.plans.converter.ApiPlanToDomainConverter;
 import com.sd.shapyfy.domain.configuration.TrainingLookup;
 import com.sd.shapyfy.domain.configuration.TrainingPlanActivator;

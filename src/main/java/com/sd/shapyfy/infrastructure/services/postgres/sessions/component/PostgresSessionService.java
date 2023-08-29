@@ -23,8 +23,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PostgresSessionService implements SessionService {
 
-    private final TrainingToDomainConverter trainingToDomainConverter;
-
     private final PostgresExerciseFetcher exerciseFetcher;
 
     private final PostgresSessionRepository sessionRepository;
@@ -73,7 +71,7 @@ public class PostgresSessionService implements SessionService {
         return new UpdateSessionPartData(
                 editSessionPartParams.type(),
                 editSessionPartParams.date(),
-                null,
+                editSessionPartParams.name(),
                 Optional.ofNullable(editSessionPartParams.sessionExerciseExerciseEditableParam()).map(this::buildUpdateExerciseData).orElse(null)
         );
     }

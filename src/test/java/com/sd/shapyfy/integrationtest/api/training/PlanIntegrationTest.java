@@ -3,6 +3,7 @@ package com.sd.shapyfy.integrationtest.api.training;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.component.PostgresTrainingRepository;
 import com.sd.shapyfy.integrationTestTool.AbstractIntegrationTest;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,12 @@ import static com.sd.shapyfy.infrastructure.services.postgres.sessions.model.Ses
 import static com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartType.TRAINING_DAY;
 import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
-public class PlanIntegrationTest extends AbstractIntegrationTest {
+class PlanIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     PostgresTrainingRepository trainingRepository;
@@ -154,7 +158,7 @@ public class PlanIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("Trainee create plan EP[POST:/v1/trainings]")
+    @DisplayName("Trainee create plan EP[POST:/v1/plans]")
     void initializeTraining() {
 
         String trainingId = as(NEW_USER.getTestUser()).assertRequest($ -> $
@@ -270,7 +274,7 @@ public class PlanIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("Trainee activate EP[PATCH:/v1/trainings/{trainingId}/plans]")
+    @DisplayName("Trainee activate EP[PATCH:/v1/plans/{planId}/activations]")
     void activateTraining() {
         UUID trainingId = UUID.fromString("00000000-0000-0000-0000-000000000201");
         as(USER_WITH_DRAFT_TRAINING.getTestUser()).assertRequest($ -> $
@@ -294,8 +298,11 @@ public class PlanIntegrationTest extends AbstractIntegrationTest {
                             .satisfies(activatedSession -> {
                                 assertThat(activatedSession.getSessionParts()).asList()
                                         //
-                                        .extracting("date")
-                                        .containsAll(List.of(date(1), date(2), date(3)));
+                                        .extracting("name", "date")
+                                        .containsAll(List.of(
+                                                Tuple.tuple("PULL", date(1)),
+                                                Tuple.tuple("PUSH", date(2)),
+                                                Tuple.tuple("REST", date(3))));
                             });
 
                     assertThat(plan.getSessions().stream().filter(s -> s.getState() == SessionState.FOLLOW_UP).findFirst())
@@ -304,11 +311,23 @@ public class PlanIntegrationTest extends AbstractIntegrationTest {
                             .satisfies(activatedSession -> {
                                 assertThat(activatedSession.getSessionParts()).asList()
                                         //
-                                        .extracting("date")
-                                        .containsAll(List.of(date(4), date(5), date(6)));
+                                        .extracting("name", "date")
+                                        .containsAll(List.of(
+                                                Tuple.tuple("PULL", date(4)),
+                                                Tuple.tuple("PUSH", date(5)),
+                                                Tuple.tuple("REST", date(6))));
                             });
                 });
     }
+
+  @Test
+  @DisplayName("Trainee get dashboard for configuration EP[GET:/v1/plans/{plan_id}/day/{day_id}")
+  void getDashboardForSessionPart() {
+      as(USER_WITH_ACTIVE_TRAINING.getTestUser()).assertRequest($ -> $
+                      .get("/v1/dashboard/00000000-0000-0000-0000-000000000301/day/00000000-0000-0000-0000-000003010102"))
+              //
+              .statusCode(200);
+  }
 
     //TODO Move to common test
     LocalDate date(int day) {

@@ -54,6 +54,7 @@ public class SessionPartEntity {
     private List<SessionExerciseEntity> sessionExercises = new ArrayList<>();
 
     public void update(UpdateSessionPartData editableSessionParams) {
+        Optional.ofNullable(editableSessionParams.name()).ifPresent(n -> this.name = n);
         Optional.ofNullable(editableSessionParams.date()).ifPresent(d -> this.date = d);
         Optional.ofNullable(editableSessionParams.updateExercises()).ifPresent(this::updateSessionExercises);
     }

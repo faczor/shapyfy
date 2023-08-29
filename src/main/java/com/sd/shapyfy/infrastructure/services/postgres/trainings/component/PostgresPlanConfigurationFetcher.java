@@ -3,6 +3,7 @@ package com.sd.shapyfy.infrastructure.services.postgres.trainings.component;
 import com.sd.shapyfy.domain.configuration.PlanConfigurationFetcher;
 import com.sd.shapyfy.domain.configuration.model.TrainingConfiguration;
 import com.sd.shapyfy.domain.plan.model.PlanId;
+import com.sd.shapyfy.domain.plan.model.Training;
 import com.sd.shapyfy.domain.user.model.UserId;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.converter.TrainingToDomainConverter;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.model.TrainingEntity;
@@ -31,9 +32,15 @@ public class PostgresPlanConfigurationFetcher implements PlanConfigurationFetche
     }
 
     @Override
-    public List<com.sd.shapyfy.domain.plan.model.Training> fetchAllTrainingsFor(UserId userId) {
+    public List<Training> fetchAllTrainingsFor(UserId userId) {
         List<TrainingEntity> allByUserId = trainingRepository.findAllByUserId(userId.getValue());
         return allByUserId.stream().map(trainingToDomainConverter::convert).toList();
+    }
+
+    @Override
+    public Training trainingFor(PlanId planId) {
+        TrainingEntity training = findById(planId);
+        return trainingToDomainConverter.convert(training);
     }
 
     private TrainingEntity findById(PlanId planId) {

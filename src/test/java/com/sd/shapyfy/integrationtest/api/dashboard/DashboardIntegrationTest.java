@@ -1,6 +1,7 @@
 package com.sd.shapyfy.integrationtest.api.dashboard;
 
 import com.sd.shapyfy.integrationTestTool.AbstractIntegrationTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -8,17 +9,18 @@ import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.Predef
 import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.USER_WITH_ACTIVE_TRAINING;
 import static org.hamcrest.Matchers.is;
 
-public class DashboardIntegrationTest extends AbstractIntegrationTest {
+class DashboardIntegrationTest extends AbstractIntegrationTest {
 
     @Test
+    @Disabled
     @DisplayName("User dashboard for new user EP[GET:/v1/dashboard")
     void fetchUserEmptyDashboard() {
-    //  as(NEW_USER.getTestUser()).assertRequest($ -> $
-    //                  .param("from-date", "2023-01-01")
-    //                  .param("to-date", "2023-01-04")
-    //                  .get("/v1/dashboard"))
-    //          //
-    //          .statusCode(200);
+      as(NEW_USER.getTestUser()).assertRequest($ -> $
+                      .param("from-date", "2023-01-01")
+                      .param("to-date", "2023-01-04")
+                      .get("/v1/dashboard"))
+              //
+              .statusCode(200);
     }
 
     @Test
@@ -66,7 +68,6 @@ public class DashboardIntegrationTest extends AbstractIntegrationTest {
                 //
                 .body("day_states[11].date", is("2023-01-12"))
                 .body("day_states[11].state", is("REST_DAY"))
-
         ;
     }
 }

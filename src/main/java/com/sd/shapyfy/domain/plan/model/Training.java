@@ -15,6 +15,7 @@ public record Training(
         TrainingConfiguration configuration,
         List<Session> sessions) {
 
+    //TODO move to converter :)
     public StateForDate stateFor(LocalDate date) {
         Optional<Session> possibleSession = sessions().stream().filter(session -> session.dateRange().isRangeContaining(date)).findFirst();
         if (possibleSession.isPresent()) {
@@ -44,6 +45,7 @@ public record Training(
                 ConfigurationDay configurationDay = configuration().configurationDays().get(i);
                 return new StateForDate(
                         searchDate,
+                        configuration.plan().id(),
                         false,
                         configurationDay.isTrainingDay(),
                         null,
@@ -57,10 +59,11 @@ public record Training(
         SessionPart sessionPart = session.partFor(date);
         return new StateForDate(
                 date,
+                configuration.plan().id(),
                 true,
                 sessionPart.state() == SessionPartType.TRAINING_DAY,
                 session,
-                configuration().configurationDays().stream().filter(configurationDay -> configurationDay.id().equals(sessionPart.sessionPartId())).findFirst().orElseThrow());
+                configuration().configurationDays().stream().filter(configurationDay -> configurationDay.id().equals(sessionPart.configurationDayId())).findFirst().orElseThrow());
     }
 
     private LocalDate getLastSessionDate() {

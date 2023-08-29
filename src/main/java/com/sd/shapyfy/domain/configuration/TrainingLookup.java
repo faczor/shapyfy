@@ -2,6 +2,7 @@ package com.sd.shapyfy.domain.configuration;
 
 import com.sd.shapyfy.domain.configuration.model.TrainingConfiguration;
 import com.sd.shapyfy.domain.plan.model.PlanId;
+import com.sd.shapyfy.domain.plan.model.Training;
 import com.sd.shapyfy.domain.user.model.UserId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,11 @@ public class TrainingLookup {
         return planConfigurationFetcher.trainingConfigurationBy(planId);
     }
 
-    public List<com.sd.shapyfy.domain.plan.model.Training> trainingsFor(UserId userId) {
+    public List<Training> trainingsFor(UserId userId) {
         return planConfigurationFetcher.fetchAllTrainingsFor(userId);
+    }
+
+    public Training trainingBy(PlanId planId) {
+        return planConfigurationFetcher.trainingFor(planId);
     }
 }

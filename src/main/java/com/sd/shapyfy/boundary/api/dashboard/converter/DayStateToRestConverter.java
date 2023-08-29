@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
-import static com.sd.shapyfy.boundary.api.dashboard.contact.UserDashboardContract.DayState.StateType.*;
+import static com.sd.shapyfy.boundary.api.dashboard.contact.UserDashboardContract.DayState.DayType.*;
 
 @Component
 public class DayStateToRestConverter {
@@ -18,6 +18,7 @@ public class DayStateToRestConverter {
 
         List<UserDashboardContract.DayState> dayStates = stateForDates.stream().map(stateForDate -> new UserDashboardContract.DayState(
                         Optional.ofNullable(stateForDate.session()).map(c -> c.sessionId().getValue().toString()).orElse(null),
+                        Optional.ofNullable(stateForDate.planId()).map(id -> id.getValue().toString()).orElse(null),
                         stateForDate.date(),
                         Optional.ofNullable(stateForDate.configurationDay()).map(day -> day.isTrainingDay() ? TRAINING_DAY : REST_DAY).orElse(NO_TRAINING)
                 ))

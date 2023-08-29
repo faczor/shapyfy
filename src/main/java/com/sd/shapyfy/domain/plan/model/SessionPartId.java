@@ -15,6 +15,6 @@ public class SessionPartId {
 
     @Override
     public String toString() {
-        return "SessionId::" + value;
+        return "SessionPartId::" + value;
     }
 }

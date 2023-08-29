@@ -13,11 +13,13 @@ public record UserDashboardContract(
     public record DayState(
             @JsonProperty(value = "id", required = false)
             String id,
+            @JsonProperty(value = "training_id", required = true)
+            String trainingDay,
             @JsonProperty(value = "date", required = true)
             LocalDate date,
             @JsonProperty(value = "state", required = true)
-            StateType stateType) {
-        public enum StateType {
+            DayType dayType) {
+        public enum DayType {
             TRAINING_DAY,
             REST_DAY,
             NO_TRAINING

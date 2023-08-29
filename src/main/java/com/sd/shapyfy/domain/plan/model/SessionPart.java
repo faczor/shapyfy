@@ -9,8 +9,20 @@ import java.util.List;
 public record SessionPart(
 
         SessionPartId sessionPartId,
-        SessionId configurationDayId,
+        SessionPartId configurationDayId,
         SessionPartType state,
         LocalDate date,
         List<TrainingExercise> trainingExercises) {
+
+    public boolean isOngoing() {
+        return !(isFinished() && isNotStarted());
+    }
+
+    public boolean isFinished() {
+        return trainingExercises().stream().allMatch(TrainingExercise::isFinished);
+    }
+
+    public boolean isNotStarted() {
+        return trainingExercises().stream().noneMatch(TrainingExercise::isFinished);
+    }
 }
