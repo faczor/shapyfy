@@ -1,6 +1,5 @@
 package com.sd.shapyfy.domain.configuration.model;
 
-import com.sd.shapyfy.domain.plan.model.SessionPartId;
 import lombok.Value;
 
 import java.util.UUID;

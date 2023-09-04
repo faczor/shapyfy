@@ -1,14 +1,15 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.model;
 
 import com.sd.shapyfy.infrastructure.services.postgres.exercises.model.ExerciseEntity;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.UpdateSessionPartData.UpdateExercise;
+import com.sd.shapyfy.infrastructure.services.postgres.trainings.component.SessionPartCreationParams.SelectedExercisesParams;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -24,15 +25,6 @@ public class SessionExerciseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "sets_amount")
-    private int setsAmount;
-
-    @Column(name = "reps_amount")
-    private int repsAmount;
-
-    @Column(name = "weight_amount")
-    private Double weightAmount;
-
     @Column(name = "rest_between_sets")
     private int restBetweenSets;
 
@@ -47,15 +39,32 @@ public class SessionExerciseEntity {
     @JoinColumn(name = "session_part_id")
     private SessionPartEntity sessionPart;
 
-    public static SessionExerciseEntity from(int sets, int reps, Double weight, int restBetweenSets, ExerciseEntity exercise, SessionPartEntity session) {
-        return new SessionExerciseEntity(null, sets, reps, weight, restBetweenSets, false, exercise, session);
+    @OneToMany(mappedBy = "sessionExercise")
+    private List<SessionExerciseSetEntity> sets;
+
+    @OneToMany(mappedBy = "sessionExercise")
+    private List<SessionExerciseAdditionalAttributeEntity> attributes;
+
+    public static SessionExerciseEntity from(SelectedExercisesParams params) {
+        return new SessionExerciseEntity(params);
     }
 
-    public void update(UpdateExercise updateExerciseParams) {
-        Optional.ofNullable(updateExerciseParams.setsAmount()).ifPresent(this::setSetsAmount);
-        Optional.ofNullable(updateExerciseParams.repsAmount()).ifPresent(this::setRepsAmount);
-        Optional.ofNullable(updateExerciseParams.weightAmount()).ifPresent(this::setWeightAmount);
-        Optional.ofNullable(updateExerciseParams.restBetweenSets()).ifPresent(this::setRestBetweenSets);
-        Optional.ofNullable(updateExerciseParams.isFinished()).ifPresent(this::setFinished);
+    private SessionExerciseEntity(SelectedExercisesParams params) {
+        this.restBetweenSets = params.restBetweenSets();
+        this.exercise = params.exercise();
+        this.sets = new ArrayList<>();
+        this.attributes = new ArrayList<>();
+        params.setConfigurations().stream().map(SessionExerciseSetEntity::from).forEach(this::addSet);
+        params.attributes().stream().map(SessionExerciseAdditionalAttributeEntity::from).forEach(this::addAttribute);
+    }
+
+    private void addAttribute(SessionExerciseAdditionalAttributeEntity attribute) {
+        attribute.setSessionExercise(this);
+        this.attributes.add(attribute);
+    }
+
+    private void addSet(SessionExerciseSetEntity set) {
+        set.setSessionExercise(this);
+        this.sets.add(set);
     }
 }

@@ -8,7 +8,7 @@ import com.sd.shapyfy.domain.user.model.UserId;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.converter.TrainingToDomainConverter;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.model.TrainingEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.TrainingNotFound;
-import com.sd.shapyfy.infrastructure.services.postgres.trainings.converter.PlanConfigurationToDomainConverter;
+import com.sd.shapyfy.infrastructure.services.postgres.trainings.converter.TrainingEntityToDomainConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,7 @@ public class PostgresPlanConfigurationFetcher implements PlanConfigurationFetche
 
     private final PostgresTrainingRepository trainingRepository;
 
-    private final PlanConfigurationToDomainConverter planConfigurationToDomainConverter;
+    private final TrainingEntityToDomainConverter trainingEntityToDomainConverter;
 
     private final TrainingToDomainConverter trainingToDomainConverter;
 
@@ -28,7 +28,7 @@ public class PostgresPlanConfigurationFetcher implements PlanConfigurationFetche
     public TrainingConfiguration trainingConfigurationBy(PlanId planId) {
         TrainingEntity training = findById(planId);
 
-        return planConfigurationToDomainConverter.convert(training);
+        return trainingEntityToDomainConverter.convertToConfiguration(training);
     }
 
     @Override

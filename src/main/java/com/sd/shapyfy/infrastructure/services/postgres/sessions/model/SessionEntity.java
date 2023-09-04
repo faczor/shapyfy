@@ -1,5 +1,6 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.model;
 
+import com.sd.shapyfy.infrastructure.services.postgres.trainings.component.SessionPartCreationParams;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.model.TrainingEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,11 +34,26 @@ public class SessionEntity {
     private TrainingEntity training;
 
     @OneToMany(mappedBy = "session", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<SessionPartEntity> sessionParts;
+    private List<SessionPartEntity> sessionParts = new ArrayList<>();
+
+    private SessionEntity(SessionState state, List<SessionPartCreationParams> sessionPartRequestParams) {
+        this.state = state;
+        this.sessionParts = new ArrayList<>() ;
+        sessionPartRequestParams.stream().map(SessionPartEntity::from).forEach(this::addPart);
+    }
+
+    public void addPart(SessionPartEntity sessionPartEntity) {
+        sessionPartEntity.setSession(this);
+        this.sessionParts.add(sessionPartEntity);
+    }
+
+    public static SessionEntity from(SessionState state, List<SessionPartCreationParams> sessionPartRequestParams) {
+        return new SessionEntity(state, sessionPartRequestParams);
+    }
 
     public SessionPartEntity createPart(String name, SessionPartType type) {
         SessionPartEntity sessionPartEntity = new SessionPartEntity(
-                null, name, type, SessionPartState.SKIP, ExistanceType.CONSTANT, null, this, new ArrayList<>()
+                null, name, type, SessionPartState.ACTIVE, ExistenceType.CONSTANT, null, this, new ArrayList<>()
         );
         sessionParts.add(sessionPartEntity);
 

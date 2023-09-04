@@ -7,7 +7,7 @@ import com.sd.shapyfy.boundary.api.plans.contract.TrainingSessionDayDocument;
 import com.sd.shapyfy.boundary.api.dashboard.converter.DomainPlanToApiConverter;
 import com.sd.shapyfy.domain.configuration.TrainingLookup;
 import com.sd.shapyfy.domain.plan.model.PlanId;
-import com.sd.shapyfy.domain.plan.model.SessionPartId;
+import com.sd.shapyfy.domain.plan.model.ConfigurationDayId;
 import com.sd.shapyfy.domain.plan.model.StateForDate;
 import com.sd.shapyfy.domain.plan.TrainingDayResolver;
 import com.sd.shapyfy.domain.plan.model.Training;
@@ -50,16 +50,13 @@ public class DashboardController {
 
     //TODO internal test
     //TODO check if training owned by user :)
-    @GetMapping("/{plan_id}/day/{day_id}")
+    @GetMapping("/{date}")
     public ResponseEntity<TrainingSessionDayDocument> trainingPlanDay(
-            @PathVariable("plan_id") String pathPlanId,
-            @PathVariable("day_id") String pathDayId) {
+            @PathVariable("date") LocalDate pathDate) {
+        UserId userId = currentUserId();
+        log.info("Attempt to fetch state on {} for {}", pathDate, userId);
+        StateForDate stateForDate = trainingDayResolver.resolveForDates(pathDate, pathDate, userId).get(0);
 
-        PlanId planId = PlanId.of(pathPlanId);
-        SessionPartId sessionPartId = SessionPartId.of(pathDayId);
-
-        Training training = trainingLookup.trainingBy(planId);
-
-        return ResponseEntity.ok(domainPlanToApiConverter.convert(training, sessionPartId));
+        return ResponseEntity.ok(domainPlanToApiConverter.convert(stateForDate.training(), stateForDate.sessionPart(), stateForDate.configurationDay().id()));
     }
 }

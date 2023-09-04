@@ -1,8 +1,10 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainings.model;
 
 import com.sd.shapyfy.domain.user.model.UserId;
+import com.sd.shapyfy.infrastructure.services.postgres.configuration.model.ConfigurationEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
+import com.sd.shapyfy.infrastructure.services.postgres.trainings.component.SessionPartCreationParams;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,7 +12,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,18 +47,30 @@ public class TrainingEntity {
     private String name;
 
     @OneToMany(mappedBy = "training", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<SessionEntity> sessions;
+    private List<SessionEntity> sessions = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "configuration_id")
+    private ConfigurationEntity configuration;
+
+    public TrainingEntity(UserId userId, String name) {
+        this.name = name;
+        this.userId = userId.getValue();
+    }
 
     public static TrainingEntity create(String name, UserId userId) {
-        return new TrainingEntity(null, userId.getValue(), name, new ArrayList<>());
+
+        return new TrainingEntity(userId, name);
     }
 
     public SessionEntity createNewSession() {
         SessionEntity sessionEntity = new SessionEntity(
-                null, SessionState.DRAFT, this, new ArrayList<>()
-        );
-        sessions.add(sessionEntity);
+                null,
+                SessionState.DRAFT,
+                this,
+                new ArrayList<>());
 
+        sessions.add(sessionEntity);
         return sessionEntity;
     }
 
@@ -63,5 +79,17 @@ public class TrainingEntity {
 
         return draftSession.orElseGet(() -> sessions.stream().filter(session -> session.getState() == SessionState.FOLLOW_UP || session.getState().isActive()).findFirst().orElseThrow());
 
+    }
+
+    public SessionEntity createSession(SessionState state, List<SessionPartCreationParams> sessionPartRequestParams) {
+        SessionEntity session = SessionEntity.from(state, sessionPartRequestParams);
+        addSession(session);
+
+        return session;
+    }
+
+    private void addSession(SessionEntity session) {
+        session.setTraining(this);
+        sessions.add(session);
     }
 }

@@ -27,6 +27,8 @@ public class TrainingPlanCreator {
 
     public record PlanConfiguration(
             String name,
+            List<String> exerciseAttributes,
+            List<String> setAttributes,
             List<SessionDayConfiguration> sessionDayConfigurations) {
 
         public record SessionDayConfiguration(

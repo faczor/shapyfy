@@ -1,5 +1,6 @@
 package com.sd.shapyfy.domain.plan.model;
 
+import com.google.common.collect.Iterables;
 import com.sd.shapyfy.domain.DateRange;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
 
@@ -11,8 +12,14 @@ public record Session(
 
         SessionId sessionId,
         SessionState state,
-        List<SessionPart> sessionParts,
-        DateRange dateRange) {
+        List<SessionPart> sessionParts) {
+
+    public DateRange dateRange() {
+        return new DateRange(
+                sessionParts().get(0).date(),
+                Iterables.getLast(sessionParts()).date()
+        );
+    }
 
     public LocalDate lastDate() {
         return dateRange().end();
@@ -28,7 +35,7 @@ public record Session(
     }
 
     //TODO proper exception
-    public SessionPart partFor(SessionPartId sessionPartId) {
-        return sessionParts.stream().filter(p -> Objects.equals(p.configurationDayId().getValue(), sessionPartId.getValue())).findFirst().orElseThrow(); // TODO
+    public SessionPart partFor(ConfigurationDayId configurationDayId) {
+        return sessionParts.stream().filter(part -> Objects.equals(part.id(), configurationDayId)).findFirst().orElseThrow();
     }
 }

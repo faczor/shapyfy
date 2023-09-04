@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.UUID;
 
 import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.NEW_USER;
-import static com.sd.shapyfy.integrationTestTool.spring.security.TestUser.PredefinedUsers.USER_WITH_INITIALIZED_EMPTY_TRAINING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -23,7 +22,7 @@ public class ExercisesIntegrationTest extends AbstractIntegrationTest {
     @Test
     @DisplayName("Search all available exercises EP[GET:/v1/exercises]")
     void fetchAvailableExercises() {
-        as(USER_WITH_INITIALIZED_EMPTY_TRAINING.getTestUser()).assertRequest($ -> $
+        as(NEW_USER.getTestUser()).assertRequest($ -> $
                         .get("/v1/exercises"))
                 //
                 .statusCode(200)

@@ -6,10 +6,10 @@ import java.time.LocalDate;
 
 public record StateForDate(
         LocalDate date,
-        PlanId planId,
+        Training training,
         boolean isSessionExisting,
         boolean isTrainingDay,
-        Session session,
+        SessionPart sessionPart,
         ConfigurationDay configurationDay) {
 
     public static StateForDate noTraining(LocalDate date) {

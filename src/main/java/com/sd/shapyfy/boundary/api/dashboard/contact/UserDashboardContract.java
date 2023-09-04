@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 public record UserDashboardContract(
         @JsonProperty(value = "user_meta_data", required = true)
@@ -12,9 +13,9 @@ public record UserDashboardContract(
         List<DayState> dayStates) {
     public record DayState(
             @JsonProperty(value = "id", required = false)
-            String id,
+            UUID id,
             @JsonProperty(value = "training_id", required = true)
-            String trainingDay,
+            UUID trainingDay,
             @JsonProperty(value = "date", required = true)
             LocalDate date,
             @JsonProperty(value = "state", required = true)

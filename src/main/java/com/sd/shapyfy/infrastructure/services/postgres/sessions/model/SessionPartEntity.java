@@ -1,8 +1,21 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.model;
 
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.UpdateSessionPartData;
-import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.UpdateSessionPartData.UpdateExercise;
-import jakarta.persistence.*;
+import com.sd.shapyfy.domain.configuration.SessionService;
+import com.sd.shapyfy.domain.configuration.SessionService.CreateSessionRequestParams.CreateSessionPartRequestParams;
+import com.sd.shapyfy.infrastructure.services.postgres.trainings.component.SessionPartCreationParams;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,8 +24,6 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 @Entity
@@ -41,7 +52,7 @@ public class SessionPartEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "existence_type")
-    private ExistanceType existanceType;
+    private ExistenceType existenceType;
 
     @Column(name = "session_date")
     private LocalDate date;
@@ -53,27 +64,26 @@ public class SessionPartEntity {
     @OneToMany(mappedBy = "sessionPart", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SessionExerciseEntity> sessionExercises = new ArrayList<>();
 
-    public void update(UpdateSessionPartData editableSessionParams) {
-        Optional.ofNullable(editableSessionParams.name()).ifPresent(n -> this.name = n);
-        Optional.ofNullable(editableSessionParams.date()).ifPresent(d -> this.date = d);
-        Optional.ofNullable(editableSessionParams.updateExercises()).ifPresent(this::updateSessionExercises);
+  //  public static SessionPartEntity from(SessionPartCreationParams param) {
+  //      return new SessionPartEntity(param);
+  //  }
+
+    private SessionPartEntity(SessionPartCreationParams param) {
+        this.name = param.name();
+        this.type = param.type();
+        this.state = param.state();
+        this.existenceType = ExistenceType.CONSTANT;
+        this.date = param.date();
+        this.sessionExercises = new ArrayList<>(); //TODO is this needed?
+        param.selectedExercisesPrams().stream().map(SessionExerciseEntity::from).forEach(this::addSessionExercise);
     }
 
-    private void updateSessionExercises(List<UpdateExercise> exercises) {
-        exercises.forEach(this::updateSingleSessionExercise);
+    private void addSessionExercise(SessionExerciseEntity sessionExerciseEntity) {
+        sessionExerciseEntity.setSessionPart(this);
+        this.sessionExercises.add(sessionExerciseEntity);
     }
 
-    private void updateSingleSessionExercise(UpdateExercise updateExerciseParams) {
-        SessionExerciseEntity sessionExercise = this.getSessionExercises().stream()
-                .filter(e -> Objects.equals(e.getExercise().getId(), updateExerciseParams.exercise().getId())).findFirst()
-                .orElseGet(() -> {
-                    SessionExerciseEntity createdExercise = new SessionExerciseEntity();
-                    createdExercise.setExercise(updateExerciseParams.exercise());
-                    createdExercise.setSessionPart(this);
-                    this.sessionExercises.add(createdExercise);
-                    return createdExercise;
-                });
-        sessionExercise.update(updateExerciseParams);
+    public static SessionPartEntity from(SessionPartCreationParams createSessionPartRequestParams) {
+        return new SessionPartEntity(createSessionPartRequestParams);
     }
-
 }

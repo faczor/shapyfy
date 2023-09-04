@@ -17,8 +17,8 @@ public class DayStateToRestConverter {
     public UserDashboardContract convertToDashboard(List<Training> trainings, List<StateForDate> stateForDates) {
 
         List<UserDashboardContract.DayState> dayStates = stateForDates.stream().map(stateForDate -> new UserDashboardContract.DayState(
-                        Optional.ofNullable(stateForDate.session()).map(c -> c.sessionId().getValue().toString()).orElse(null),
-                        Optional.ofNullable(stateForDate.planId()).map(id -> id.getValue().toString()).orElse(null),
+                        Optional.ofNullable(stateForDate.sessionPart()).map(c -> c.id().getValue()).orElse(null),
+                        Optional.ofNullable(stateForDate.training()).map(training -> training.configuration().plan().id().getValue()).orElse(null),
                         stateForDate.date(),
                         Optional.ofNullable(stateForDate.configurationDay()).map(day -> day.isTrainingDay() ? TRAINING_DAY : REST_DAY).orElse(NO_TRAINING)
                 ))

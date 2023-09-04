@@ -2,23 +2,22 @@ package com.sd.shapyfy.boundary.api.plans.contract;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
-import com.sd.shapyfy.domain.configuration.model.TrainingExercise;
+import com.sd.shapyfy.domain.configuration.model.ConfiguredExercises;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartType;
 import jakarta.validation.constraints.NotEmpty;
 
-import java.time.DayOfWeek;
 import java.util.List;
 import java.util.UUID;
 
-public record TrainingDayDocument(
+public record TrainingDayConfigurationDocument(
         @JsonProperty(value = "id", required = true) UUID dayId,
         @JsonProperty(value = "name") String name,
         @JsonProperty(value = "type", required = true) SessionPartType type,
         @JsonProperty(value = "exercises", required = true) List<TrainingDayExerciseDocument> exerciseDocuments) {
 
 
-    public static TrainingDayDocument from(ConfigurationDay configurationDay) {
-        return new TrainingDayDocument(
+    public static TrainingDayConfigurationDocument from(ConfigurationDay configurationDay) {
+        return new TrainingDayConfigurationDocument(
                 configurationDay.id().getValue(),
                 configurationDay.name(),
                 configurationDay.type(),
@@ -44,17 +43,17 @@ public record TrainingDayDocument(
             @JsonProperty(value = "weight_amount")
             Double weight,
             //
-            @JsonProperty(value = "rest_between_sets_second")
-            int secondRestBetweenSets
+            @JsonProperty(value = "rest_between_sets")
+            TimeAmountDocument timeAmountDocument
     ) {
-        public static TrainingDayExerciseDocument from(TrainingExercise trainingExercise) {
+        public static TrainingDayExerciseDocument from(ConfiguredExercises configuredExercises) {
             return new TrainingDayExerciseDocument(
-                    trainingExercise.exercise().id().getValue(),
-                    trainingExercise.exercise().name(),
-                    trainingExercise.sets(),
-                    trainingExercise.reps(),
-                    trainingExercise.weight(),
-                    trainingExercise.breakBetweenSets()
+                    configuredExercises.exercise().id().getValue(),
+                    configuredExercises.exercise().name(),
+                    configuredExercises.sets(),
+                    configuredExercises.reps(),
+                    configuredExercises.weight(),
+                    TimeAmountDocument.fromSeconds(configuredExercises.breakBetweenSets())
             );
         }
     }

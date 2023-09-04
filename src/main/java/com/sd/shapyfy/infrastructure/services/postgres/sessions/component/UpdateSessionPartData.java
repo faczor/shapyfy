@@ -14,10 +14,16 @@ public record UpdateSessionPartData(
 
     public record UpdateExercise(
             ExerciseEntity exercise,
-            Integer setsAmount,
-            Integer repsAmount,
-            Double weightAmount,
+
+            List<UpdateSet> updateSets,
             Integer restBetweenSets,
             Boolean isFinished) {
+
+        public record UpdateSet(
+                Integer setsAmount,
+                Integer repsAmount,
+                Double weightAmount,
+                Boolean isFinished) {
+        }
     }
 }

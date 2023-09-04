@@ -1,5 +1,6 @@
 package com.sd.shapyfy.infrastructure.services.postgres.trainings.converter;
 
+import com.sd.shapyfy.boundary.api.plans.contract.PlanState;
 import com.sd.shapyfy.domain.user.model.UserId;
 import com.sd.shapyfy.domain.plan.model.Plan;
 import com.sd.shapyfy.domain.plan.model.PlanId;
@@ -15,7 +16,8 @@ public class TrainingPlanToDomainConverter {
         return new Plan(
                 PlanId.of(trainingEntity.getId()),
                 trainingEntity.getName(),
-                UserId.of(trainingEntity.getUserId())
+                UserId.of(trainingEntity.getUserId()),
+                PlanState.NOT_STARTED
         );
     }
 }

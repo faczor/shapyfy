@@ -2,12 +2,11 @@ package com.sd.shapyfy.domain.configuration.model;
 
 import com.sd.shapyfy.domain.exercise.model.Exercise;
 
-//TODO decide if part of configuration or separate thing
-public record TrainingExercise(
+public record ConfiguredExercises(
+        TrainingExerciseId id,
         Exercise exercise,
         int sets,
         int reps,
         int breakBetweenSets,
-        Double weight,
-        boolean isFinished) {
+        Double weight) {
 }

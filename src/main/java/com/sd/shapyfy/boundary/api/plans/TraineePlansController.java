@@ -1,14 +1,17 @@
 package com.sd.shapyfy.boundary.api.plans;
 
 import com.sd.shapyfy.boundary.api.ApiV1;
-import com.sd.shapyfy.boundary.api.plans.contract.*;
+import com.sd.shapyfy.boundary.api.plans.contract.CreatePlanDocument;
+import com.sd.shapyfy.boundary.api.plans.contract.PlanDocument;
+import com.sd.shapyfy.boundary.api.plans.contract.PlanDocuments;
+import com.sd.shapyfy.boundary.api.plans.contract.StartPlanDocument;
 import com.sd.shapyfy.boundary.api.plans.converter.ApiPlanToDomainConverter;
 import com.sd.shapyfy.domain.configuration.TrainingLookup;
 import com.sd.shapyfy.domain.configuration.TrainingPlanActivator;
 import com.sd.shapyfy.domain.configuration.model.TrainingConfiguration;
 import com.sd.shapyfy.domain.plan.TrainingPlanCreator;
+import com.sd.shapyfy.domain.plan.model.ConfigurationDayId;
 import com.sd.shapyfy.domain.plan.model.PlanId;
-import com.sd.shapyfy.domain.plan.model.SessionPartId;
 import com.sd.shapyfy.domain.plan.model.Training;
 import com.sd.shapyfy.domain.user.model.UserId;
 import jakarta.validation.Valid;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.sd.shapyfy.boundary.api.TokenUtils.currentUserId;
 
@@ -74,7 +78,7 @@ public class TraineePlansController {
         PlanId planId = PlanId.of(pathVariablePlanId);
         log.info("Attempt to activate training {} with params {}", planId, document);
 
-        trainingPlanActivator.activate(planId, SessionPartId.of(document.sessionDayId()), document.startDate());
+        trainingPlanActivator.activate(planId, ConfigurationDayId.of(UUID.fromString(document.sessionDayId())), document.startDate());
 
         return ResponseEntity.ok().build();
     }

@@ -13,6 +13,8 @@ public class ApiPlanToDomainConverter {
     public TrainingPlanCreator.PlanConfiguration convertForCreation(CreatePlanDocument document) {
         return new TrainingPlanCreator.PlanConfiguration(
                 document.name(),
+                document.exerciseAttributes(),
+                document.setAttributes(),
                 document.dayConfigurations().stream()
                         .map(dayConfiguration -> new SessionDayConfiguration(
                                 dayConfiguration.name(),
@@ -22,7 +24,7 @@ public class ApiPlanToDomainConverter {
                                         exercise.sets(),
                                         exercise.reps(),
                                         exercise.weight(),
-                                        exercise.secondRestBetweenSets())
+                                        exercise.timeRestBetweenSets().toSeconds())
                                 ).toList()))
                         .toList());
     }

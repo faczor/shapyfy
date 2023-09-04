@@ -3,6 +3,7 @@ package com.sd.shapyfy.boundary.api.plans.contract;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.boundary.api.dashboard.contact.UserDashboardContract;
 
+//TODO before app release
 public record TrainingSessionDayDocument(
         @JsonProperty(value = "id")
         String sessionId,
@@ -13,8 +14,7 @@ public record TrainingSessionDayDocument(
         @JsonProperty(value = "day_meta_data")
         DayMetaData dayMetaData,
         @JsonProperty(value = "day_to_configuration_context")
-        DayToConfigurationContext dayToConfigurationContext
-) {
+        DayToConfigurationContext dayToConfigurationContext) {
     public record DayMetaData(
 
             @JsonProperty(value = "day_type")

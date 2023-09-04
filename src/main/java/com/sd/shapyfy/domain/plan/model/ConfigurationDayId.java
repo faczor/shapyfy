@@ -5,11 +5,11 @@ import lombok.Value;
 import java.util.UUID;
 
 @Value(staticConstructor = "of")
-public class SessionPartId {
+public class ConfigurationDayId {
 
     UUID value;
 
-    public static SessionPartId of(String value) {
+    public static ConfigurationDayId of(String value) {
         return of(UUID.fromString(value));
     }
 

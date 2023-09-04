@@ -45,7 +45,7 @@ public record Training(
                 ConfigurationDay configurationDay = configuration().configurationDays().get(i);
                 return new StateForDate(
                         searchDate,
-                        configuration.plan().id(),
+                        this,
                         false,
                         configurationDay.isTrainingDay(),
                         null,
@@ -59,11 +59,11 @@ public record Training(
         SessionPart sessionPart = session.partFor(date);
         return new StateForDate(
                 date,
-                configuration.plan().id(),
+                this,
                 true,
-                sessionPart.state() == SessionPartType.TRAINING_DAY,
-                session,
-                configuration().configurationDays().stream().filter(configurationDay -> configurationDay.id().equals(sessionPart.configurationDayId())).findFirst().orElseThrow());
+                sessionPart.type() == SessionPartType.TRAINING_DAY,
+                sessionPart,
+                configuration().forSessionPart(sessionPart));
     }
 
     private LocalDate getLastSessionDate() {
