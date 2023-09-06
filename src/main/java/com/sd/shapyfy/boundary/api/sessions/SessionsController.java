@@ -1,10 +1,9 @@
-package com.sd.shapyfy.boundary.api.training_day;
+package com.sd.shapyfy.boundary.api.sessions;
 
 import com.sd.shapyfy.boundary.api.ApiV1;
-import com.sd.shapyfy.boundary.api.training_day.contract.ExerciseProcessDocument;
-import com.sd.shapyfy.boundary.api.training_day.contract.SessionPartDocument;
-import com.sd.shapyfy.boundary.api.training_day.contract.TrainingExerciseDocument;
-import com.sd.shapyfy.boundary.api.training_day.converter.TrainingExerciseToApiConverter;
+import com.sd.shapyfy.boundary.api.sessions.contract.ExerciseProcessDocument;
+import com.sd.shapyfy.boundary.api.sessions.contract.SessionPartDocument;
+import com.sd.shapyfy.boundary.api.sessions.converter.TrainingExerciseToApiConverter;
 import com.sd.shapyfy.domain.exercise.SessionPartId;
 import com.sd.shapyfy.domain.exercise.model.ExerciseId;
 import com.sd.shapyfy.domain.plan.TrainingDayProcess;
@@ -26,7 +25,7 @@ import static com.sd.shapyfy.boundary.api.TokenUtils.currentUserId;
 @Slf4j
 @ApiV1("/v1/sessions")
 @RequiredArgsConstructor
-public class TrainingDayController {
+public class SessionsController {
 
     private final TrainingDayProcess trainingDayProcess;
 
@@ -44,6 +43,8 @@ public class TrainingDayController {
         return ResponseEntity.ok(SessionPartDocument.from(sessionPart));
     }
 
+    //TODO Remove unused exercise
+    @Deprecated(forRemoval = true)
     @PatchMapping("/{session_id}/part/{session_part_id}/exercise/{exercise_id}/starts")
     public ResponseEntity<ExerciseProcessDocument> runExercise(
             @PathVariable(value = "session_id") UUID pathSessionId,

@@ -3,7 +3,6 @@ package com.sd.shapyfy.boundary.api.plans.contract;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.domain.configuration.model.TrainingConfiguration;
 
-import java.util.List;
 import java.util.UUID;
 
 public record PlanDocument(

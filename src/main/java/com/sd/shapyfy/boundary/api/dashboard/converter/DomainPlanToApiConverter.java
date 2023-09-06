@@ -21,7 +21,8 @@ public class DomainPlanToApiConverter {
         ConfigurationDay configuration = configurationForPart(training, sessionPart);
 
         return new TrainingSessionDayDocument(
-                String.valueOf(configurationDayId.getValue()),
+                training.sessions().stream().filter(s -> s.sessionParts().stream().anyMatch(p -> p.id().equals(sessionPart.id()))).findFirst().get().sessionId().getValue(),
+                sessionPart.id().getValue(),
                 configuration.name(),
                 training.configuration().plan().name(),
                 new TrainingSessionDayDocument.DayMetaData(

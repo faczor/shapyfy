@@ -39,10 +39,10 @@ public class SessionExerciseEntity {
     @JoinColumn(name = "session_part_id")
     private SessionPartEntity sessionPart;
 
-    @OneToMany(mappedBy = "sessionExercise")
+    @OneToMany(mappedBy = "sessionExercise", cascade = CascadeType.ALL)
     private List<SessionExerciseSetEntity> sets;
 
-    @OneToMany(mappedBy = "sessionExercise")
+    @OneToMany(mappedBy = "sessionExercise", cascade = CascadeType.ALL)
     private List<SessionExerciseAdditionalAttributeEntity> attributes;
 
     public static SessionExerciseEntity from(SelectedExercisesParams params) {

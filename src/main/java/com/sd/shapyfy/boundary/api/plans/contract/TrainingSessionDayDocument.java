@@ -3,10 +3,14 @@ package com.sd.shapyfy.boundary.api.plans.contract;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sd.shapyfy.boundary.api.dashboard.contact.UserDashboardContract;
 
+import java.util.UUID;
+
 //TODO before app release
 public record TrainingSessionDayDocument(
         @JsonProperty(value = "id")
-        String sessionId,
+        UUID sessionId,
+        @JsonProperty(value = "part_id")
+        UUID partId,
         @JsonProperty(value = "name")
         String sessionName,
         @JsonProperty(value = "plan_name")

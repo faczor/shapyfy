@@ -37,7 +37,7 @@ public class SessionExerciseSetEntity {
     @JoinColumn(name = "session_exercise_id")
     private SessionExerciseEntity sessionExercise;
 
-    @OneToMany(mappedBy = "set")
+    @OneToMany(mappedBy = "set", cascade = CascadeType.ALL)
     List<SetAdditionalAttributeEntity> attributes;
 
     public static SessionExerciseSetEntity from(SetConfiguration configParams) {

@@ -1,10 +1,10 @@
-package com.sd.shapyfy.boundary.api.training_day.converter;
+package com.sd.shapyfy.boundary.api.sessions.converter;
 
 import com.sd.shapyfy.boundary.api.exercises.contract.ExerciseDocument;
 import com.sd.shapyfy.boundary.api.plans.contract.TimeAmountDocument;
-import com.sd.shapyfy.boundary.api.training_day.contract.AttributeDocument;
-import com.sd.shapyfy.boundary.api.training_day.contract.ExerciseProcessDocument;
-import com.sd.shapyfy.boundary.api.training_day.contract.SetDocument;
+import com.sd.shapyfy.boundary.api.sessions.contract.AttributeDocument;
+import com.sd.shapyfy.boundary.api.sessions.contract.ExerciseProcessDocument;
+import com.sd.shapyfy.boundary.api.sessions.contract.SetDocument;
 import com.sd.shapyfy.domain.plan.TrainingDayProcess.SessionExerciseWithPreviousOccurrences;
 import com.sd.shapyfy.domain.plan.model.TrainingExercise;
 import org.springframework.stereotype.Component;

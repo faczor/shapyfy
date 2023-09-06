@@ -6,7 +6,6 @@ import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionSta
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 public record Session(
 
@@ -34,8 +33,4 @@ public record Session(
         return sessionParts.stream().filter(part -> part.date().equals(localDate)).findFirst().orElseThrow();
     }
 
-    //TODO proper exception
-    public SessionPart partFor(ConfigurationDayId configurationDayId) {
-        return sessionParts.stream().filter(part -> Objects.equals(part.id(), configurationDayId)).findFirst().orElseThrow();
-    }
 }
