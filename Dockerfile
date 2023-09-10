@@ -21,4 +21,5 @@ COPY ./src ./src
 RUN mvn clean package -Dmaven.test.skip
 EXPOSE 8080
 
+
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "target/Shapyfy-1.0.0.jar"]
