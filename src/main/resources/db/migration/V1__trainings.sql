@@ -83,16 +83,17 @@ CREATE TABLE shapyfy.sessions
 
 CREATE TABLE shapyfy.session_parts
 (
-    session_part_id UUID PRIMARY KEY     DEFAULT gen_random_uuid(),
-    name            VARCHAR(256),
-    type            varchar(32) NOT NULL, --is_off should be also included
-    state           varchar(32) NOT NULL,
-    existence_type  varchar(32) NOT NULL DEFAULT 'CONSTANT',
-    session_date    timestamp,
-    created_at       timestamp   NOT NULL default now(),
-    updated_at       timestamp   NOT NULL default now(),
+    session_part_id              UUID PRIMARY KEY     DEFAULT gen_random_uuid(),
+    name                         VARCHAR(256),
+    type                         varchar(32) NOT NULL, --is_off should be also included
+    state                        varchar(32) NOT NULL,
+    existence_type               varchar(32) NOT NULL DEFAULT 'CONSTANT',
+    session_date                 timestamp,
+    configuration_part_reference UUID        NOT NULL,
+    created_at                   timestamp   NOT NULL default now(),
+    updated_at                   timestamp   NOT NULL default now(),
     --
-    session_id      UUID        NOT NULL,
+    session_id                   UUID        NOT NULL,
     CONSTRAINT fk_sessions FOREIGN KEY (session_id) REFERENCES shapyfy.sessions (session_id)
 );
 

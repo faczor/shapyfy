@@ -41,6 +41,7 @@ public class CreationParamsConverter {
                 requestParams.type(),
                 requestParams.state(),
                 requestParams.date(),
+                requestParams.configurationPartId().getValue(),
                 requestParams.createTrainingExerciseRequestParams().stream().map(exerciseRequestParams -> convertToExerciseCreationParams(exerciseRequestParams, attributes)).toList()
         );
     }

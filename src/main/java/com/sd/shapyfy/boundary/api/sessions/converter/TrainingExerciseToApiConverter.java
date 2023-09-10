@@ -5,7 +5,7 @@ import com.sd.shapyfy.boundary.api.plans.contract.TimeAmountDocument;
 import com.sd.shapyfy.boundary.api.sessions.contract.AttributeDocument;
 import com.sd.shapyfy.boundary.api.sessions.contract.ExerciseProcessDocument;
 import com.sd.shapyfy.boundary.api.sessions.contract.SetDocument;
-import com.sd.shapyfy.domain.plan.TrainingDayProcess.SessionExerciseWithPreviousOccurrences;
+import com.sd.shapyfy.domain.plan.TrainingProcess.SessionExerciseWithPreviousOccurrences;
 import com.sd.shapyfy.domain.plan.model.TrainingExercise;
 import org.springframework.stereotype.Component;
 

@@ -9,6 +9,7 @@ import java.util.List;
 
 public record SessionPart(
         SessionPartId id,
+        ConfigurationDayId configurationDayId,
         String name,
         SessionPartType type,
         SessionPartState state,

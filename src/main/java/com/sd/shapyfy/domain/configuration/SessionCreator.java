@@ -44,12 +44,13 @@ public class SessionCreator {
 
     private SessionService.CreateSessionRequestParams buildCreateSessionParams(TrainingConfiguration trainingConfiguration, SessionState sessionState, LocalDate trainingStartDate, int indexOfStartDay) {
         return new SessionService.CreateSessionRequestParams(
-                ConfigurationId.of(trainingConfiguration.sessionId().getValue()),
+                ConfigurationId.of(trainingConfiguration.configurationId().getValue()),
                 sessionState,
                 IntStream.range(0, trainingConfiguration.daysPlanAmount()).mapToObj(index -> {
                     ConfigurationDay configurationDay = trainingConfiguration.configurationDays().get(index);
 
                     return new CreateSessionPartRequestParams(
+                            configurationDay.id(),
                             configurationDay.name(),
                             trainingStartDate.plusDays(index),
                             configurationDay.type(),

@@ -7,13 +7,14 @@ import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPar
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 public record SessionPartCreationParams(
         String name,
         SessionPartType type,
         SessionPartState state,
         LocalDate date,
-
+        UUID configurationPartId,
         List<SelectedExercisesParams> selectedExercisesPrams) {
     public record SelectedExercisesParams(
             ExerciseEntity exercise,

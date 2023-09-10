@@ -24,7 +24,7 @@ public class TrainingEntityToDomainConverter {
 
         return new TrainingConfiguration(
                 trainingPlanToDomainConverter.convert(trainingEntity),
-                SessionId.of(trainingEntity.getConfiguration().getId()), //TODO switch type :)
+                ConfigurationId.of(trainingEntity.getConfiguration().getId()),
                 trainingEntity.getConfiguration().getAttributes().stream().map(this::attributeToDomainConfiguration).toList(),
                 trainingEntity.getConfiguration().getParts().stream().map(this::convertPartToDomain).toList()
         );

@@ -1,5 +1,6 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.component;
 
+import com.sd.shapyfy.domain.configuration.model.TrainingExerciseId;
 import com.sd.shapyfy.domain.exercise.SessionPartId;
 import com.sd.shapyfy.domain.exercise.TrainingExerciseFetcher;
 import com.sd.shapyfy.domain.exercise.model.ExerciseId;
@@ -40,5 +41,10 @@ public class PostgresTrainingExerciseFetcher implements TrainingExerciseFetcher 
         List<SessionExerciseEntity> sessionExercises = sessionExerciseRepository.fetchAllFinished(exerciseId.getValue(), userId.getValue());
 
         return sessionExercises.stream().map(sessionExerciseToDomainConverter::convert).toList();
+    }
+
+    public SessionExerciseEntity fetchById(TrainingExerciseId id) {
+        log.info("Attempt to fetch training exercise {}", id);
+        return sessionExerciseRepository.findById(id.getValue()).orElseThrow();
     }
 }

@@ -1,5 +1,6 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.model;
 
+import com.sd.shapyfy.domain.plan.TrainingProcess;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.component.SessionPartCreationParams.SelectedExercisesParams.SetConfiguration;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -55,5 +57,12 @@ public class SessionExerciseSetEntity {
     private void setAttribute(SetAdditionalAttributeEntity attribute) {
         attribute.setSet(this);
         attributes.add(attribute);
+    }
+
+    public void update(TrainingProcess.UpdateTrainingExercise.UpdateSetRequest updateSetRequest) {
+        this.repsAmount = updateSetRequest.reps();
+        this.weightAmount = updateSetRequest.weight();
+        this.isFinished = updateSetRequest.isFinished();
+        updateSetRequest.updateAttributeRequests().forEach(attributeRq -> attributes.stream().filter(attribute -> Objects.equals(attribute.getId(), attributeRq.id().getValue())).findFirst().orElseThrow().update(attributeRq));
     }
 }

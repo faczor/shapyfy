@@ -21,7 +21,7 @@ public record PlanConfigurationDocument(
 
     public static PlanConfigurationDocument from(TrainingConfiguration trainingConfiguration) {
         return new PlanConfigurationDocument(
-                trainingConfiguration.sessionId().getValue().toString(),
+                trainingConfiguration.configurationId().getValue().toString(),
                 trainingConfiguration.configurationDays().stream().map(TrainingDayConfigurationDocument::from).toList(),
                 trainingConfiguration.configurationAttributes().stream().filter(ConfigurationAttribute::isForSet).map(AttributeConfigurationDocument::from).toList(),
                 trainingConfiguration.configurationAttributes().stream().filter(ConfigurationAttribute::isForExercise).map(AttributeConfigurationDocument::from).toList()

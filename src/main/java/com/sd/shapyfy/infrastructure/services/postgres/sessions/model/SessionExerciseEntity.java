@@ -1,5 +1,6 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.model;
 
+import com.sd.shapyfy.domain.plan.TrainingProcess;
 import com.sd.shapyfy.infrastructure.services.postgres.exercises.model.ExerciseEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.component.SessionPartCreationParams.SelectedExercisesParams;
 import jakarta.persistence.*;
@@ -10,6 +11,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -66,5 +68,13 @@ public class SessionExerciseEntity {
     private void addSet(SessionExerciseSetEntity set) {
         set.setSessionExercise(this);
         this.sets.add(set);
+    }
+
+    public void update(List<TrainingProcess.UpdateTrainingExercise.UpdateAttributeRequest> updateAttributeRequests,
+                       List<TrainingProcess.UpdateTrainingExercise.UpdateSetRequest> updateSetRequests,
+                       boolean isFinished) {
+        updateAttributeRequests.forEach(attributeRq -> attributes.stream().filter(attribute -> Objects.equals(attribute.getId(), attributeRq.id().getValue())).findFirst().orElseThrow().update(attributeRq));
+        updateSetRequests.forEach(setRq -> sets.stream().filter(set -> Objects.equals(set.getId(), setRq.id().getValue())).findFirst().orElseThrow().update(setRq));
+        this.isFinished = isFinished;
     }
 }

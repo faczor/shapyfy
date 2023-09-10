@@ -14,7 +14,7 @@ public record AttributeDocument(
         String value) {
     public static AttributeDocument from(Attribute attribute) {
         return new AttributeDocument(
-                attribute.attributeId().getId(),
+                attribute.attributeId().getValue(),
                 attribute.name(),
                 attribute.value()
         );

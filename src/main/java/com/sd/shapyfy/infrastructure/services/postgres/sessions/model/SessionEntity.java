@@ -51,16 +51,4 @@ public class SessionEntity {
         return new SessionEntity(state, sessionPartRequestParams);
     }
 
-    public SessionPartEntity createPart(String name, SessionPartType type) {
-        SessionPartEntity sessionPartEntity = new SessionPartEntity(
-                null, name, type, SessionPartState.ACTIVE, ExistenceType.CONSTANT, null, this, new ArrayList<>()
-        );
-        sessionParts.add(sessionPartEntity);
-
-        return sessionPartEntity;
-    }
-
-    public void update(SessionState state) {
-        this.state = state;
-    }
 }

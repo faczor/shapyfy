@@ -1,6 +1,7 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.converter;
 
 import com.sd.shapyfy.domain.exercise.SessionPartId;
+import com.sd.shapyfy.domain.plan.model.ConfigurationDayId;
 import com.sd.shapyfy.domain.plan.model.Session;
 import com.sd.shapyfy.domain.plan.model.SessionId;
 import com.sd.shapyfy.domain.plan.model.SessionPart;
@@ -26,6 +27,7 @@ public class SessionEntityToDomainConverter {
     public SessionPart convertPart(SessionPartEntity partEntity) {
         return new SessionPart(
                 SessionPartId.of(partEntity.getId()),
+                ConfigurationDayId.of(partEntity.getConfigurationPartId()),
                 partEntity.getName(),
                 partEntity.getType(),
                 partEntity.getState(),

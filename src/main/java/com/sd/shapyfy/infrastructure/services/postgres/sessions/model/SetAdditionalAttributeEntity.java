@@ -1,5 +1,6 @@
 package com.sd.shapyfy.infrastructure.services.postgres.sessions.model;
 
+import com.sd.shapyfy.domain.plan.TrainingProcess;
 import com.sd.shapyfy.infrastructure.services.postgres.configuration.model.ConfigurationAttributeEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.configuration.model.ConfigurationAttributeType;
 import jakarta.persistence.*;
@@ -42,5 +43,9 @@ public class SetAdditionalAttributeEntity {
 
     private SetAdditionalAttributeEntity(String name) {
         this.name = name;
+    }
+
+    public void update(TrainingProcess.UpdateTrainingExercise.UpdateAttributeRequest updateAttributeRequest) {
+        this.value = updateAttributeRequest.value();
     }
 }

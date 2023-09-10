@@ -7,10 +7,10 @@ import java.util.UUID;
 @Value(staticConstructor = "of")
 public class AttributeId {
 
-    UUID id;
+    UUID value;
 
     @Override
     public String toString() {
-        return "AttributeId::" + id;
+        return "AttributeId::" + value;
     }
 }

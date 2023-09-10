@@ -57,6 +57,9 @@ public class SessionPartEntity {
     @Column(name = "session_date")
     private LocalDate date;
 
+    @Column(name = "configuration_part_reference")
+    private UUID configurationPartId;
+
     @ManyToOne
     @JoinColumn(name = "session_id")
     private SessionEntity session;
@@ -74,6 +77,7 @@ public class SessionPartEntity {
         this.state = param.state();
         this.existenceType = ExistenceType.CONSTANT;
         this.date = param.date();
+        this.configurationPartId = param.configurationPartId();
         this.sessionExercises = new ArrayList<>(); //TODO is this needed?
         param.selectedExercisesPrams().stream().map(SessionExerciseEntity::from).forEach(this::addSessionExercise);
     }
