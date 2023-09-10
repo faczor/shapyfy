@@ -14,7 +14,6 @@ import java.lang.annotation.Target;
 //
 @RestController
 @RequestMapping
-
 public @interface ApiV1 {
 
     @AliasFor(annotation = RequestMapping.class)

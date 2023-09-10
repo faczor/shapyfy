@@ -1,2 +1,0 @@
-INSERT INTO trainings (training_id, user_id, name)
-VALUES ('00000000-0000-0000-0000-000000000100', '42141241241242141', 'PUSH A,PULL A,LEGS A,null');

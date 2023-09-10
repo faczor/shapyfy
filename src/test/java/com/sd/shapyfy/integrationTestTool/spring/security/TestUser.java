@@ -11,7 +11,11 @@ public class TestUser {
 
     @RequiredArgsConstructor
     public enum PredefinedUsers {
-        DEFAULT(TestUser.of("42141241241242141"));
+
+        NEW_USER(TestUser.of("00000000000000000")),
+        USER_WITH_DRAFT_TRAINING(TestUser.of("00000000000000001")),
+        USER_WITH_ACTIVE_TRAINING(TestUser.of("00000000000000002")),
+        ;
 
         @Getter
         private final TestUser testUser;
