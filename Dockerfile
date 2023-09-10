@@ -18,7 +18,7 @@ ENTRYPOINT ["/usr/local/bin/mvn-entrypoint.sh"]
 COPY ./pom.xml ./
 COPY ./src ./src
 
-RUN mvn clean package -Dskiptest
+RUN mvn clean package -Dmaven.test.skip
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=local", "target/Shapyfy-1.0.0.jar"]
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "target/Shapyfy-1.0.0.jar"]

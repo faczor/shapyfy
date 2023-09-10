@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://34.118.105.242:5432/postgres?currentSchema=shapyfy
+    username: postgres
+    password: ;|d8VkR#]ONcmE>2
+  jpa:
+    show-sql: true
+  flyway:
+    url: jdbc:postgresql://34.118.105.242:5432/postgres?currentSchema=shapyfy
+    user: postgres
+    password: ;|d8VkR#]ONcmE>2
