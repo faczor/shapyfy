@@ -8,6 +8,7 @@ import com.sd.shapyfy.infrastructure.services.postgres.configuration.model.Confi
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.converter.CreationParamsConverter;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.converter.SessionEntityToDomainConverter;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionEntity;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.component.PostgresTrainingPlanService;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.model.TrainingEntity;
 import lombok.RequiredArgsConstructor;
@@ -33,13 +34,25 @@ public class PostgresSessionService implements SessionService {
     @Override
     public Session createSession(CreateSessionRequestParams params) {
         log.info("Create session with params {}", params);
-        ConfigurationEntity configurationEntity = configurationRepository.findById(params.configurationId().getValue()).orElseThrow(); //TODO proper exception
+        ConfigurationEntity configurationEntity = configurationRepository.findById(params.configurationId().getValue())
+                //TODO proper exception
+                .orElseThrow();
         TrainingEntity training = configurationEntity.getTraining();
         SessionEntity createdSession = training.createSession(params.state(), creationParamsConverter.convert(params));
 
         trainingPlanService.save(training);
 
         return sessionEntityToDomainConverter.convert(createdSession);
+    }
+
+    @Override
+    public Session updateStatus(SessionId sessionId, SessionState state) {
+        log.info("Update session {} with {}", sessionId, state);
+        SessionEntity sessionEntity = getById(sessionId);
+        sessionEntity.setState(state);
+        sessionRepository.save(sessionEntity);
+
+        return sessionEntityToDomainConverter.convert(sessionEntity);
     }
 
     private SessionEntity getById(SessionId sessionId) {

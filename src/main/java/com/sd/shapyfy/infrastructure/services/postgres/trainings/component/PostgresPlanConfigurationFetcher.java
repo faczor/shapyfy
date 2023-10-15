@@ -3,8 +3,12 @@ package com.sd.shapyfy.infrastructure.services.postgres.trainings.component;
 import com.sd.shapyfy.domain.configuration.PlanConfigurationFetcher;
 import com.sd.shapyfy.domain.configuration.model.TrainingConfiguration;
 import com.sd.shapyfy.domain.plan.model.PlanId;
+import com.sd.shapyfy.domain.plan.model.SessionId;
 import com.sd.shapyfy.domain.plan.model.Training;
 import com.sd.shapyfy.domain.user.model.UserId;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresSessionFetcher;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.component.PostgresSessionRepository;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.converter.TrainingToDomainConverter;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.model.TrainingEntity;
 import com.sd.shapyfy.infrastructure.services.postgres.trainings.TrainingNotFound;
@@ -24,6 +28,8 @@ public class PostgresPlanConfigurationFetcher implements PlanConfigurationFetche
 
     private final TrainingToDomainConverter trainingToDomainConverter;
 
+    private final PostgresSessionFetcher sessionFetcher;
+
     @Override
     public TrainingConfiguration trainingConfigurationBy(PlanId planId) {
         TrainingEntity training = findById(planId);
@@ -41,6 +47,12 @@ public class PostgresPlanConfigurationFetcher implements PlanConfigurationFetche
     public Training trainingFor(PlanId planId) {
         TrainingEntity training = findById(planId);
         return trainingToDomainConverter.convert(training);
+    }
+
+    @Override
+    public Training fetchForSession(SessionId sessionId) {
+        SessionEntity sessionEntity = sessionFetcher.findById(sessionId);
+        return trainingToDomainConverter.convert(sessionEntity.getTraining());
     }
 
     private TrainingEntity findById(PlanId planId) {

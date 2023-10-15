@@ -1,5 +1,7 @@
 package com.sd.shapyfy.domain.plan;
 
+import com.sd.shapyfy.boundary.event.OnExerciseFinishEvent;
+import com.sd.shapyfy.domain.EventPublisher;
 import com.sd.shapyfy.domain.configuration.model.AttributeId;
 import com.sd.shapyfy.domain.configuration.model.ExerciseSetId;
 import com.sd.shapyfy.domain.configuration.model.TrainingExerciseId;
@@ -24,6 +26,8 @@ public class TrainingProcess {
 
     private final TrainingExerciseService trainingExerciseService;
 
+    private final EventPublisher eventPublisher;
+
     //TODO mark as training active?
     public SessionExerciseWithPreviousOccurrences runExercise(SessionPartId sessionPartId, ExerciseId exerciseId, UserId userId) {
         log.info("Run exercise {} on {} for {}", exerciseId, sessionPartId, userId);
@@ -34,9 +38,11 @@ public class TrainingProcess {
                 finishedExerciseOccurrences);
     }
 
-    public TrainingExercise finishExercise(SessionId sessionId, SessionPartId sessionPartId, UpdateTrainingExercise updateTrainingExercise) {
+    public TrainingExercise finishExercise(SessionId sessionId, SessionPartId sessionPartId, UserId userId, UpdateTrainingExercise updateTrainingExercise) {
         log.info("Finish exercise {}", updateTrainingExercise);
-        return trainingExerciseService.update(updateTrainingExercise);
+        TrainingExercise updatedExercise = trainingExerciseService.update(updateTrainingExercise);
+        eventPublisher.publish(new OnExerciseFinishEvent(this, updatedExercise, userId, sessionId,sessionPartId));
+        return updatedExercise;
     }
 
     public record SessionExerciseWithPreviousOccurrences(

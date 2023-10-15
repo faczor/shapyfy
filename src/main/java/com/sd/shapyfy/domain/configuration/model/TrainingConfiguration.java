@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public record TrainingConfiguration(
         Plan plan,
-        ConfigurationId configurationId, //SessionId === ConfigurationId :) Change as soon as possible!
+        ConfigurationId configurationId,
         List<ConfigurationAttribute> configurationAttributes,
         List<ConfigurationDay> configurationDays) {
 

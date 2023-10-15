@@ -4,6 +4,7 @@ import com.sd.shapyfy.domain.DateRange;
 import com.sd.shapyfy.domain.configuration.model.ConfigurationDay;
 import com.sd.shapyfy.domain.configuration.model.TrainingConfiguration;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartType;
+import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -35,6 +36,11 @@ public record Training(
 
     public boolean isActive() {
         return sessions().stream().anyMatch(Session::isActive);
+    }
+
+    public Session getFollowUpSession() {
+        return sessions().stream().filter(session -> session.state() == SessionState.FOLLOW_UP)
+                .findFirst().orElseThrow();
     }
 
     private StateForDate futureState(LocalDate lastSessionDate, LocalDate searchDate) {

@@ -75,6 +75,7 @@ public class SessionsController {
         TrainingExercise trainingExercise = trainingProcess.finishExercise(
                 SessionId.of(pathSessionId),
                 SessionPartId.of(pathPartId),
+                currentUserId(),
                 trainingExerciseToDomainConverter.convertForFinishExercise(TrainingExerciseId.of(pathExerciseId), document)
         );
 

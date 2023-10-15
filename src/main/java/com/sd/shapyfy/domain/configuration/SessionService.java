@@ -5,6 +5,7 @@ import com.sd.shapyfy.domain.configuration.model.ConfigurationId;
 import com.sd.shapyfy.domain.exercise.model.ExerciseId;
 import com.sd.shapyfy.domain.plan.model.ConfigurationDayId;
 import com.sd.shapyfy.domain.plan.model.Session;
+import com.sd.shapyfy.domain.plan.model.SessionId;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartState;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionPartType;
 import com.sd.shapyfy.infrastructure.services.postgres.sessions.model.SessionState;
@@ -16,6 +17,8 @@ import java.util.UUID;
 public interface SessionService {
 
     Session createSession(CreateSessionRequestParams createSessionRequestParams);
+
+    Session updateStatus(SessionId sessionId, SessionState state);
 
     record CreateSessionRequestParams(
             ConfigurationId configurationId,

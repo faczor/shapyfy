@@ -28,6 +28,7 @@ public class SessionCreator {
 
     private final SessionService sessionService;
 
+    //TODO move to boundary
     @EventListener(OnTrainingActivationEvent.class)
     public void createFollowUpsOnTrainingActivation(OnTrainingActivationEvent event) {
         Session session = createSession(event.getTrainingConfiguration(), SessionState.ACTIVE, event.getStartDayId(), event.getTrainingStartDate());
@@ -35,7 +36,7 @@ public class SessionCreator {
         createSession(event.getTrainingConfiguration(), SessionState.FOLLOW_UP, event.getTrainingConfiguration().configurationDays().get(0).id(), session.lastDate().plusDays(1));
     }
 
-    private Session createSession(TrainingConfiguration trainingConfiguration, SessionState sessionState, ConfigurationDayId startDayId, LocalDate trainingStartDate) {
+    public Session createSession(TrainingConfiguration trainingConfiguration, SessionState sessionState, ConfigurationDayId startDayId, LocalDate trainingStartDate) {
         log.info("Create session for configuration {} with state {} and startWith {} on {}", trainingConfiguration, sessionState, startDayId, trainingStartDate);
         int indexOfStartDay = Iterables.indexOf(trainingConfiguration.configurationDays(), day -> Objects.equals(day.id(), startDayId));
         SessionService.CreateSessionRequestParams createSessionRequestParams = buildCreateSessionParams(trainingConfiguration, sessionState, trainingStartDate, indexOfStartDay);
