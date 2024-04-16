@@ -1,7 +1,5 @@
 package com.shapyfy.core.domain;
 
-import com.shapyfy.core.domain.legacy.configuration.model.ConfigurationAttributeType;
-import com.shapyfy.core.domain.legacy.configuration.model.PlanDayType;
 import com.shapyfy.core.domain.model.Exercise;
 import com.shapyfy.core.domain.model.PlanDayType;
 import com.shapyfy.core.domain.model.TrainingPlan;
