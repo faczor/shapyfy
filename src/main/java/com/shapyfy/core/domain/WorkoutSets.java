@@ -16,8 +16,6 @@ public class WorkoutSets {
 
     private final WorkoutExerciseRepository workoutExerciseRepository;
 
-
-
     public void create(WorkoutExerciseConfig.WorkoutExerciseConfigId id, CreateWorkoutSetParams params) {
         log.info("Attempt to create workout set for {}", id);
 

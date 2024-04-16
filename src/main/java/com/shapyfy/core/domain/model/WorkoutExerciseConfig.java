@@ -1,6 +1,6 @@
 package com.shapyfy.core.domain.model;
 
-import com.shapyfy.core.domain.TrainingPlanCreator;
+import com.shapyfy.core.domain.TrainingPlanCreator.CreateTrainingPlanRequest.CreatePlanDayRequest.CreateWorkoutExerciseConfigRequest;
 
 public record WorkoutExerciseConfig(
         WorkoutExerciseConfigId id,
@@ -12,15 +12,15 @@ public record WorkoutExerciseConfig(
         int order) {
 
     //TODO Add order and rest time
-    public static WorkoutExerciseConfig from(TrainingPlanCreator.CreateConfigurationRequest.CreateConfigurationDayRequest.CreateExerciseConfigurationRequest createExerciseConfigurationRequest) {
+    public static WorkoutExerciseConfig from(CreateWorkoutExerciseConfigRequest request) {
         return new WorkoutExerciseConfig(
                 new WorkoutExerciseConfigId("1241241"),
-                null,
-                createExerciseConfigurationRequest.sets(),
-                createExerciseConfigurationRequest.reps(),
-                createExerciseConfigurationRequest.weight(),
-                0,
-                0);
+                request.exercise(),
+                request.sets(),
+                request.reps(),
+                request.weight(),
+                request.restTime(),
+                request.order());
     }
 
     public record WorkoutExerciseConfigId(String value) {

@@ -7,9 +7,10 @@ public record ActivityLog(
         RecordId id,
         LocalDate date,
         TrackType type,
+        PlanDay planDay,
         List<WorkoutExerciseConfig> exercises
 ) {
-    private record RecordId(String value) {
+    public record RecordId(String value) {
     }
 
     enum TrackType {
