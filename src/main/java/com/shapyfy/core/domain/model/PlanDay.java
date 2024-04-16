@@ -1,7 +1,6 @@
 package com.shapyfy.core.domain.model;
 
 import com.shapyfy.core.domain.TrainingPlanCreator;
-import com.shapyfy.core.domain.legacy.configuration.model.PlanDayType;
 
 import java.util.List;
 
