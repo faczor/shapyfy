@@ -16,7 +16,7 @@ public class Exercises {
 
     public Exercise create(String name) {
         log.info("Attempt to create exercise {}", name);
-        Exercise exercise = exerciseRepository.save(new Exercise(null, name, MuscleGroup.CHEST));
+        Exercise exercise = exerciseRepository.save(new Exercise(null, name));
         log.info("Exercise created {}", exercise);
         return exercise;
     }

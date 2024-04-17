@@ -45,7 +45,7 @@ public record TrainingPlan(
         return days.get(indexOfSearchedPlanDay - 1);
     }
 
-    private record TrainingPlanId(String value) {
+    public record TrainingPlanId(String value) {
 
         public static TrainingPlanId newVal() {
             return new TrainingPlanId(UUID.randomUUID().toString());

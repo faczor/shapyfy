@@ -3,6 +3,7 @@ package com.shapyfy.core.boundary.api.dashboard.adapter;
 import com.shapyfy.core.boundary.api.dashboard.adapter.CalendarAdapter.Calendar;
 import com.shapyfy.core.domain.model.ActivityLog;
 import com.shapyfy.core.domain.model.PlanDay;
+import com.shapyfy.core.domain.model.PlanDayType;
 import com.shapyfy.core.domain.model.TrainingPlan;
 import com.shapyfy.core.util.DateRange;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import static java.lang.Boolean.FALSE;
 
 @Slf4j
 @Component
-class CalendarMapper {
+public class CalendarMapper {
 
     public Calendar map(TrainingPlan trainingPlan, List<ActivityLog> activityLogs, DateRange dateRange) {
         log.info("Mapping training plan {} to calendar for {}", trainingPlan, dateRange);
@@ -44,6 +45,11 @@ class CalendarMapper {
         }
 
         PlanDay currentDay = trainingPlan.days().getFirst();
+        if (dateRange.start().equals(trainingPlan.startDate())) {
+            resultDays.add(new Calendar.Day(trainingPlan.startDate(), currentDay.type() == PlanDayType.WORKOUT_DAY ? Calendar.CalendarDayType.WORKOUT : Calendar.CalendarDayType.REST, null, currentDay.id().value()));
+            dateRange = new DateRange(trainingPlan.startDate().plusDays(1), dateRange.end());
+        }
+
         for (LocalDate date : dateRange.listDatesWithinRange()) {
 
             CalendarDayWithPlanDay calendarDayWithPlanDay = activityLogs.stream().filter(log -> log.date().isEqual(date)).findFirst()
@@ -96,9 +102,9 @@ class CalendarMapper {
         return new CalendarDayWithPlanDay(
                 new Calendar.Day(
                         date,
-                        Calendar.CalendarDayType.WORKOUT, // TODO
-                        log.planDay().id().value(),
-                        log.id().value()
+                        log.planDay().type() == PlanDayType.WORKOUT_DAY ? Calendar.CalendarDayType.WORKOUT : Calendar.CalendarDayType.REST, // TODO
+                        log.id().value(),
+                        log.planDay().id().value()
                 ),
                 log.planDay()
         );
@@ -116,7 +122,7 @@ class CalendarMapper {
         return new CalendarDayWithPlanDay(
                 new Calendar.Day(
                         date,
-                        Calendar.CalendarDayType.WORKOUT, //TODO :)
+                        planDay.type() == PlanDayType.WORKOUT_DAY ? Calendar.CalendarDayType.WORKOUT : Calendar.CalendarDayType.REST, //TODO :)
                         null,
                         planDay.id().value()
                 ),
@@ -141,4 +147,10 @@ class CalendarMapper {
             Calendar.Day calendarDay,
             PlanDay planDay) {
     }
+
+    private record DayContext(
+            LocalDate date,
+            PlanDay planDay,
+            ActivityLog activityLog
+    ){};
 }

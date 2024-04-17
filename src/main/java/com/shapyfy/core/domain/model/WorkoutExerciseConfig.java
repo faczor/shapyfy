@@ -14,7 +14,7 @@ public record WorkoutExerciseConfig(
     //TODO Add order and rest time
     public static WorkoutExerciseConfig from(CreateWorkoutExerciseConfigRequest request) {
         return new WorkoutExerciseConfig(
-                new WorkoutExerciseConfigId("1241241"),
+                null,
                 request.exercise(),
                 request.sets(),
                 request.reps(),

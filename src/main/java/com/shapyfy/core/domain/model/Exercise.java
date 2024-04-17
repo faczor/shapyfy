@@ -17,7 +17,6 @@ public class Exercise {
     @Id
     private UUID id;
     private String name;
-    private MuscleGroup muscleGroup;
 
     public ExerciseId getId() {
         return new ExerciseId(id);

@@ -12,7 +12,7 @@ public record PlanDay(
 ) {
     public static PlanDay from(TrainingPlanCreator.CreateTrainingPlanRequest.CreatePlanDayRequest createPlanDayRequest) {
         return new PlanDay(
-                new PlayDayId("1241241"),
+                null,
                 createPlanDayRequest.name(),
                 createPlanDayRequest.type(),
                 createPlanDayRequest.requests().stream().map(WorkoutExerciseConfig::from).toList());

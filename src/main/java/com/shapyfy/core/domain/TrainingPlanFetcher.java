@@ -7,16 +7,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class TrainingFetcher {
+public class TrainingPlanFetcher {
 
     private final TrainingPlanRepository trainingPlanRepository;
 
-    public TrainingPlan fetchFor(UserId userId) {
+    public TrainingPlan fetchForUser(UserId userId) {
         log.info("Fetching training plan for {}", userId);
         return trainingPlanRepository.findByUserId(userId);
     }

@@ -1,7 +1,7 @@
 package com.shapyfy.core.boundary.api.dashboard.adapter;
 
 import com.shapyfy.core.domain.ActivityLogs;
-import com.shapyfy.core.domain.TrainingFetcher;
+import com.shapyfy.core.domain.TrainingPlanFetcher;
 import com.shapyfy.core.domain.model.ActivityLog;
 import com.shapyfy.core.domain.model.TrainingPlan;
 import com.shapyfy.core.domain.model.UserId;
@@ -16,14 +16,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CalendarAdapter {
 
-    private final TrainingFetcher trainingFetcher;
+    private final TrainingPlanFetcher trainingPlanFetcher;
 
     private final ActivityLogs activityLogs;
 
     private final CalendarMapper calendarMapper;
 
-    public Calendar getCalendar(LocalDate from, LocalDate to, UserId userId) {
-        TrainingPlan trainingPlan = trainingFetcher.fetchFor(userId);
+    public Calendar fetchCalendar(LocalDate from, LocalDate to, UserId userId) {
+        TrainingPlan trainingPlan = trainingPlanFetcher.fetchForUser(userId);
         List<ActivityLog> logs = activityLogs.fetchFor(from, to, userId);
 
         return calendarMapper.map(trainingPlan, logs, new DateRange(from, to));
