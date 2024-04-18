@@ -5,7 +5,7 @@ import com.shapyfy.core.domain.TrainingPlanCreator;
 import java.util.List;
 
 public record PlanDay(
-        PlayDayId id,
+        PlanDayId id,
         String name,
         PlanDayType type,
         List<WorkoutExerciseConfig> workoutExerciseConfigConfigurations
@@ -18,6 +18,6 @@ public record PlanDay(
                 createPlanDayRequest.requests().stream().map(WorkoutExerciseConfig::from).toList());
     }
 
-    public record PlayDayId(String value) {
+    public record PlanDayId(String value) {
     }
 }

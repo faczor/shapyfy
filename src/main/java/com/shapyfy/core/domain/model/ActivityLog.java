@@ -9,8 +9,13 @@ public record ActivityLog(
         LocalDate date,
         TrackType type,
         PlanDay planDay,
-        List<WorkoutExerciseConfig> exercises
+        List<WorkoutSet> sets
 ) {
+
+    public static ActivityLog workout(LocalDate date, PlanDay planDay, List<WorkoutSet> sets) {
+        return new ActivityLog(ActivityLogId.newVal(), date, TrackType.WORKOUT, planDay, sets);
+    }
+
     public record ActivityLogId(String value) {
         public static ActivityLogId newVal() {
             return new ActivityLogId(UUID.randomUUID().toString());
