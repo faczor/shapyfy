@@ -10,14 +10,14 @@ public record PlanDay(
         PlanDayType type,
         List<WorkoutExerciseConfig> workoutExerciseConfigConfigurations
 ) {
-    public static PlanDay from(TrainingPlanCreator.CreateConfigurationRequest.CreateConfigurationDayRequest createConfigurationDayRequest) {
+    public static PlanDay from(TrainingPlanCreator.CreateTrainingPlanRequest.CreatePlanDayRequest createPlanDayRequest) {
         return new PlanDay(
-                new PlayDayId("1241241"),
-                createConfigurationDayRequest.name(),
-                createConfigurationDayRequest.type(),
-                createConfigurationDayRequest.createExerciseConfigurationRequests().stream().map(WorkoutExerciseConfig::from).toList());
+                null,
+                createPlanDayRequest.name(),
+                createPlanDayRequest.type(),
+                createPlanDayRequest.requests().stream().map(WorkoutExerciseConfig::from).toList());
     }
 
-    private record PlayDayId(String value) {
+    public record PlayDayId(String value) {
     }
 }

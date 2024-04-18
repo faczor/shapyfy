@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -18,25 +19,25 @@ public class TrainingPlanCreator {
 
     private final TrainingPlanRepository trainingPlanRepository;
 
-    public TrainingPlan create(CreateConfigurationRequest createConfigurationRequest, UserId userId) {
-        log.info("Creating training plan {} by {}", createConfigurationRequest, userId);
-        var createdPlan = trainingPlanRepository.save(TrainingPlan.from(createConfigurationRequest, userId));
+    public TrainingPlan create(CreateTrainingPlanRequest request, UserId userId) {
+        log.info("Creating training plan {} by {}", request, userId);
+        var createdPlan = trainingPlanRepository.save(TrainingPlan.from(request, userId));
         log.info("Training plan created {}", createdPlan);
         return createdPlan;
     }
 
-    public record CreateConfigurationRequest(
-            String name,
-            List<CreateConfigurationDayRequest> createConfigurationDayRequests) {
-        public record CreateConfigurationDayRequest(
-                PlanDayType type,
-                String name,
-                List<CreateExerciseConfigurationRequest> createExerciseConfigurationRequests) {
-            public record CreateExerciseConfigurationRequest(
-                    Exercise.ExerciseId id,
-                    double weight,
-                    int sets,
-                    int reps) {
+    public record CreateTrainingPlanRequest(String name,
+                                            LocalDate startDate,
+                                            List<CreatePlanDayRequest> requests) {
+        public record CreatePlanDayRequest(PlanDayType type,
+                                           String name,
+                                           List<CreateWorkoutExerciseConfigRequest> requests) {
+            public record CreateWorkoutExerciseConfigRequest(Exercise exercise,
+                                                             double weight,
+                                                             int sets,
+                                                             int reps,
+                                                             int restTime,
+                                                             int order) {
             }
         }
     }

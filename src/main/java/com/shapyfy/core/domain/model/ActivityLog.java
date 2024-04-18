@@ -2,17 +2,22 @@ package com.shapyfy.core.domain.model;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 public record ActivityLog(
-        RecordId id,
+        ActivityLogId id,
         LocalDate date,
         TrackType type,
+        PlanDay planDay,
         List<WorkoutExerciseConfig> exercises
 ) {
-    private record RecordId(String value) {
+    public record ActivityLogId(String value) {
+        public static ActivityLogId newVal() {
+            return new ActivityLogId(UUID.randomUUID().toString());
+        }
     }
 
-    enum TrackType {
+    public enum TrackType {
         WORKOUT,
         SKIP,
         RESIGN
