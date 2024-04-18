@@ -3,7 +3,13 @@ package com.shapyfy.core.boundary.api.dashboard;
 import com.shapyfy.core.boundary.api.dashboard.adapter.CalendarAdapter;
 import com.shapyfy.core.boundary.api.dashboard.adapter.CalendarAdapter.Calendar.Day;
 import com.shapyfy.core.boundary.api.dashboard.adapter.CalendarMapper;
-import com.shapyfy.core.domain.model.*;
+import com.shapyfy.core.domain.model.ActivityLog;
+import com.shapyfy.core.domain.model.PlanDay;
+import com.shapyfy.core.domain.model.PlanDay.PlanDayId;
+import com.shapyfy.core.domain.model.PlanDayType;
+import com.shapyfy.core.domain.model.Status;
+import com.shapyfy.core.domain.model.TrainingPlan;
+import com.shapyfy.core.domain.model.UserId;
 import com.shapyfy.core.util.DateRange;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,10 +24,10 @@ public class CalendarMapperUnitTest {
 
     @Test
     public void shouldMapCalendar_whereFirstDayIsBeforePlanStartDate() {
-        PlanDay.PlayDayId
-                first_day_id = new PlanDay.PlayDayId("first_day_test_id"),
-                second_day_id = new PlanDay.PlayDayId("second_day_test_id"),
-                third_day_id = new PlanDay.PlayDayId("third_day_test_id");
+        PlanDayId
+                first_day_id = new PlanDayId("first_day_test_id"),
+                second_day_id = new PlanDayId("second_day_test_id"),
+                third_day_id = new PlanDayId("third_day_test_id");
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -55,10 +61,10 @@ public class CalendarMapperUnitTest {
     public void shouldMapCalendar_whereFirstDayIsAfterPlanStartDate() {
         LocalDate plan_startDate = of(2022, 1, 14);
 
-        PlanDay.PlayDayId
-                first_day_id = new PlanDay.PlayDayId("first_day_test_id"),
-                second_day_id = new PlanDay.PlayDayId("second_day_test_id"),
-                third_day_id = new PlanDay.PlayDayId("third_day_test_id");
+        PlanDayId
+                first_day_id = new PlanDayId("first_day_test_id"),
+                second_day_id = new PlanDayId("second_day_test_id"),
+                third_day_id = new PlanDayId("third_day_test_id");
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -91,10 +97,10 @@ public class CalendarMapperUnitTest {
     public void shouldMapCalendar_whereFirstDayIsSameAsPlanStartDate() {
         LocalDate plan_startDate = of(2022, 1, 14);
 
-        PlanDay.PlayDayId
-                first_day_id = new PlanDay.PlayDayId("first_day_test_id"),
-                second_day_id = new PlanDay.PlayDayId("second_day_test_id"),
-                third_day_id = new PlanDay.PlayDayId("third_day_test_id");
+        PlanDayId
+                first_day_id = new PlanDayId("first_day_test_id"),
+                second_day_id = new PlanDayId("second_day_test_id"),
+                third_day_id = new PlanDayId("third_day_test_id");
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -125,10 +131,10 @@ public class CalendarMapperUnitTest {
     public void shouldMapCalendar_whereFirstDayIsBeforeFirstActivityLog() {
         LocalDate plan_startDate = of(2022, 1, 14);
 
-        PlanDay.PlayDayId
-                first_day_id = new PlanDay.PlayDayId("first_day_test_id"),
-                second_day_id = new PlanDay.PlayDayId("second_day_test_id"),
-                third_day_id = new PlanDay.PlayDayId("third_day_test_id");
+        PlanDayId
+                first_day_id = new PlanDayId("first_day_test_id"),
+                second_day_id = new PlanDayId("second_day_test_id"),
+                third_day_id = new PlanDayId("third_day_test_id");
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -163,10 +169,10 @@ public class CalendarMapperUnitTest {
     public void shouldMapCalendar_whereFirstDayIsAfterFirstActivityLog() {
         LocalDate plan_startDate = of(2022, 1, 14);
 
-        PlanDay.PlayDayId
-                first_day_id = new PlanDay.PlayDayId("first_day_test_id"),
-                second_day_id = new PlanDay.PlayDayId("second_day_test_id"),
-                third_day_id = new PlanDay.PlayDayId("third_day_test_id");
+        PlanDayId
+                first_day_id = new PlanDayId("first_day_test_id"),
+                second_day_id = new PlanDayId("second_day_test_id"),
+                third_day_id = new PlanDayId("third_day_test_id");
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -197,10 +203,10 @@ public class CalendarMapperUnitTest {
     public void shouldMapCalendar_whereFirstDayIsSameAsFirstActivityLog() {
         LocalDate plan_startDate = of(2022, 1, 14);
 
-        PlanDay.PlayDayId
-                first_day_id = new PlanDay.PlayDayId("first_day_test_id"),
-                second_day_id = new PlanDay.PlayDayId("second_day_test_id"),
-                third_day_id = new PlanDay.PlayDayId("third_day_test_id");
+        PlanDayId
+                first_day_id = new PlanDayId("first_day_test_id"),
+                second_day_id = new PlanDayId("second_day_test_id"),
+                third_day_id = new PlanDayId("third_day_test_id");
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -242,7 +248,7 @@ public class CalendarMapperUnitTest {
         );
     }
 
-    private PlanDay day(PlanDay.PlayDayId id, String name, PlanDayType type) {
+    private PlanDay day(PlanDayId id, String name, PlanDayType type) {
         return new PlanDay(
                 id,
                 name,

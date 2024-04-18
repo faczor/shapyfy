@@ -21,4 +21,7 @@ public class Exercises {
         return exercise;
     }
 
+    public Exercise fetchById(Exercise.ExerciseId exerciseId) {
+        return exerciseRepository.getById(exerciseId);
+    }
 }
