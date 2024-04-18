@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Component
@@ -50,7 +51,13 @@ public class ActivityLogs {
 
     private List<WorkoutSet> mapRequestToWorkoutSet(WorkoutExerciseLog finishedExercise) {
         Exercise exercise = exercises.fetchById(finishedExercise.exerciseId());
-        return finishedExercise.sets().stream().map(set -> new WorkoutSet(null, set.reps(), set.weight(), exercise, finishedExercise.sets.indexOf(set))).toList();
+        return IntStream.range(0, finishedExercise.sets().size())
+                .mapToObj(index -> WorkoutSet.from(
+                        finishedExercise.sets().get(index).reps(),
+                        finishedExercise.sets().get(index).weight(),
+                        exercise,
+                        index))
+                .toList();
     }
 
     public record CreateWorkoutLogRequest(
