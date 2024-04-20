@@ -62,13 +62,13 @@ public class PlanDayApiAdapter {
     //TODO Code build by AI: Refactor this method
     private PlanDayContract mapToContract(PlanDay planDay, List<ActivityLog> logs) {
 
-        List<HelpingAggregator> helpingAggregators = convertToHelpingAggregators(logs);
+        List<ExerciseWithPreviousOccurrences> exerciseWithPreviousOccurrences = convertToHelpingAggregators(logs);
 
         List<PlanDayContract.WorkoutExerciseContract> workoutExercises = planDay.getWorkoutExerciseConfigs().stream().map(exerciseConfig -> {
 
-            Optional<HelpingAggregator> aggregatorForExercise = helpingAggregators.stream().filter(aggregator -> aggregator.exercise().equals(exerciseConfig.getExercise())).findFirst();
+            Optional<ExerciseWithPreviousOccurrences> possibleOccurrence = exerciseWithPreviousOccurrences.stream().filter(occurrence -> occurrence.exercise().equals(exerciseConfig.getExercise())).findFirst();
 
-            List<PreviousWorkouts> previousWorkouts = aggregatorForExercise.map(aggregator -> aggregator.supports().stream().map(support -> {
+            List<PreviousWorkouts> previousWorkouts = possibleOccurrence.map(occurrence -> occurrence.dateSets().stream().map(support -> {
                 List<WorkoutSetContract> sets = support.sets().stream().map(set -> new WorkoutSetContract(
                         set.getReps(),
                         set.getWeight()
@@ -98,44 +98,62 @@ public class PlanDayApiAdapter {
         );
     }
 
-    private List<HelpingAggregator> convertToHelpingAggregators(List<ActivityLog> activityLogs) {
-        List<HelpingAggregator> helpingAggregators = new ArrayList<>();
+    private List<ExerciseWithPreviousOccurrences> convertToHelpingAggregators(List<ActivityLog> activityLogs) {
+        List<ExerciseWithPreviousOccurrences> helpingAggregators = new ArrayList<>();
 
         for (ActivityLog activityLog : activityLogs) {
             for (WorkoutSet workoutSet : activityLog.getSets()) {
                 Exercise exercise = workoutSet.getExercise();
 
-                HelpingAggregator helpingAggregator = findHelpingAggregatorByExercise(helpingAggregators, exercise);
+                ExerciseWithPreviousOccurrences helpingAggregator = findHelpingAggregatorByExercise(helpingAggregators, exercise);
 
                 if (helpingAggregator == null) {
-                    helpingAggregator = new HelpingAggregator(
+                    helpingAggregator = new ExerciseWithPreviousOccurrences(
                             exercise,
                             new ArrayList<>()
                     );
                     helpingAggregators.add(helpingAggregator);
                 }
-                HelpingAggregator.Support support = new HelpingAggregator.Support(
-                        activityLog.getDate(),
-                        Collections.singletonList(workoutSet)
-                );
-                helpingAggregator.supports().add(support);
+
+                ExerciseWithPreviousOccurrences.DateSets setsByDate = findSetsByDate(helpingAggregator.dateSets(), activityLog.getDate());
+
+                if (setsByDate == null) {
+                    ArrayList<WorkoutSet> list = new ArrayList<>();
+                    list.add(workoutSet);
+                    ExerciseWithPreviousOccurrences.DateSets support = new ExerciseWithPreviousOccurrences.DateSets(
+                            activityLog.getDate(),
+                            list
+                    );
+                    helpingAggregator.dateSets().add(support);
+                } else {
+                    setsByDate.sets().add(workoutSet);
+                }
             }
         }
 
         return helpingAggregators;
     }
 
-    private HelpingAggregator findHelpingAggregatorByExercise(List<HelpingAggregator> helpingAggregators, Exercise exercise) {
-        for (HelpingAggregator helpingAggregator : helpingAggregators) {
-            if (helpingAggregator.exercise().equals(exercise)) {
-                return helpingAggregator;
+    private ExerciseWithPreviousOccurrences findHelpingAggregatorByExercise(List<ExerciseWithPreviousOccurrences> exerciseWithPreviousOccurrences, Exercise exercise) {
+        for (ExerciseWithPreviousOccurrences occurrence : exerciseWithPreviousOccurrences) {
+            if (occurrence.exercise().equals(exercise)) {
+                return occurrence;
             }
         }
         return null;
     }
 
-    private record HelpingAggregator(Exercise exercise, List<Support> supports) {
-        record Support(
+    private ExerciseWithPreviousOccurrences.DateSets findSetsByDate(List<ExerciseWithPreviousOccurrences.DateSets> setsByDates, LocalDate date) {
+        for (ExerciseWithPreviousOccurrences.DateSets setsByDate : setsByDates) {
+            if (setsByDate.date().equals(date)) {
+                return setsByDate;
+            }
+        }
+        return null;
+    }
+
+    private record ExerciseWithPreviousOccurrences(Exercise exercise, List<DateSets> dateSets) {
+        record DateSets(
                 LocalDate date,
                 List<WorkoutSet> sets
         ) {
