@@ -1,7 +1,7 @@
 package com.shapyfy.core.boundary.api.dashboard;
 
-import com.shapyfy.core.boundary.api.dashboard.adapter.CalendarAdapter;
-import com.shapyfy.core.boundary.api.dashboard.adapter.CalendarAdapter.Calendar.Day;
+import com.shapyfy.core.boundary.api.dashboard.model.Calendar;
+import com.shapyfy.core.boundary.api.dashboard.model.Calendar.Day;
 import com.shapyfy.core.boundary.api.dashboard.adapter.CalendarMapper;
 import com.shapyfy.core.domain.model.ActivityLog;
 import com.shapyfy.core.domain.model.PlanDay;
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.shapyfy.core.boundary.api.dashboard.adapter.CalendarAdapter.Calendar.CalendarDayType.*;
+import static com.shapyfy.core.boundary.api.dashboard.model.Calendar.CalendarDayType.*;
 import static java.time.LocalDate.of;
 
 public class CalendarMapperUnitTest {
@@ -25,9 +25,9 @@ public class CalendarMapperUnitTest {
     @Test
     public void shouldMapCalendar_whereFirstDayIsBeforePlanStartDate() {
         PlanDayId
-                first_day_id = new PlanDayId("first_day_test_id"),
-                second_day_id = new PlanDayId("second_day_test_id"),
-                third_day_id = new PlanDayId("third_day_test_id");
+                first_day_id = PlanDayId.of("first_day_test_id"),
+                second_day_id = PlanDayId.of("second_day_test_id"),
+                third_day_id = PlanDayId.of("third_day_test_id");
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -41,17 +41,17 @@ public class CalendarMapperUnitTest {
         DateRange dateRange = new DateRange(of(2022, 1, 11), of(2022, 1, 17));
 
         CalendarMapper mapper = new CalendarMapper();
-        CalendarAdapter.Calendar actualCalendar = mapper.map(plan, logs, dateRange);
+        Calendar actualCalendar = mapper.map(plan, logs, dateRange);
 
-        CalendarAdapter.Calendar expectedCalendar = new CalendarAdapter.Calendar(
+        Calendar expectedCalendar = new Calendar(
                 List.of(
                         new Day(of(2022, 1, 11), UNKNOWN, null, null),
                         new Day(of(2022, 1, 12), UNKNOWN, null, null),
                         new Day(of(2022, 1, 13), UNKNOWN, null, null),
-                        new Day(of(2022, 1, 14), WORKOUT, null, first_day_id.value()),
-                        new Day(of(2022, 1, 15), WORKOUT, null, second_day_id.value()),
-                        new Day(of(2022, 1, 16), REST, null, third_day_id.value()),
-                        new Day(of(2022, 1, 17), WORKOUT, null, first_day_id.value()))
+                        new Day(of(2022, 1, 14), WORKOUT, null, first_day_id.getId()),
+                        new Day(of(2022, 1, 15), WORKOUT, null, second_day_id.getId()),
+                        new Day(of(2022, 1, 16), REST, null, third_day_id.getId()),
+                        new Day(of(2022, 1, 17), WORKOUT, null, first_day_id.getId()))
         );
 
         Assertions.assertEquals(expectedCalendar, actualCalendar);
@@ -62,9 +62,9 @@ public class CalendarMapperUnitTest {
         LocalDate plan_startDate = of(2022, 1, 14);
 
         PlanDayId
-                first_day_id = new PlanDayId("first_day_test_id"),
-                second_day_id = new PlanDayId("second_day_test_id"),
-                third_day_id = new PlanDayId("third_day_test_id");
+                first_day_id = PlanDayId.of("first_day_test_id"),
+                second_day_id = PlanDayId.of("second_day_test_id"),
+                third_day_id = PlanDayId.of("third_day_test_id");
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -78,15 +78,15 @@ public class CalendarMapperUnitTest {
         DateRange dateRange = new DateRange(of(2022, 1, 15), of(2022, 1, 19));
 
         CalendarMapper mapper = new CalendarMapper();
-        CalendarAdapter.Calendar actualCalendar = mapper.map(plan, logs, dateRange);
+        Calendar actualCalendar = mapper.map(plan, logs, dateRange);
 
-        CalendarAdapter.Calendar expectedCalendar = new CalendarAdapter.Calendar(
+        Calendar expectedCalendar = new Calendar(
                 List.of(
-                        new Day(of(2022, 1, 15), WORKOUT, null, second_day_id.value()),
-                        new Day(of(2022, 1, 16), REST, null, third_day_id.value()),
-                        new Day(of(2022, 1, 17), WORKOUT, null, first_day_id.value()),
-                        new Day(of(2022, 1, 18), WORKOUT, null, second_day_id.value()),
-                        new Day(of(2022, 1, 19), REST, null, third_day_id.value())
+                        new Day(of(2022, 1, 15), WORKOUT, null, second_day_id.getId()),
+                        new Day(of(2022, 1, 16), REST, null, third_day_id.getId()),
+                        new Day(of(2022, 1, 17), WORKOUT, null, first_day_id.getId()),
+                        new Day(of(2022, 1, 18), WORKOUT, null, second_day_id.getId()),
+                        new Day(of(2022, 1, 19), REST, null, third_day_id.getId())
                 )
         );
 
@@ -98,9 +98,9 @@ public class CalendarMapperUnitTest {
         LocalDate plan_startDate = of(2022, 1, 14);
 
         PlanDayId
-                first_day_id = new PlanDayId("first_day_test_id"),
-                second_day_id = new PlanDayId("second_day_test_id"),
-                third_day_id = new PlanDayId("third_day_test_id");
+                first_day_id = PlanDayId.of("first_day_test_id"),
+                second_day_id = PlanDayId.of("second_day_test_id"),
+                third_day_id = PlanDayId.of("third_day_test_id");
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -112,15 +112,15 @@ public class CalendarMapperUnitTest {
         TrainingPlan plan = plan(plan_startDate, days);
         List<ActivityLog> logs = List.of();
         DateRange dateRange = new DateRange(of(2022, 1, 14), of(2022, 1, 18));
-        CalendarAdapter.Calendar actualCalendar = mapper.map(plan, logs, dateRange);
+        Calendar actualCalendar = mapper.map(plan, logs, dateRange);
 
-        CalendarAdapter.Calendar expectedCalendar = new CalendarAdapter.Calendar(
+        Calendar expectedCalendar = new Calendar(
                 List.of(
-                        new Day(of(2022, 1, 14), WORKOUT, null, first_day_id.value()),
-                        new Day(of(2022, 1, 15), WORKOUT, null, second_day_id.value()),
-                        new Day(of(2022, 1, 16), REST, null, third_day_id.value()),
-                        new Day(of(2022, 1, 17), WORKOUT, null, first_day_id.value()),
-                        new Day(of(2022, 1, 18), WORKOUT, null, second_day_id.value())
+                        new Day(of(2022, 1, 14), WORKOUT, null, first_day_id.getId()),
+                        new Day(of(2022, 1, 15), WORKOUT, null, second_day_id.getId()),
+                        new Day(of(2022, 1, 16), REST, null, third_day_id.getId()),
+                        new Day(of(2022, 1, 17), WORKOUT, null, first_day_id.getId()),
+                        new Day(of(2022, 1, 18), WORKOUT, null, second_day_id.getId())
                 )
         );
 
@@ -132,9 +132,9 @@ public class CalendarMapperUnitTest {
         LocalDate plan_startDate = of(2022, 1, 14);
 
         PlanDayId
-                first_day_id = new PlanDayId("first_day_test_id"),
-                second_day_id = new PlanDayId("second_day_test_id"),
-                third_day_id = new PlanDayId("third_day_test_id");
+                first_day_id = PlanDayId.of("first_day_test_id"),
+                second_day_id = PlanDayId.of("second_day_test_id"),
+                third_day_id = PlanDayId.of("third_day_test_id");
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -150,15 +150,15 @@ public class CalendarMapperUnitTest {
         DateRange dateRange = new DateRange(of(2022, 1, 17), of(2022, 1, 21));
 
         CalendarMapper mapper = new CalendarMapper();
-        CalendarAdapter.Calendar actualCalendar = mapper.map(plan, logs, dateRange);
+        Calendar actualCalendar = mapper.map(plan, logs, dateRange);
 
-        CalendarAdapter.Calendar expectedCalendar = new CalendarAdapter.Calendar(
+        Calendar expectedCalendar = new Calendar(
                 List.of(
-                        new Day(of(2022, 1, 17), REST, null, third_day_id.value()),
-                        new Day(of(2022, 1, 18), WORKOUT, logs.get(0).id().value(), first_day_id.value()),
-                        new Day(of(2022, 1, 19), WORKOUT, logs.get(1).id().value(), second_day_id.value()),
-                        new Day(of(2022, 1, 20), REST, null, third_day_id.value()),
-                        new Day(of(2022, 1, 21), WORKOUT, null, first_day_id.value())
+                        new Day(of(2022, 1, 17), REST, null, third_day_id.getId()),
+                        new Day(of(2022, 1, 18), WORKOUT, logs.get(0).getId().getId(), first_day_id.getId()),
+                        new Day(of(2022, 1, 19), WORKOUT, logs.get(1).getId().getId(), second_day_id.getId()),
+                        new Day(of(2022, 1, 20), REST, null, third_day_id.getId()),
+                        new Day(of(2022, 1, 21), WORKOUT, null, first_day_id.getId())
                 )
         );
 
@@ -170,9 +170,9 @@ public class CalendarMapperUnitTest {
         LocalDate plan_startDate = of(2022, 1, 14);
 
         PlanDayId
-                first_day_id = new PlanDayId("first_day_test_id"),
-                second_day_id = new PlanDayId("second_day_test_id"),
-                third_day_id = new PlanDayId("third_day_test_id");
+                first_day_id = PlanDayId.of("first_day_test_id"),
+                second_day_id = PlanDayId.of("second_day_test_id"),
+                third_day_id = PlanDayId.of("third_day_test_id");
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -188,12 +188,12 @@ public class CalendarMapperUnitTest {
         DateRange dateRange = new DateRange(of(2022, 1, 20), of(2022, 1, 21));
 
         CalendarMapper mapper = new CalendarMapper();
-        CalendarAdapter.Calendar actualCalendar = mapper.map(plan, logs, dateRange);
+        Calendar actualCalendar = mapper.map(plan, logs, dateRange);
 
-        CalendarAdapter.Calendar expectedCalendar = new CalendarAdapter.Calendar(
+        Calendar expectedCalendar = new Calendar(
                 List.of(
-                        new Day(of(2022, 1, 20), REST, null, third_day_id.value()),
-                        new Day(of(2022, 1, 21), WORKOUT, null, first_day_id.value())
+                        new Day(of(2022, 1, 20), REST, null, third_day_id.getId()),
+                        new Day(of(2022, 1, 21), WORKOUT, null, first_day_id.getId())
                 )
         );
 
@@ -204,9 +204,9 @@ public class CalendarMapperUnitTest {
         LocalDate plan_startDate = of(2022, 1, 14);
 
         PlanDayId
-                first_day_id = new PlanDayId("first_day_test_id"),
-                second_day_id = new PlanDayId("second_day_test_id"),
-                third_day_id = new PlanDayId("third_day_test_id");
+                first_day_id = PlanDayId.of("first_day_test_id"),
+                second_day_id = PlanDayId.of("second_day_test_id"),
+                third_day_id = PlanDayId.of("third_day_test_id");
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -222,14 +222,14 @@ public class CalendarMapperUnitTest {
         DateRange dateRange = new DateRange(of(2022, 1, 18), of(2022, 1, 21));
 
         CalendarMapper mapper = new CalendarMapper();
-        CalendarAdapter.Calendar actualCalendar = mapper.map(plan, logs, dateRange);
+        Calendar actualCalendar = mapper.map(plan, logs, dateRange);
 
-        CalendarAdapter.Calendar expectedCalendar = new CalendarAdapter.Calendar(
+        Calendar expectedCalendar = new Calendar(
                 List.of(
-                        new Day(of(2022, 1, 18), WORKOUT, logs.get(0).id().value(), first_day_id.value()),
-                        new Day(of(2022, 1, 19), WORKOUT, logs.get(1).id().value(), second_day_id.value()),
-                        new Day(of(2022, 1, 20), REST, null, third_day_id.value()),
-                        new Day(of(2022, 1, 21), WORKOUT, null, first_day_id.value())
+                        new Day(of(2022, 1, 18), WORKOUT, logs.get(0).getId().getId(), first_day_id.getId()),
+                        new Day(of(2022, 1, 19), WORKOUT, logs.get(1).getId().getId(), second_day_id.getId()),
+                        new Day(of(2022, 1, 20), REST, null, third_day_id.getId()),
+                        new Day(of(2022, 1, 21), WORKOUT, null, first_day_id.getId())
                 )
         );
 
@@ -238,8 +238,8 @@ public class CalendarMapperUnitTest {
 
 
     private TrainingPlan plan(LocalDate startDate, List<PlanDay> days) {
-        return new TrainingPlan(
-                new TrainingPlan.TrainingPlanId("123"),
+        return TrainingPlan.of(
+                TrainingPlan.TrainingPlanId.createNew(),
                 "Plan name",
                 Status.ACTIVE,
                 days,
@@ -249,7 +249,7 @@ public class CalendarMapperUnitTest {
     }
 
     private PlanDay day(PlanDayId id, String name, PlanDayType type) {
-        return new PlanDay(
+        return PlanDay.of(
                 id,
                 name,
                 type,
@@ -258,7 +258,7 @@ public class CalendarMapperUnitTest {
     }
 
     private static ActivityLog log(int dayOfMonth, PlanDay day) {
-        return new ActivityLog(ActivityLog.ActivityLogId.newVal(), of(2022, 1, dayOfMonth), ActivityLog.TrackType.WORKOUT, day, List.of());
+        return ActivityLog.of(ActivityLog.ActivityLogId.createNew(), of(2022, 1, dayOfMonth), ActivityLog.TrackType.WORKOUT, day, List.of());
     }
 
 }

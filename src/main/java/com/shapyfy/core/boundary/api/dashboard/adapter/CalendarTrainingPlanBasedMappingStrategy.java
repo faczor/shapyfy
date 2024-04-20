@@ -19,12 +19,12 @@ public class CalendarTrainingPlanBasedMappingStrategy extends CalendarMappingStr
     @Override
     List<DayContext> map(TrainingPlan trainingPlan, List<ActivityLog> activityLogs, DateRange dateRange) {
 
-        List<LocalDate> datesAfterStart = dateRange.streamDatesWithinRange().filter(date -> date.isAfter(trainingPlan.startDate())).toList();
-        PlanDay firstDay = trainingPlan.days().getFirst();
+        List<LocalDate> datesAfterStart = dateRange.streamDatesWithinRange().filter(date -> date.isAfter(trainingPlan.getStartDate())).toList();
+        PlanDay firstDay = trainingPlan.getDays().getFirst();
 
         return Stream.of(
-                        dateRange.streamDatesWithinRange().filter(date -> date.isBefore(trainingPlan.startDate())).map(DayContext::empty),
-                        dateRange.streamDatesWithinRange().filter(date -> date.equals(trainingPlan.startDate())).map(date -> DayContext.day(date, firstDay)),
+                        dateRange.streamDatesWithinRange().filter(date -> date.isBefore(trainingPlan.getStartDate())).map(DayContext::empty),
+                        dateRange.streamDatesWithinRange().filter(date -> date.equals(trainingPlan.getStartDate())).map(date -> DayContext.day(date, firstDay)),
                         Optional.of(datesAfterStart).filter(Predicate.not(List::isEmpty))
                                 .map(dates -> futureDayContexts(new DateRange(dates.getFirst(), dates.getLast()), trainingPlan, activityLogs, firstDay).stream()).orElse(Stream.empty())
                 )
