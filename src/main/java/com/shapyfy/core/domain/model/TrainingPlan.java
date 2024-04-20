@@ -32,7 +32,7 @@ public class TrainingPlan {
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     List<PlanDay> days;
 
-    @Column(name = "start_date")//TODO Change in schema :)
+    @Column(name = "start_date")
     LocalDate startDate;
 
     @Embedded
