@@ -18,7 +18,7 @@ public abstract class CalendarMappingStrategy {
         List<DayContext> resultDays = new ArrayList<>();
         for (LocalDate date : dateRange.listDatesWithinRange()) {
 
-            DayContext calendarDayWithPlanDay = activityLogs.stream().filter(log -> log.date().isEqual(date)).findFirst()
+            DayContext calendarDayWithPlanDay = activityLogs.stream().filter(log -> log.getDate().isEqual(date)).findFirst()
                     .map(log -> calendarDayBasedOnActivityLog(date, log))
                     .orElse(calendarDayBasedOnNextDay(date, trainingPlan, currentDay));
 
@@ -30,7 +30,7 @@ public abstract class CalendarMappingStrategy {
     }
 
     protected DayContext calendarDayBasedOnActivityLog(LocalDate date, ActivityLog log) {
-        return new DayContext(date, Optional.of(log.planDay()), Optional.of(log));
+        return new DayContext(date, Optional.of(log.getPlanDay()), Optional.of(log));
     }
 
     protected DayContext calendarDayBasedOnPreviousDay(LocalDate date, TrainingPlan trainingPlan, PlanDay planDay) {

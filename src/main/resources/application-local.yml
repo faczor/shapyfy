@@ -1,11 +1,11 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres?currentSchema=shapyfy
-    username: postgres
-    password: postgres
+    username: shapyfy
+    password: shapyfy
   jpa:
     show-sql: true
   flyway:
     url: jdbc:postgresql://localhost:5432/postgres?currentSchema=shapyfy
-    user: postgres
-    password: postgres
+    user: shapyfy
+    password: shapyfy

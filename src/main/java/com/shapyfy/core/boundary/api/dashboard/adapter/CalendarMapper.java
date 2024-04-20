@@ -1,6 +1,6 @@
 package com.shapyfy.core.boundary.api.dashboard.adapter;
 
-import com.shapyfy.core.boundary.api.dashboard.adapter.CalendarAdapter.Calendar;
+import com.shapyfy.core.boundary.api.dashboard.model.Calendar;
 import com.shapyfy.core.domain.model.ActivityLog;
 import com.shapyfy.core.domain.model.PlanDayType;
 import com.shapyfy.core.domain.model.TrainingPlan;
@@ -26,7 +26,7 @@ public class CalendarMapper {
             return Calendar.empty(dateRange);
         }
 
-        boolean activityLogCloserThanStartDate = isActivityLogCloserThanStartDate(activityLogs, trainingPlan.startDate(), dateRange.start());
+        boolean activityLogCloserThanStartDate = isActivityLogCloserThanStartDate(activityLogs, trainingPlan.getStartDate(), dateRange.start());
 
         //TODO Consider better way of initializing strategy
         List<DayContext> dayContexts = activityLogCloserThanStartDate
@@ -43,23 +43,23 @@ public class CalendarMapper {
 
         return day.activityLog().map(activityLog -> new Calendar.Day(
                         day.date(),
-                        activityLog.planDay().type() == PlanDayType.WORKOUT_DAY ? Calendar.CalendarDayType.WORKOUT : Calendar.CalendarDayType.REST,
-                        activityLog.id().value(),
-                        day.planDay().get().id().value()))
+                        activityLog.getPlanDay().getType() == PlanDayType.WORKOUT_DAY ? Calendar.CalendarDayType.WORKOUT : Calendar.CalendarDayType.REST,
+                        activityLog.getId().getId(),
+                        day.planDay().get().getId().getId()))
                 .orElse(new Calendar.Day(
                         day.date(),
-                        day.planDay().get().type() == PlanDayType.WORKOUT_DAY ? Calendar.CalendarDayType.WORKOUT : Calendar.CalendarDayType.REST,
+                        day.planDay().get().getType() == PlanDayType.WORKOUT_DAY ? Calendar.CalendarDayType.WORKOUT : Calendar.CalendarDayType.REST,
                         null,
-                        day.planDay().get().id().value()));
+                        day.planDay().get().getId().getId()));
 
     }
 
     private boolean isActivityLogCloserThanStartDate(List<ActivityLog> activityLogs, LocalDate planStartDay, LocalDate rangeStart) {
-        Optional<ActivityLog> firstLog = activityLogs.stream().min(Comparator.comparing(ActivityLog::date));
+        Optional<ActivityLog> firstLog = activityLogs.stream().min(Comparator.comparing(ActivityLog::getDate));
         if (firstLog.isEmpty()) {
             return false;
         }
-        DateRange dateRangeFromFirstLogToRangeStart = new DateRange(firstLog.get().date(), rangeStart);
+        DateRange dateRangeFromFirstLogToRangeStart = new DateRange(firstLog.get().getDate(), rangeStart);
         DateRange dateRangeFromPlanStartToRangeStart = new DateRange(planStartDay, rangeStart);
 
         boolean isFirstLogCloserTanStartDate = dateRangeFromFirstLogToRangeStart.listDatesWithinRange().size() < dateRangeFromPlanStartToRangeStart.listDatesWithinRange().size();

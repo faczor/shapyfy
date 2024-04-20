@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ActivityLogRepository {
-    List<ActivityLog> findAll(LocalDate from, LocalDate to, UserId userId);
+    List<ActivityLog> findAll(LocalDate from, LocalDate to, List<PlanDay.PlanDayId> planDayIds);
 
     List<ActivityLog> findAllByPlanDayId(PlanDay.PlanDayId planDayId);
 

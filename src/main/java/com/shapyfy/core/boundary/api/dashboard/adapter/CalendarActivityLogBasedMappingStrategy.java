@@ -15,16 +15,16 @@ public class CalendarActivityLogBasedMappingStrategy extends CalendarMappingStra
 
     @Override
     List<DayContext> map(TrainingPlan trainingPlan, List<ActivityLog> activityLogs, DateRange dateRange) {
-        ActivityLog firstLog = activityLogs.stream().min(Comparator.comparing(ActivityLog::date)).orElseThrow();
+        ActivityLog firstLog = activityLogs.stream().min(Comparator.comparing(ActivityLog::getDate)).orElseThrow();
         List<DayContext> resultDays = new ArrayList<>();
 
-        boolean isFirstLogAfterStartDate = firstLog.date().isAfter(dateRange.start());
+        boolean isFirstLogAfterStartDate = firstLog.getDate().isAfter(dateRange.start());
         if (isFirstLogAfterStartDate) {
-            DateRange rangeFromStartToFirstLog = new DateRange(dateRange.start(), firstLog.date().minusDays(1));
-            PlanDay currentDay = firstLog.planDay();
+            DateRange rangeFromStartToFirstLog = new DateRange(dateRange.start(), firstLog.getDate().minusDays(1));
+            PlanDay currentDay = firstLog.getPlanDay();
             for (LocalDate date : rangeFromStartToFirstLog.listDatesWithinRange().reversed()) {
 
-                DayContext calendarDayWithPlanDay = activityLogs.stream().filter(log -> log.date().isEqual(date)).findFirst()
+                DayContext calendarDayWithPlanDay = activityLogs.stream().filter(log -> log.getDate().isEqual(date)).findFirst()
                         .map(log -> calendarDayBasedOnActivityLog(date, log))
                         .orElse(calendarDayBasedOnPreviousDay(date, trainingPlan, currentDay));
 
@@ -32,10 +32,10 @@ public class CalendarActivityLogBasedMappingStrategy extends CalendarMappingStra
                 currentDay = calendarDayWithPlanDay.planDay().get();
             }
 
-            dateRange = new DateRange(firstLog.date(), dateRange.end());
+            dateRange = new DateRange(firstLog.getDate(), dateRange.end());
         }
 
-        resultDays.addAll(futureDayContexts(dateRange, trainingPlan, activityLogs, firstLog.planDay()));
+        resultDays.addAll(futureDayContexts(dateRange, trainingPlan, activityLogs, firstLog.getPlanDay()));
 
         return resultDays;
     }

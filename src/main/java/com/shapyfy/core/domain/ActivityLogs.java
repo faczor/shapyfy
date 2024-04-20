@@ -33,30 +33,35 @@ public class ActivityLogs {
     public void workout(CreateWorkoutLogRequest request) {
         log.info("Attempt to workout track {}", request);
         PlanDay planDay = planDays.fetchById(request.planDayId());
-        List<WorkoutSet> sets = request.exercises().stream().map(this::mapRequestToWorkoutSet).flatMap(List::stream).toList();
 
-        ActivityLog savedLog = activityLogRepository.save(ActivityLog.workout(request.date(), planDay, sets));
-        log.info("Workout track saved {}", savedLog);
+        ActivityLog log = ActivityLog.workout(request.date(), planDay);
+        request.exercises().stream().map(e -> mapRequestToWorkoutSet(e, log))
+                .flatMap(List::stream)
+                .forEach(log::addSet);
+
+        ActivityLog savedLog = activityLogRepository.save(log);
+        ActivityLogs.log.info("Workout track saved {}", savedLog);
     }
 
-    public List<ActivityLog> fetchFor(LocalDate from, LocalDate to, UserId userId) {
-        log.info("Fetching activity logs for {} from {} to {}", userId, from, to);
+    public List<ActivityLog> fetchFor(LocalDate from, LocalDate to, List<PlanDay.PlanDayId> planDayIds) {
+        log.info("Fetching activity logs for {} from {} to {}", planDayIds, from, to);
 
-        return activityLogRepository.findAll(from, to, userId);
+        return activityLogRepository.findAll(from, to, planDayIds);
     }
 
     public List<ActivityLog> logsForPlanDay(PlanDay.PlanDayId planDayId) {
+        log.info("Fetching activity logs for plan day {}", planDayId);
         return activityLogRepository.findAllByPlanDayId(planDayId);
     }
 
-    private List<WorkoutSet> mapRequestToWorkoutSet(WorkoutExerciseLog finishedExercise) {
+    private List<WorkoutSet> mapRequestToWorkoutSet(WorkoutExerciseLog finishedExercise, ActivityLog log) {
         Exercise exercise = exercises.fetchById(finishedExercise.exerciseId());
         return IntStream.range(0, finishedExercise.sets().size())
                 .mapToObj(index -> WorkoutSet.from(
                         finishedExercise.sets().get(index).reps(),
                         finishedExercise.sets().get(index).weight(),
                         exercise,
-                        index))
+                        index, log))
                 .toList();
     }
 
@@ -64,10 +69,10 @@ public class ActivityLogs {
             LocalDate date,
             PlanDay.PlanDayId planDayId,
             List<WorkoutExerciseLog> exercises) {
-        record WorkoutExerciseLog(
+        public record WorkoutExerciseLog(
                 Exercise.ExerciseId exerciseId,
                 List<WorkoutSetLog> sets) {
-            record WorkoutSetLog(
+            public record WorkoutSetLog(
                     int reps,
                     double weight) {
             }

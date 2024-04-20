@@ -1,24 +1,59 @@
 package com.shapyfy.core.domain.model;
 
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Value;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public record ActivityLog(
-        ActivityLogId id,
-        LocalDate date,
-        TrackType type,
-        PlanDay planDay,
-        List<WorkoutSet> sets
-) {
+import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.PUBLIC;
 
-    public static ActivityLog workout(LocalDate date, PlanDay planDay, List<WorkoutSet> sets) {
-        return new ActivityLog(ActivityLogId.newVal(), date, TrackType.WORKOUT, planDay, sets);
+@Entity(name = "activity_logs")
+@Table(name = "activity_logs")
+@AllArgsConstructor(access = AccessLevel.PUBLIC, staticName = "of")
+@NoArgsConstructor(access = PROTECTED, force = true)
+@Value
+public class ActivityLog {
+
+    @EmbeddedId
+    ActivityLogId id;
+
+    LocalDate date;
+
+    @Enumerated(EnumType.STRING)
+    TrackType type;
+
+    @ManyToOne
+    @JoinColumn(name = "plan_day_id")
+    PlanDay planDay;
+
+    @OneToMany(mappedBy = "activityLog", cascade = CascadeType.ALL)
+    List<WorkoutSet> sets;
+
+    public static ActivityLog workout(LocalDate date, PlanDay planDay) {
+        return new ActivityLog(ActivityLogId.createNew(), date, TrackType.WORKOUT, planDay, new ArrayList<>());
     }
 
-    public record ActivityLogId(String value) {
-        public static ActivityLogId newVal() {
-            return new ActivityLogId(UUID.randomUUID().toString());
+    public void addSet(WorkoutSet set) {
+        sets.add(set);
+    }
+
+    @Value
+    @Embeddable
+    @AllArgsConstructor(access = PUBLIC, staticName = "of")
+    @NoArgsConstructor(access = PROTECTED, force = true)
+    public static class ActivityLogId {
+
+        UUID id;
+
+        public static ActivityLogId createNew() {
+            return new ActivityLogId(UUID.randomUUID());
         }
     }
 

@@ -26,18 +26,24 @@ public class TrainingPlanCreator {
         return createdPlan;
     }
 
-    public record CreateTrainingPlanRequest(String name,
-                                            LocalDate startDate,
-                                            List<CreatePlanDayRequest> requests) {
-        public record CreatePlanDayRequest(PlanDayType type,
-                                           String name,
-                                           List<CreateWorkoutExerciseConfigRequest> requests) {
-            public record CreateWorkoutExerciseConfigRequest(Exercise exercise,
-                                                             double weight,
-                                                             int sets,
-                                                             int reps,
-                                                             int restTime,
-                                                             int order) {
+    public record CreateTrainingPlanRequest(
+            //
+            String name,
+            LocalDate startDate,
+            List<CreatePlanDayRequest> createPlan) {
+        public record CreatePlanDayRequest(
+                //
+                PlanDayType type,
+                String name,
+                List<CreateWorkoutExerciseConfigRequest> createWorkoutExerciseConfigs) {
+            public record CreateWorkoutExerciseConfigRequest(
+                    //
+                    Exercise exercise,
+                    double weight,
+                    int sets,
+                    int reps,
+                    int restTime,
+                    int order) {
             }
         }
     }
