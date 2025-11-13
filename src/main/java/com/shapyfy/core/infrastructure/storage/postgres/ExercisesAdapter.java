@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -27,5 +28,10 @@ public class ExercisesAdapter implements ExerciseRepository {
     @Override
     public List<Exercise> findAll() {
         return exerciseJpaRepository.findAll();
+    }
+
+    @Override
+    public Optional<Exercise> findByTranslationKey(String translationKey) {
+        return exerciseJpaRepository.findByTranslationKey(translationKey);
     }
 }

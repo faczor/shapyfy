@@ -1,11 +1,7 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=shapyfy
-    username: shapyfy
-    password: shapyfy
-  jpa:
-    show-sql: true
   flyway:
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=shapyfy
-    user: shapyfy
-    password: shapyfy
+    locations: classpath:db/migration/common,classpath:db/migration
+  datasource:
+    url: jdbc:postgresql://psql01.mikr.us:5432/db_adrian247
+    username: adrian247
+    password: 93C4_1daf1e

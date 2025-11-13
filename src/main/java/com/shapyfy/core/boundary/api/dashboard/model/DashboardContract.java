@@ -9,7 +9,7 @@ public record DashboardContract(
 
     public static DashboardContract emptyState(DateRange dateRange) {
         return new DashboardContract(
-                new UserPlanContext(UserPlanContext.PlanStatus.NOT_CONFIGURED, null),
+                new UserPlanContext(UserPlanContext.PlanStatus.NOT_CONFIGURED, null, null),
                 Calendar.empty(dateRange)
         );
     }
@@ -17,7 +17,8 @@ public record DashboardContract(
     //
     public record UserPlanContext(
             @JsonProperty("status") PlanStatus status,
-            @JsonProperty("plan_id") String planId //nullable
+            @JsonProperty("plan_id") String planId, //nullable
+            @JsonProperty("plan_name") String planName //TODO not sure if it should be there or moved to separate node or new EP for details
     ) {
         public enum PlanStatus {
             ACTIVE,

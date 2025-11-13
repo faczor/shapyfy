@@ -3,6 +3,7 @@ package com.shapyfy.core.domain.port;
 import com.shapyfy.core.domain.model.Exercise;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ExerciseRepository {
 
@@ -11,4 +12,6 @@ public interface ExerciseRepository {
     Exercise save(Exercise exercise);
 
     List<Exercise> findAll();
+
+    Optional<Exercise> findByTranslationKey(String translationKey);
 }

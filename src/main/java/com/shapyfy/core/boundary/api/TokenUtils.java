@@ -32,6 +32,7 @@ public class TokenUtils {
 
     @SneakyThrows(JsonProcessingException.class)
     private static JwtDetails buildJwtDetails(String authorization) {
+        System.out.println("authorization: " + authorization);
         String bearerValue = authorization.replace("Bearer ", "");
         String userDetailsToken = bearerValue.split("\\.")[1];
 

@@ -3,25 +3,26 @@ package com.shapyfy.core.boundary.api.trainingDay.adapter;
 import com.shapyfy.core.SystemTime;
 import com.shapyfy.core.boundary.api.trainingDay.model.CompletePlanDayRequest;
 import com.shapyfy.core.boundary.api.trainingDay.model.PlanDayContract;
+import com.shapyfy.core.boundary.api.trainingDay.model.PlanDayContract.WorkoutExerciseContract;
+import com.shapyfy.core.boundary.api.trainingDay.model.PlanDayContract.WorkoutExerciseContract.ExerciseConfigContract;
 import com.shapyfy.core.boundary.api.trainingDay.model.PlanDayContract.WorkoutExerciseContract.PreviousWorkouts;
 import com.shapyfy.core.boundary.api.trainingDay.model.PlanDayContract.WorkoutExerciseContract.PreviousWorkouts.WorkoutSetContract;
 import com.shapyfy.core.domain.ActivityLogs;
 import com.shapyfy.core.domain.ActivityLogs.CreateWorkoutLogRequest.WorkoutExerciseLog;
 import com.shapyfy.core.domain.ActivityLogs.CreateWorkoutLogRequest.WorkoutExerciseLog.WorkoutSetLog;
 import com.shapyfy.core.domain.PlanDays;
-import com.shapyfy.core.domain.model.ActivityLog;
-import com.shapyfy.core.domain.model.Exercise;
-import com.shapyfy.core.domain.model.PlanDay;
-import com.shapyfy.core.domain.model.WorkoutSet;
+import com.shapyfy.core.domain.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.groupingBy;
 
 @Slf4j
 @Component
@@ -34,6 +35,11 @@ public class PlanDayApiAdapter {
 
     private final SystemTime systemTime;
 
+    Collector<WorkoutSet, ?, Map<Exercise, Map<LocalDate, List<WorkoutSet>>>> groupWorkoutSetToExerciseDateSets = groupingBy(
+            WorkoutSet::getExercise,
+            groupingBy(set -> set.getActivityLog().getDate())
+    );
+
     public PlanDayContract getPlanDay(PlanDay.PlanDayId planDayId) {
         PlanDay planDay = planDays.fetchById(planDayId);
         List<ActivityLog> logsForPlan = activityLogs.logsForPlanDay(planDayId);
@@ -43,7 +49,6 @@ public class PlanDayApiAdapter {
 
     public void completePlanDay(CompletePlanDayRequest request) {
         LocalDate today = systemTime.today();
-
         activityLogs.workout(
                 new ActivityLogs.CreateWorkoutLogRequest(
                         today,
@@ -59,36 +64,16 @@ public class PlanDayApiAdapter {
         );
     }
 
-    //TODO Code build by AI: Refactor this method
     private PlanDayContract mapToContract(PlanDay planDay, List<ActivityLog> logs) {
+        if (isNull(logs)) {
+            throw new IllegalArgumentException("Logs cannot be null");
+        }
 
-        List<ExerciseWithPreviousOccurrences> exerciseWithPreviousOccurrences = convertToHelpingAggregators(logs);
+        List<ExerciseLogsByDate> exerciseLogsByDate = groupExerciseLogsByDate(logs);
 
-        List<PlanDayContract.WorkoutExerciseContract> workoutExercises = planDay.getWorkoutExerciseConfigs().stream().map(exerciseConfig -> {
-
-            Optional<ExerciseWithPreviousOccurrences> possibleOccurrence = exerciseWithPreviousOccurrences.stream().filter(occurrence -> occurrence.exercise().equals(exerciseConfig.getExercise())).findFirst();
-
-            List<PreviousWorkouts> previousWorkouts = possibleOccurrence.map(occurrence -> occurrence.dateSets().stream().map(support -> {
-                List<WorkoutSetContract> sets = support.sets().stream().map(set -> new WorkoutSetContract(
-                        set.getReps(),
-                        set.getWeight()
-                )).toList();
-                return new PreviousWorkouts(support.date(), sets);
-
-            }).toList()).orElse(Collections.emptyList());
-
-            return new PlanDayContract.WorkoutExerciseContract(
-                    exerciseConfig.getExercise().getId().getId(),
-                    exerciseConfig.getExercise().getName(),
-                    new PlanDayContract.WorkoutExerciseContract.ExerciseConfigContract(
-                            exerciseConfig.getReps(),
-                            exerciseConfig.getWeight(),
-                            exerciseConfig.getSets(),
-                            exerciseConfig.getRestTime()
-                    ),
-                    previousWorkouts
-            );
-        }).toList();
+        List<WorkoutExerciseContract> workoutExercises = planDay.getWorkoutExerciseConfigs().stream()
+                .map(config -> mapToWorkoutExerciseContract(config, exerciseLogsByDate))
+                .toList();
 
         return new PlanDayContract(
                 planDay.getId().getId(),
@@ -98,65 +83,46 @@ public class PlanDayApiAdapter {
         );
     }
 
-    private List<ExerciseWithPreviousOccurrences> convertToHelpingAggregators(List<ActivityLog> activityLogs) {
-        List<ExerciseWithPreviousOccurrences> helpingAggregators = new ArrayList<>();
+    private List<ExerciseLogsByDate> groupExerciseLogsByDate(List<ActivityLog> logs) {
 
-        for (ActivityLog activityLog : activityLogs) {
-            for (WorkoutSet workoutSet : activityLog.getSets()) {
-                Exercise exercise = workoutSet.getExercise();
-
-                ExerciseWithPreviousOccurrences helpingAggregator = findHelpingAggregatorByExercise(helpingAggregators, exercise);
-
-                if (helpingAggregator == null) {
-                    helpingAggregator = new ExerciseWithPreviousOccurrences(
-                            exercise,
-                            new ArrayList<>()
-                    );
-                    helpingAggregators.add(helpingAggregator);
-                }
-
-                ExerciseWithPreviousOccurrences.DateSets setsByDate = findSetsByDate(helpingAggregator.dateSets(), activityLog.getDate());
-
-                if (setsByDate == null) {
-                    ArrayList<WorkoutSet> list = new ArrayList<>();
-                    list.add(workoutSet);
-                    ExerciseWithPreviousOccurrences.DateSets support = new ExerciseWithPreviousOccurrences.DateSets(
-                            activityLog.getDate(),
-                            list
-                    );
-                    helpingAggregator.dateSets().add(support);
-                } else {
-                    setsByDate.sets().add(workoutSet);
-                }
-            }
-        }
-
-        return helpingAggregators;
+        return logs.stream()
+                .flatMap(log -> log.getSets().stream())
+                .collect(groupWorkoutSetToExerciseDateSets)
+                .entrySet().stream()
+                .map(entry -> new ExerciseLogsByDate(entry.getKey(), entry.getValue()))
+                .toList();
     }
 
-    private ExerciseWithPreviousOccurrences findHelpingAggregatorByExercise(List<ExerciseWithPreviousOccurrences> exerciseWithPreviousOccurrences, Exercise exercise) {
-        for (ExerciseWithPreviousOccurrences occurrence : exerciseWithPreviousOccurrences) {
-            if (occurrence.exercise().equals(exercise)) {
-                return occurrence;
-            }
-        }
-        return null;
+    private WorkoutExerciseContract mapToWorkoutExerciseContract(
+            WorkoutExerciseConfig exerciseConfig,
+            List<ExerciseLogsByDate> exerciseLogsByDate) {
+        Exercise exercise = exerciseConfig.getExercise();
+        List<PreviousWorkouts> previousWorkouts = getPreviousWorkouts(exerciseLogsByDate, exercise);
+
+        return new WorkoutExerciseContract(
+                exercise.getId().getId(),
+                exercise.getName(),
+                ExerciseConfigContract.from(exerciseConfig),
+                previousWorkouts
+        );
     }
 
-    private ExerciseWithPreviousOccurrences.DateSets findSetsByDate(List<ExerciseWithPreviousOccurrences.DateSets> setsByDates, LocalDate date) {
-        for (ExerciseWithPreviousOccurrences.DateSets setsByDate : setsByDates) {
-            if (setsByDate.date().equals(date)) {
-                return setsByDate;
-            }
-        }
-        return null;
+    private List<PreviousWorkouts> getPreviousWorkouts(
+            List<ExerciseLogsByDate> exerciseLogsByDate,
+            Exercise exercise) {
+        Map<LocalDate, List<WorkoutSet>> logsByDate = exerciseLogsByDate.stream()
+                .filter(logs -> Objects.equals(logs.exercise(), exercise))
+                .findFirst()
+                .map(ExerciseLogsByDate::logsByDate)
+                .orElseGet(Collections::emptyMap);
+
+        return logsByDate.entrySet().stream()
+                .map(entry -> PreviousWorkouts.from(entry.getKey(), entry.getValue()))
+                .toList();
     }
 
-    private record ExerciseWithPreviousOccurrences(Exercise exercise, List<DateSets> dateSets) {
-        record DateSets(
-                LocalDate date,
-                List<WorkoutSet> sets
-        ) {
-        }
+    public record ExerciseLogsByDate(
+            Exercise exercise,
+            Map<LocalDate, List<WorkoutSet>> logsByDate) {
     }
 }

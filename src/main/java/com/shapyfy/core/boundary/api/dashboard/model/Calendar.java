@@ -1,5 +1,6 @@
 package com.shapyfy.core.boundary.api.dashboard.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.shapyfy.core.util.DateRange;
 
 import java.time.LocalDate;
@@ -11,8 +12,8 @@ public record Calendar(List<Day> days) {
     public record Day(
             LocalDate date,
             CalendarDayType type,
-            UUID logId,
-            UUID dayId) {
+            @JsonProperty("log_id") UUID logId,
+            @JsonProperty("day_id") UUID dayId) {
     }
 
     public enum CalendarDayType {

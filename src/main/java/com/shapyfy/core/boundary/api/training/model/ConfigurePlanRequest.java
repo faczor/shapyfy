@@ -13,7 +13,7 @@ public record ConfigurePlanRequest(
         @JsonProperty("start_date") LocalDate startDate,
         @JsonProperty("day_configurations") List<ConfigureDay> configureDays) {
     public record ConfigureDay(
-
+            //
             @JsonProperty("type") PlanDayType type,
             @JsonProperty("name") String name,
             @JsonProperty("exercise_configurations") List<ConfigureExerciseWorkout> requests) {

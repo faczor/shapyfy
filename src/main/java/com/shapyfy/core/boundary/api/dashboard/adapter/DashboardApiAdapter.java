@@ -35,7 +35,8 @@ public class DashboardApiAdapter {
             return new DashboardContract(
                     new DashboardContract.UserPlanContext(
                             trainingPlan.isActive() ? ACTIVE : NOT_CONFIGURED,
-                            trainingPlan.getId().getId().toString()
+                            trainingPlan.getId().getId().toString(),
+                            trainingPlan.getName()
                     ),
                     calendarMapper.map(trainingPlan, logs, dateRange)
             );

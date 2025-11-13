@@ -21,6 +21,7 @@ public class RestSecurityConfiguration {
         return http
                 .csrf().disable()
                 .authorizeHttpRequests((request) -> request
+                        .requestMatchers("/actuator/**", "/api-docs").permitAll()
                         .requestMatchers("/**").permitAll()
                         .requestMatchers("/v1/**").permitAll()
                         .anyRequest().authenticated()

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static com.shapyfy.core.boundary.api.dashboard.model.Calendar.CalendarDayType.*;
 import static java.time.LocalDate.of;
@@ -25,9 +26,9 @@ public class CalendarMapperUnitTest {
     @Test
     public void shouldMapCalendar_whereFirstDayIsBeforePlanStartDate() {
         PlanDayId
-                first_day_id = PlanDayId.of("first_day_test_id"),
-                second_day_id = PlanDayId.of("second_day_test_id"),
-                third_day_id = PlanDayId.of("third_day_test_id");
+                first_day_id = PlanDayId.of(UUID.fromString("first_day_test_id")),
+                second_day_id = PlanDayId.of(UUID.fromString("second_day_test_id")),
+                third_day_id = PlanDayId.of(UUID.fromString("third_day_test_id"));
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -62,9 +63,9 @@ public class CalendarMapperUnitTest {
         LocalDate plan_startDate = of(2022, 1, 14);
 
         PlanDayId
-                first_day_id = PlanDayId.of("first_day_test_id"),
-                second_day_id = PlanDayId.of("second_day_test_id"),
-                third_day_id = PlanDayId.of("third_day_test_id");
+                first_day_id = PlanDayId.of(UUID.fromString("first_day_test_id")),
+                second_day_id = PlanDayId.of(UUID.fromString("second_day_test_id")),
+                third_day_id = PlanDayId.of(UUID.fromString("third_day_test_id"));
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -98,9 +99,9 @@ public class CalendarMapperUnitTest {
         LocalDate plan_startDate = of(2022, 1, 14);
 
         PlanDayId
-                first_day_id = PlanDayId.of("first_day_test_id"),
-                second_day_id = PlanDayId.of("second_day_test_id"),
-                third_day_id = PlanDayId.of("third_day_test_id");
+                first_day_id = PlanDayId.of(UUID.fromString("first_day_test_id")),
+                second_day_id = PlanDayId.of(UUID.fromString("second_day_test_id")),
+                third_day_id = PlanDayId.of(UUID.fromString("third_day_test_id"));
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -132,9 +133,9 @@ public class CalendarMapperUnitTest {
         LocalDate plan_startDate = of(2022, 1, 14);
 
         PlanDayId
-                first_day_id = PlanDayId.of("first_day_test_id"),
-                second_day_id = PlanDayId.of("second_day_test_id"),
-                third_day_id = PlanDayId.of("third_day_test_id");
+                first_day_id = PlanDayId.of(UUID.fromString("first_day_test_id")),
+                second_day_id = PlanDayId.of(UUID.fromString("second_day_test_id")),
+                third_day_id = PlanDayId.of(UUID.fromString("third_day_test_id"));
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -170,9 +171,9 @@ public class CalendarMapperUnitTest {
         LocalDate plan_startDate = of(2022, 1, 14);
 
         PlanDayId
-                first_day_id = PlanDayId.of("first_day_test_id"),
-                second_day_id = PlanDayId.of("second_day_test_id"),
-                third_day_id = PlanDayId.of("third_day_test_id");
+                first_day_id = PlanDayId.of(UUID.fromString("first_day_test_id")),
+                second_day_id = PlanDayId.of(UUID.fromString("second_day_test_id")),
+                third_day_id = PlanDayId.of(UUID.fromString("third_day_test_id"));
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -204,9 +205,9 @@ public class CalendarMapperUnitTest {
         LocalDate plan_startDate = of(2022, 1, 14);
 
         PlanDayId
-                first_day_id = PlanDayId.of("first_day_test_id"),
-                second_day_id = PlanDayId.of("second_day_test_id"),
-                third_day_id = PlanDayId.of("third_day_test_id");
+                first_day_id = PlanDayId.of(UUID.fromString("first_day_test_id")),
+                second_day_id = PlanDayId.of(UUID.fromString("second_day_test_id")),
+                third_day_id = PlanDayId.of(UUID.fromString("third_day_test_id"));
 
         List<PlanDay> days = List.of(
                 day(first_day_id, "PUSH", PlanDayType.WORKOUT_DAY),
@@ -236,7 +237,6 @@ public class CalendarMapperUnitTest {
         Assertions.assertEquals(expectedCalendar, actualCalendar);
     }
 
-
     private TrainingPlan plan(LocalDate startDate, List<PlanDay> days) {
         return TrainingPlan.of(
                 TrainingPlan.TrainingPlanId.createNew(),
@@ -244,7 +244,7 @@ public class CalendarMapperUnitTest {
                 Status.ACTIVE,
                 days,
                 startDate,
-                new UserId("123")
+                UserId.of("123")
         );
     }
 
@@ -253,7 +253,8 @@ public class CalendarMapperUnitTest {
                 id,
                 name,
                 type,
-                List.of()
+                List.of(),
+                null
         );
     }
 
