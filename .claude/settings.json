@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git add \"*.kt\" \"*.sql\" \"*.sqm\" \"*.java\""
+          }
+        ]
+      }
+    ]
+  },
+
+  "permissions": {
+    "allow": [
+      "Bash(mvn clean compile:*)",
+      "Bash(./gradlew test:*)",
+      "Bash(./gradlew clean test:*)",
+      "Bash(./gradlew build:*)",
+      "WebFetch(domain:github.com)"
+    ],
+    "deny": [
+      "Read(./.evc)"
+    ],
+    "ask": []
+  }
+}
