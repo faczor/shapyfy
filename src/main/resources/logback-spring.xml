@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- Console output - human readable for development -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- JSON file output for Loki/Promtail -->
+    <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/shapyfy-core.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/shapyfy-core-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>trace_id</includeMdcKeyName>
+            <includeMdcKeyName>span_id</includeMdcKeyName>
+            <includeMdcKeyName>user_id</includeMdcKeyName>
+            <includeMdcKeyName>request_id</includeMdcKeyName>
+            <customFields>{"application":"shapyfy-core","environment":"${SPRING_PROFILES_ACTIVE:-dev}"}</customFields>
+        </encoder>
+    </appender>
+
+    <!-- Async wrapper for better performance -->
+    <appender name="ASYNC_JSON" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>512</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <appender-ref ref="JSON_FILE"/>
+    </appender>
+
+    <!-- Root logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_JSON"/>
+    </root>
+
+    <!-- Spring Boot specific loggers -->
+    <logger name="org.springframework.web" level="INFO"/>
+    <logger name="org.springframework.security" level="INFO"/>
+    <logger name="org.springframework.boot" level="INFO"/>
+    <logger name="org.flywaydb" level="INFO"/>
+
+    <!-- Your application logger -->
+    <logger name="com.shapyfy" level="DEBUG"/>
+
+    <!-- SQL logging (useful for debugging) -->
+    <logger name="org.springframework.jdbc.core" level="DEBUG"/>
+
+    <!-- Reduce noise from some libraries -->
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="io.lettuce" level="WARN"/>
+</configuration>

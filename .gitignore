@@ -38,3 +38,7 @@ build/
 
 ### AI Agent ###
 .aider.tags.cache.v4
+
+### Logs ###
+logs/
+*.log
