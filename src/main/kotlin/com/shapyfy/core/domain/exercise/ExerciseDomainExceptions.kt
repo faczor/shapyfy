@@ -1,6 +1,4 @@
-package com.shapyfy.core.domain
-
-import com.shapyfy.core.domain.model.Exercise
+package com.shapyfy.core.domain.exercise
 
 class ExerciseDuplicateException(
     val exercise: Exercise,

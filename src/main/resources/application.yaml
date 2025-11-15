@@ -9,6 +9,16 @@ spring:
     url: jdbc:postgresql://psql01.mikr.us:5432/db_adrian247?schema=shapyfy
     username: adrian247
     password: 93C4_1daf1e
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Firebase JWKS URL format: https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com
+          # Replace with your actual Firebase project ID or use environment variable
+          jwk-set-uri: ${FIREBASE_JWK_SET_URI:https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com}
+
+firebase:
+  project-id: ${FIREBASE_PROJECT_ID:shapyfy-dev}
 
 anthropic:
   api-key: ${ANTHROPIC_API_KEY:}

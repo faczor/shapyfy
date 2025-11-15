@@ -1,0 +1,200 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - kotlin-main  # Your current branch
+  workflow_dispatch:  # Allow manual trigger
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push with Jib
+        run: |
+          ./gradlew jib \
+            -Djib.to.image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
+            -Djib.to.image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -Djib.to.auth.username=${{ github.actor }} \
+            -Djib.to.auth.password=${{ secrets.GITHUB_TOKEN }}
+
+  deploy-dev:
+    name: Deploy to Development
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/kotlin-main'
+    environment:
+      name: development
+      url: http://${{ secrets.SERVER_HOST }}:8080
+
+    steps:
+      - name: Deploy to Dev Server
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_ENVIRONMENT: development
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          SPRING_PROFILES_ACTIVE: dev
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          envs: DB_USERNAME,DB_PASSWORD,SENTRY_DSN,SENTRY_ENVIRONMENT,GITHUB_REPOSITORY,SPRING_PROFILES_ACTIVE
+          script: |
+            cd /opt/shapyfy
+
+            # Login to GitHub Container Registry
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Create/update .env file with secrets from GitHub
+            cat > .env << EOF
+            DB_USERNAME=${DB_USERNAME}
+            DB_PASSWORD=${DB_PASSWORD}
+            SENTRY_DSN=${SENTRY_DSN}
+            SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
+            GITHUB_REPOSITORY=${GITHUB_REPOSITORY}
+            SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+            EOF
+            chmod 600 .env
+
+            # Pull the latest image
+            docker compose pull
+
+            # Restart the container with new image
+            docker compose up -d --force-recreate
+
+            # Clean up old images
+            docker image prune -af
+
+            # Show status
+            docker compose ps
+
+            # Wait for health check
+            sleep 10
+            docker compose logs --tail=50
+
+      - name: Verify Dev Deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            cd /opt/shapyfy
+            # Check if container is running
+            if docker ps | grep -q shapyfy-core; then
+              echo "✅ Container is running"
+              docker compose exec -T shapyfy-core wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+              echo "✅ Health check passed"
+            else
+              echo "❌ Container is not running"
+              exit 1
+            fi
+
+  deploy-production:
+    name: Deploy to Production
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://${{ secrets.DOMAIN }}
+
+    steps:
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_ENVIRONMENT: production
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          SPRING_PROFILES_ACTIVE: production
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          envs: DB_USERNAME,DB_PASSWORD,SENTRY_DSN,SENTRY_ENVIRONMENT,GITHUB_REPOSITORY,SPRING_PROFILES_ACTIVE
+          script: |
+            cd /opt/shapyfy
+
+            # Login to GitHub Container Registry
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Create/update .env file with secrets from GitHub
+            cat > .env << EOF
+            DB_USERNAME=${DB_USERNAME}
+            DB_PASSWORD=${DB_PASSWORD}
+            SENTRY_DSN=${SENTRY_DSN}
+            SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
+            GITHUB_REPOSITORY=${GITHUB_REPOSITORY}
+            SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+            EOF
+            chmod 600 .env
+
+            # Pull the latest image
+            docker compose pull
+
+            # Restart the container with new image
+            docker compose up -d --force-recreate
+
+            # Clean up old images
+            docker image prune -af
+
+            # Show status
+            docker compose ps
+
+            # Wait for health check
+            sleep 10
+            docker compose logs --tail=50
+
+      - name: Verify Production Deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            cd /opt/shapyfy
+            # Check if container is running
+            if docker ps | grep -q shapyfy-core; then
+              echo "✅ Container is running"
+              docker compose exec -T shapyfy-core wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+              echo "✅ Health check passed"
+            else
+              echo "❌ Container is not running"
+              exit 1
+            fi

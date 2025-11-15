@@ -1,14 +1,14 @@
 package com.shapyfy.core.architecture.translation
 
-import com.shapyfy.core.domain.CanonicalizationResult
-import com.shapyfy.core.domain.ExerciseTranslationPort
-import com.shapyfy.core.domain.model.Exercise
-import com.shapyfy.core.domain.model.Language
-import com.shapyfy.core.domain.model.NameNormalizer
-import com.shapyfy.core.domain.model.TranslationCategory
-import com.shapyfy.core.domain.model.TranslationKey
-import com.shapyfy.core.domain.model.TranslationKeyFactory
-import com.shapyfy.core.domain.model.TranslationRecord
+import com.shapyfy.core.domain.exercise.CanonicalizationResult
+import com.shapyfy.core.domain.exercise.ExerciseTranslationPort
+import com.shapyfy.core.domain.exercise.Exercise
+import com.shapyfy.core.domain.Language
+import com.shapyfy.core.boundary.exercises.NameNormalizer
+import com.shapyfy.core.domain.exercise.TranslationCategory
+import com.shapyfy.core.domain.exercise.TranslationKey
+import com.shapyfy.core.domain.exercise.TranslationKeyFactory
+import com.shapyfy.core.domain.exercise.TranslationRecord
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 

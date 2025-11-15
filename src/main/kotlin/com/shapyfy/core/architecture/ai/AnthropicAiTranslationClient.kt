@@ -3,8 +3,8 @@ package com.shapyfy.core.architecture.ai
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.shapyfy.core.architecture.translation.AiTranslationClient
 import com.shapyfy.core.architecture.translation.AiTranslationResult
-import com.shapyfy.core.domain.model.Language
-import com.shapyfy.core.domain.model.NameNormalizer
+import com.shapyfy.core.domain.Language
+import com.shapyfy.core.boundary.exercises.NameNormalizer
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.util.Locale

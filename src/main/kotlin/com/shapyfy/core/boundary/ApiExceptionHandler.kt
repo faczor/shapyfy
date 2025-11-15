@@ -1,10 +1,12 @@
 package com.shapyfy.core.boundary
 
-import com.shapyfy.core.domain.ExerciseDuplicateException
-import com.shapyfy.core.domain.ExerciseMetricsPort
-import com.shapyfy.core.domain.ExerciseTranslationPort
-import com.shapyfy.core.domain.model.Language
-import com.shapyfy.core.domain.model.TranslationCategory
+import com.shapyfy.core.domain.exercise.ExerciseDuplicateException
+import com.shapyfy.core.domain.exercise.ExerciseMetricsPort
+import com.shapyfy.core.domain.exercise.ExerciseTranslationPort
+import com.shapyfy.core.domain.Language
+import com.shapyfy.core.domain.exercise.TranslationCategory
+import com.shapyfy.core.domain.workout.InvalidExerciseReferenceException
+import com.shapyfy.core.domain.workout.WorkoutNotFoundException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -44,7 +46,7 @@ class ApiExceptionHandler(
 
         val syncException = SyncException(
             status = HttpStatus.CONFLICT,
-            id = exercise.id,
+            id = exercise.id.value,
             translationKey = "${TranslationCategory.EXERCISES.value}.${exercise.name}",
             availableTranslations = allTranslations,
             errorMessage = "Exercise with the same name already exists"
@@ -54,4 +56,38 @@ class ApiExceptionHandler(
             .status(syncException.status)
             .body(syncException.toResponse())
     }
+
+    @ExceptionHandler(InvalidExerciseReferenceException::class)
+    fun handleInvalidExerciseReference(exception: InvalidExerciseReferenceException): ResponseEntity<ErrorResponse> {
+        log.error("Invalid exercise reference: {}", exception.message, exception)
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(
+                ErrorResponse(
+                    message = "Invalid exercise reference: ${exception.exerciseId.value}",
+                    details = "The exercise ID '${exception.exerciseId.value}' does not exist"
+                )
+            )
+    }
+
+    @ExceptionHandler(WorkoutNotFoundException::class)
+    fun handleWorkoutNotFound(exception: WorkoutNotFoundException): ResponseEntity<ErrorResponse> {
+        log.error("Workout not found: {}", exception.message, exception)
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(
+                ErrorResponse(
+                    message = "Workout not found",
+                    details = "The workout with ID '${exception.workoutId.value}' does not exist"
+                )
+            )
+    }
 }
+
+/**
+ * Generic error response
+ */
+data class ErrorResponse(
+    val message: String,
+    val details: String? = null
+)

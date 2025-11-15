@@ -1,4 +1,6 @@
-package com.shapyfy.core.domain.model
+package com.shapyfy.core.domain.exercise
+
+import com.shapyfy.core.domain.Language
 
 data class TranslationRecord(
     val translationKey: TranslationKey,

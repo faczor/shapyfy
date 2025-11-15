@@ -1,7 +1,8 @@
 package com.shapyfy.core.architecture.persistence
 
-import com.shapyfy.core.domain.model.Exercise
-import com.shapyfy.core.domain.ExerciseRepository
+import com.shapyfy.core.domain.exercise.Exercise
+import com.shapyfy.core.domain.ExerciseId
+import com.shapyfy.core.domain.exercise.ExerciseRepository
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataAccessException
 import org.springframework.stereotype.Repository
@@ -16,7 +17,7 @@ class ExerciseJdbcRepository(
     override fun save(exercise: Exercise): Exercise {
         log.info("Attempt to persist exercise '{}' with id {}", exercise.name, exercise.id)
         val entity = ExerciseEntity.new(
-            id = exercise.id,
+            id = exercise.id.value,
             name = exercise.name,
             createdAt = exercise.createdAt,
             updatedAt = exercise.updatedAt
@@ -55,9 +56,21 @@ class ExerciseJdbcRepository(
         }
     }
 
+    override fun existsById(id: ExerciseId): Boolean {
+        log.info("Checking if exercise exists with id '{}'", id)
+        return try {
+            val exists = exerciseCrudRepository.existsById(id.value)
+            log.info("Exercise '{}' exists: {}", id, exists)
+            exists
+        } catch (ex: DataAccessException) {
+            log.error("Failed to check if exercise '{}' exists", id, ex)
+            throw ex
+        }
+    }
+
     private fun ExerciseEntity.toDomain(): Exercise =
         Exercise(
-            id = getId(),
+            id = ExerciseId.from(getId()),
             name = name,
             createdAt = createdAt,
             updatedAt = updatedAt

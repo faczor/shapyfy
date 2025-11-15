@@ -3,6 +3,7 @@ plugins {
 	id 'org.jetbrains.kotlin.plugin.spring' version '1.9.25'
 	id 'org.springframework.boot' version '3.5.7'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.google.cloud.tools.jib' version '3.4.4'
 }
 
 group = 'com.shapyfy'
@@ -33,6 +34,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
@@ -66,4 +68,44 @@ kotlin {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jib {
+	from {
+		image = 'eclipse-temurin:21-jre-alpine'
+		platforms {
+			platform {
+				architecture = 'amd64'
+				os = 'linux'
+			}
+		}
+	}
+	to {
+		image = 'shapyfy/core'
+		tags = ['latest', version]
+	}
+	container {
+		jvmFlags = [
+			'-Xmx512m',
+			'-Xms256m',
+			'-XX:+UseContainerSupport',
+			'-XX:MaxRAMPercentage=75.0'
+		]
+		ports = ['8080']
+		labels = [
+			'maintainer': 'Shapyfy Team',
+			'version': version,
+			'description': 'Shapyfy Core API'
+		]
+		creationTime = 'USE_CURRENT_TIMESTAMP'
+		user = '1000:1000'  // Run as non-root user
+	}
+	extraDirectories {
+		paths {
+			path {
+				from = file('src/main/jib')
+				into = '/app/resources'
+			}
+		}
+	}
 }

@@ -1,4 +1,4 @@
-package com.shapyfy.core.domain.model
+package com.shapyfy.core.boundary.exercises
 
 import java.text.Normalizer
 import java.util.Locale

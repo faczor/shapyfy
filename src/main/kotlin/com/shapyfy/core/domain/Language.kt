@@ -1,4 +1,4 @@
-package com.shapyfy.core.domain.model
+package com.shapyfy.core.domain
 
 import java.util.Locale
 

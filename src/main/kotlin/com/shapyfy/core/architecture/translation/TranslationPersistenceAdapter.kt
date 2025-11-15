@@ -2,10 +2,10 @@ package com.shapyfy.core.architecture.translation
 
 import com.shapyfy.core.architecture.persistence.TranslationCrudRepository
 import com.shapyfy.core.architecture.persistence.TranslationEntity
-import com.shapyfy.core.domain.model.Language
-import com.shapyfy.core.domain.model.TranslationCategory
-import com.shapyfy.core.domain.model.TranslationKey
-import com.shapyfy.core.domain.model.TranslationRecord
+import com.shapyfy.core.domain.Language
+import com.shapyfy.core.domain.exercise.TranslationCategory
+import com.shapyfy.core.domain.exercise.TranslationKey
+import com.shapyfy.core.domain.exercise.TranslationRecord
 import org.slf4j.LoggerFactory
 import org.springframework.cache.CacheManager
 import org.springframework.dao.DataAccessException

@@ -1,12 +1,13 @@
-package com.shapyfy.core.domain
+package com.shapyfy.core.domain.exercise
 
-import com.shapyfy.core.domain.model.Exercise
-import com.shapyfy.core.domain.model.Language
+import com.shapyfy.core.domain.ExerciseId
+import com.shapyfy.core.domain.Language
 
 interface ExerciseRepository {
     fun save(exercise: Exercise): Exercise
     fun findByName(name: String): Exercise?
     fun findAll(): List<Exercise>
+    fun existsById(id: ExerciseId): Boolean
 }
 
 interface ExerciseMetricsPort {

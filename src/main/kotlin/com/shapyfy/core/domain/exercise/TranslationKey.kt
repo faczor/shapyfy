@@ -1,4 +1,4 @@
-package com.shapyfy.core.domain.model
+package com.shapyfy.core.domain.exercise
 
 @JvmInline
 value class TranslationKey(val value: String) {
@@ -18,7 +18,6 @@ enum class TranslationCategory(val value: String) {
 
 object TranslationKeyFactory {
     fun forExercise(canonicalName: String): TranslationKey {
-        val normalized = NameNormalizer.normalize(canonicalName)
-        return TranslationKey("${TranslationCategory.EXERCISES.value}.$normalized")
+        return TranslationKey("${TranslationCategory.EXERCISES.value}.$canonicalName")
     }
 }

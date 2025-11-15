@@ -1,8 +1,6 @@
-package com.shapyfy.core.domain
+package com.shapyfy.core.domain.exercise
 
-import com.shapyfy.core.domain.model.ExerciseSummary
-import com.shapyfy.core.domain.model.Language
-import com.shapyfy.core.domain.model.TranslationKeyFactory
+import com.shapyfy.core.domain.Language
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 

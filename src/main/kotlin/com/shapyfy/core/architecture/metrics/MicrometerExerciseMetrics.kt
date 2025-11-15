@@ -1,7 +1,7 @@
 package com.shapyfy.core.architecture.metrics
 
-import com.shapyfy.core.domain.model.Language
-import com.shapyfy.core.domain.ExerciseMetricsPort
+import com.shapyfy.core.domain.Language
+import com.shapyfy.core.domain.exercise.ExerciseMetricsPort
 import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.stereotype.Component
 

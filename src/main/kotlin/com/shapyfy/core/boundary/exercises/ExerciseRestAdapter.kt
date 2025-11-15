@@ -1,9 +1,9 @@
 package com.shapyfy.core.boundary.exercises
 
-import com.shapyfy.core.domain.ExerciseCreator
-import com.shapyfy.core.domain.ExerciseFetcher
-import com.shapyfy.core.domain.model.ExerciseCreationCommand
-import com.shapyfy.core.domain.model.Language
+import com.shapyfy.core.domain.exercise.ExerciseCreator
+import com.shapyfy.core.domain.exercise.ExerciseFetcher
+import com.shapyfy.core.domain.exercise.ExerciseCreationCommand
+import com.shapyfy.core.domain.Language
 import org.springframework.stereotype.Component
 import org.slf4j.LoggerFactory
 
@@ -34,7 +34,7 @@ class ExerciseRestAdapter(
         )
 
         val response = ExerciseResponse(
-            id = result.id,
+            id = result.id.value,
             name = result.localizedName,
             translationKey = result.translationKey.value
         )
@@ -53,7 +53,7 @@ class ExerciseRestAdapter(
 
         val responses = exercises.map { exercise ->
             ExerciseResponse(
-                id = exercise.id,
+                id = exercise.id.value,
                 name = exercise.localizedName,
                 translationKey = exercise.translationKey.value
             )
