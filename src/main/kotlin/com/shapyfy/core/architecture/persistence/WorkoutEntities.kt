@@ -26,6 +26,9 @@ class WorkoutEntity(
     @Column("end_time")
     val endTime: Instant,
 
+    @Column("plan_day_id")
+    val planDayId: UUID?,  // null = freestyle workout
+
     @Column("created_at")
     val createdAt: Instant,
 
@@ -46,6 +49,7 @@ class WorkoutEntity(
             status: String,
             startTime: Instant,
             endTime: Instant,
+            planDayId: UUID?,
             createdAt: Instant,
             updatedAt: Instant?
         ): WorkoutEntity = WorkoutEntity(
@@ -54,6 +58,7 @@ class WorkoutEntity(
             status = status,
             startTime = startTime,
             endTime = endTime,
+            planDayId = planDayId,
             createdAt = createdAt,
             updatedAt = updatedAt
         ).apply {

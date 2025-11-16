@@ -58,3 +58,36 @@ value class WorkoutSetId(override val value: UUID) : DomainId {
 
     override fun toString(): String = value.toString()
 }
+
+@JvmInline
+value class PlanId(override val value: UUID) : DomainId {
+    companion object {
+        fun generate(): PlanId = PlanId(UUID.randomUUID())
+        fun from(value: String): PlanId = PlanId(UUID.fromString(value))
+        fun from(value: UUID): PlanId = PlanId(value)
+    }
+
+    override fun toString(): String = value.toString()
+}
+
+@JvmInline
+value class PlanDayId(override val value: UUID) : DomainId {
+    companion object {
+        fun generate(): PlanDayId = PlanDayId(UUID.randomUUID())
+        fun from(value: String): PlanDayId = PlanDayId(UUID.fromString(value))
+        fun from(value: UUID): PlanDayId = PlanDayId(value)
+    }
+
+    override fun toString(): String = value.toString()
+}
+
+@JvmInline
+value class PlanExerciseId(override val value: UUID) : DomainId {
+    companion object {
+        fun generate(): PlanExerciseId = PlanExerciseId(UUID.randomUUID())
+        fun from(value: String): PlanExerciseId = PlanExerciseId(UUID.fromString(value))
+        fun from(value: UUID): PlanExerciseId = PlanExerciseId(value)
+    }
+
+    override fun toString(): String = value.toString()
+}

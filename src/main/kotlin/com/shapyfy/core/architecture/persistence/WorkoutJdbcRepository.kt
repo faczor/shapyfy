@@ -1,6 +1,7 @@
 package com.shapyfy.core.architecture.persistence
 
 import com.shapyfy.core.domain.ExerciseId
+import com.shapyfy.core.domain.PlanDayId
 import com.shapyfy.core.domain.UserId
 import com.shapyfy.core.domain.WorkoutExerciseId
 import com.shapyfy.core.domain.WorkoutId
@@ -36,6 +37,7 @@ class WorkoutJdbcRepository(
                 status = workout.status.name,
                 startTime = workout.startTime,
                 endTime = workout.endTime,
+                planDayId = workout.planDayId?.value,
                 createdAt = workout.createdAt,
                 updatedAt = workout.updatedAt
             )
@@ -173,6 +175,7 @@ class WorkoutJdbcRepository(
             startTime = startTime,
             endTime = endTime,
             exercises = exercises,
+            planDayId = planDayId?.let { PlanDayId.from(it) },
             createdAt = createdAt,
             updatedAt = updatedAt
         )

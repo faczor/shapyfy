@@ -1,14 +1,23 @@
 package com.shapyfy.core.domain.workout
 
 import com.shapyfy.core.domain.ExerciseId
+import com.shapyfy.core.domain.PlanDayId
 import com.shapyfy.core.domain.UserId
 import java.time.Instant
 
+/**
+ * Command to log a workout
+ *
+ * Can be:
+ * - Freestyle: planDayId is null
+ * - Planned: planDayId references the plan day this workout is based on
+ */
 data class WorkoutLoggingCommand(
     val userId: UserId,
     val startTime: Instant,
     val endTime: Instant,
-    val exercises: List<ExerciseLoggingData>
+    val exercises: List<ExerciseLoggingData>,
+    val planDayId: PlanDayId? = null  // null = freestyle workout
 ) {
     init {
         require(exercises.isNotEmpty()) { "Workout must contain at least one exercise" }

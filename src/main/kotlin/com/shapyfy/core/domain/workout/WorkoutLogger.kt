@@ -50,12 +50,23 @@ class WorkoutLogger(
             )
         }
 
-        val workout = Workout.new(
-            userId = command.userId,
-            startTime = command.startTime,
-            endTime = command.endTime,
-            exercises = workoutExercises
-        )
+        // Create workout based on whether it's planned or freestyle
+        val workout = if (command.planDayId != null) {
+            Workout.fromPlan(
+                userId = command.userId,
+                planDayId = command.planDayId,
+                startTime = command.startTime,
+                endTime = command.endTime,
+                exercises = workoutExercises
+            )
+        } else {
+            Workout.new(
+                userId = command.userId,
+                startTime = command.startTime,
+                endTime = command.endTime,
+                exercises = workoutExercises
+            )
+        }
 
         // Persist workout
         val savedWorkout = workoutRepository.save(workout)
