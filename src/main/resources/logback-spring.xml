@@ -9,14 +9,8 @@
         </encoder>
     </appender>
 
-    <!-- JSON file output for Loki/Promtail -->
-    <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/shapyfy-core.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/shapyfy-core-%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
-            <totalSizeCap>1GB</totalSizeCap>
-        </rollingPolicy>
+    <!-- JSON console output for Docker (parsed by logging infrastructure) -->
+    <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <includeMdcKeyName>trace_id</includeMdcKeyName>
             <includeMdcKeyName>span_id</includeMdcKeyName>
@@ -26,17 +20,15 @@
         </encoder>
     </appender>
 
-    <!-- Async wrapper for better performance -->
-    <appender name="ASYNC_JSON" class="ch.qos.logback.classic.AsyncAppender">
-        <queueSize>512</queueSize>
-        <discardingThreshold>0</discardingThreshold>
-        <appender-ref ref="JSON_FILE"/>
-    </appender>
-
     <!-- Root logger -->
     <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC_JSON"/>
+        <!-- Use human-readable console for local dev, JSON console for production -->
+        <springProfile name="dev,local">
+            <appender-ref ref="CONSOLE"/>
+        </springProfile>
+        <springProfile name="production,staging">
+            <appender-ref ref="JSON_CONSOLE"/>
+        </springProfile>
     </root>
 
     <!-- Spring Boot specific loggers -->

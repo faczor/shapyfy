@@ -1,0 +1,33 @@
+services:
+  shapyfy-core:
+    image: ghcr.io/${GITHUB_REPOSITORY:-shapyfy/core}:latest
+    container_name: shapyfy-core
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-production}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://psql01.mikr.us:5432/db_adrian247?currentSchema=shapyfy
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-production}
+    env_file:
+      - .env
+    networks:
+      - shapyfy-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 60s
+
+networks:
+  shapyfy-network:
+    driver: bridge

@@ -111,8 +111,9 @@ jobs:
             # Show status
             docker compose ps
 
-            # Wait for health check
-            sleep 10
+            # Wait for application to start (Spring Boot takes ~30-40 seconds)
+            echo "Waiting for application to start..."
+            sleep 30
             docker compose logs --tail=50
 
       - name: Verify Dev Deployment
@@ -124,15 +125,29 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             cd /opt/shapyfy
+
             # Check if container is running
-            if docker ps | grep -q shapyfy-core; then
-              echo "✅ Container is running"
-              docker compose exec -T shapyfy-core wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
-              echo "✅ Health check passed"
-            else
+            if ! docker ps | grep -q shapyfy-core; then
               echo "❌ Container is not running"
               exit 1
             fi
+
+            echo "✅ Container is running"
+
+            # Wait for app to be healthy (retry for up to 60 seconds)
+            echo "Waiting for health check to pass..."
+            for i in {1..12}; do
+              if docker compose exec -T shapyfy-core wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health 2>/dev/null; then
+                echo "✅ Health check passed"
+                exit 0
+              fi
+              echo "Attempt $i/12: Application still starting..."
+              sleep 5
+            done
+
+            echo "❌ Health check failed after 60 seconds"
+            docker compose logs --tail=100
+            exit 1
 
       - name: Deployment summary
         if: success()
