@@ -87,10 +87,11 @@ jib {
 	}
 	container {
 		jvmFlags = [
-			'-Xmx512m',
-			'-Xms256m',
+			'-Xmx1024m',                    // Increased from 512m for better performance
+			'-Xms512m',                     // Increased from 256m to reduce resizing
 			'-XX:+UseContainerSupport',
-			'-XX:MaxRAMPercentage=75.0'
+			'-XX:MaxRAMPercentage=75.0',
+			'-XX:+TieredCompilation'        // Enable tiered compilation (C1 + C2 for optimal runtime perf)
 		]
 		ports = ['8080']
 		labels = [

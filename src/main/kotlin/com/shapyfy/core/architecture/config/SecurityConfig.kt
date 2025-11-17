@@ -35,6 +35,7 @@ class SecurityConfig {
             authorize
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+                .requestMatchers("/api/v1/public/**").permitAll()
                 .requestMatchers("/api/v1/exercises/**").permitAll()
                 .requestMatchers("/api/v1/workouts/**").authenticated()
                 .anyRequest().permitAll()

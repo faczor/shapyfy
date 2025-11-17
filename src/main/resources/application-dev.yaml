@@ -14,7 +14,7 @@ spring:
 sentry:
   dsn: ${SENTRY_DSN:}
   environment: development
-  traces-sample-rate: 1.0  # Full tracing in dev
+  traces-sample-rate: 0.1  # Reduced from 1.0 to improve startup performance
   enable-tracing: true
 
 # Logging

@@ -1,3 +1,36 @@
+# Test Configuration
+# Testcontainers will override datasource properties via @DynamicPropertySource
+
 spring:
+  # Datasource - will be overridden by Testcontainers
+  # Note: No currentSchema parameter needed for Testcontainers
+  datasource:
+    url: jdbc:postgresql://localhost:5432/test
+    username: test
+    password: test
+
   flyway:
-    locations: classpath:test-db/migration
+    locations: classpath:db/migration
+    # Don't use schemas in tests - use public schema
+    schemas: public
+
+  # Security - use dummy values for tests (security filters disabled in tests)
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://www.googleapis.com/service_accounts/v1/jwk/test
+
+# Firebase - dummy values for tests
+firebase:
+  project-id: test-project
+
+# Anthropic - dummy value for tests
+anthropic:
+  api-key: test-key
+
+# Sentry - disabled for tests
+sentry:
+  dsn:
+  environment: test
+  enabled: false

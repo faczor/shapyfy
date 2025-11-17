@@ -24,8 +24,15 @@ class IncomingRequestLoggingFilter : OncePerRequestFilter() {
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val requestId = UUID.randomUUID().toString()
         val pathWithQuery = pathWithQuery(request)
+
+        // Skip logging for actuator endpoints (health checks, metrics, etc.)
+        if (pathWithQuery.startsWith("/actuator")) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
+        val requestId = UUID.randomUUID().toString()
         val userId = extractUserIdFromJwt(request)
 
         if (userId != null) {

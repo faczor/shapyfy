@@ -8,6 +8,7 @@ import com.shapyfy.core.domain.exercise.TranslationCategory
 import com.shapyfy.core.domain.plan.InvalidExerciseReferenceException as PlanInvalidExerciseReferenceException
 import com.shapyfy.core.domain.plan.NoActivePlanException
 import com.shapyfy.core.domain.plan.PlanNotFoundException
+import com.shapyfy.core.architecture.waitlist.WaitlistEmailAlreadyExistsException
 import com.shapyfy.core.domain.workout.InvalidExerciseReferenceException
 import com.shapyfy.core.domain.workout.WorkoutNotFoundException
 import org.slf4j.LoggerFactory
@@ -122,6 +123,19 @@ class ApiExceptionHandler(
                 ErrorResponse(
                     message = "No active plan found",
                     details = "User does not have an active plan"
+                )
+            )
+    }
+
+    @ExceptionHandler(WaitlistEmailAlreadyExistsException::class)
+    fun handleWaitlistEmailAlreadyExists(exception: WaitlistEmailAlreadyExistsException): ResponseEntity<ErrorResponse> {
+        log.info("Duplicate waitlist signup attempt: {}", exception.email)
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(
+                ErrorResponse(
+                    message = "Email already registered",
+                    details = "This email is already on the waitlist"
                 )
             )
     }

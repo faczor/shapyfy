@@ -53,6 +53,7 @@ abstract class IntegrationTestBase {
         jdbcTemplate.update("DELETE FROM workout_plans")
         jdbcTemplate.update("DELETE FROM translations")
         jdbcTemplate.update("DELETE FROM exercises")
+        jdbcTemplate.update("DELETE FROM waitlist_signup")
         cacheManager.getCache("translations")?.clear()
     }
 

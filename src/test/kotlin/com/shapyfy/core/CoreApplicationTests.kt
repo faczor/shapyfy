@@ -1,13 +1,13 @@
 package com.shapyfy.core
 
+import com.shapyfy.core.support.IntegrationTestBase
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
-class CoreApplicationTests {
+class CoreApplicationTests : IntegrationTestBase() {
 
 	@Test
 	fun contextLoads() {
+		// Verifies that Spring context loads successfully with Testcontainers
 	}
 
 }
