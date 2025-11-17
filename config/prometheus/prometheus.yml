@@ -13,7 +13,7 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 10s
     static_configs:
-      - targets: ['shapyfy-core:8080']
+      - targets: ['host.docker.internal:40086']
         labels:
           application: 'shapyfy-core'
           environment: 'production'
