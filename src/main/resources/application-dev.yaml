@@ -10,15 +10,7 @@ spring:
   jpa:
     show-sql: false  # Disable SQL logging in dev server
 
-# Firebase
-firebase:
-  project-id: ${FIREBASE_PROJECT_ID:shapyfy-dev}
-
-# Anthropic API
-anthropic:
-  api-key: ${ANTHROPIC_API_KEY:}
-
-# Sentry
+# Sentry (enabled for dev)
 sentry:
   dsn: ${SENTRY_DSN:}
   environment: development
