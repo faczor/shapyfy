@@ -1,25 +1,44 @@
+# Base Application Configuration
+# Common settings shared across all environments
+# Environment-specific settings are in application-{profile}.yaml
+
 spring:
   application:
-    name: core
-  jpa:
-    show-sql: true
+    name: shapyfy-core
+
+  # Flyway database migrations
   flyway:
     locations: classpath:db/migration
-  datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://psql01.mikr.us:5432/db_adrian247?currentSchema=shapyfy}
-    username: ${SPRING_DATASOURCE_USERNAME:adrian247}
-    password: ${SPRING_DATASOURCE_PASSWORD:93C4_1daf1e}
+    baseline-on-migrate: true
+    enabled: true
+
+  # Security
   security:
     oauth2:
       resourceserver:
         jwt:
-          # Firebase JWKS URL format: https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com
-          # Replace with your actual Firebase project ID or use environment variable
           jwk-set-uri: ${FIREBASE_JWK_SET_URI:https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com}
 
-firebase:
-  project-id: ${FIREBASE_PROJECT_ID:shapyfy-dev}
+  # Jackson JSON configuration
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
 
-anthropic:
-  api-key: ${ANTHROPIC_API_KEY:}
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Server configuration
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
 

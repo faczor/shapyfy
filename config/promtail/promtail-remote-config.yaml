@@ -1,0 +1,56 @@
+# Promtail configuration for remote Loki server
+# Replace <LOGGING_SERVER_IP> with your actual logging server IP
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  # Send logs to REMOTE Loki server
+  - url: http://<LOGGING_SERVER_IP>:3100/loki/api/v1/push
+    # Optional: Add basic auth if you secure Loki
+    # basic_auth:
+    #   username: loki
+    #   password: secret
+
+scrape_configs:
+  # Scrape JSON logs from Spring Boot application
+  - job_name: shapyfy-core
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: shapyfy-core
+          environment: production
+          server: app-server-1
+          __path__: /var/log/shapyfy/*.log
+
+    pipeline_stages:
+      # Parse JSON logs
+      - json:
+          expressions:
+            timestamp: timestamp
+            level: level
+            thread: thread
+            logger: logger
+            message: message
+            trace_id: trace_id
+            span_id: span_id
+            exception: exception
+
+      # Extract timestamp
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+
+      # Set labels from JSON fields
+      - labels:
+          level:
+          environment:
+
+      # Output the message
+      - output:
+          source: message

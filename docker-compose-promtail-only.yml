@@ -1,0 +1,14 @@
+# This runs on the APPLICATION SERVER (Server 1)
+# Promtail ships logs to remote Loki server
+
+version: '3.8'
+
+services:
+  promtail:
+    image: grafana/promtail:2.9.3
+    container_name: shapyfy-promtail
+    volumes:
+      - ./config/promtail/promtail-remote-config.yaml:/etc/promtail/config.yml
+      - ./logs:/var/log/shapyfy
+    command: -config.file=/etc/promtail/config.yml
+    restart: unless-stopped

@@ -1,0 +1,43 @@
+# Jib handles build internally, but this is useful if you ever use docker build
+
+# Build outputs
+build/
+target/
+*.jar
+*.war
+
+# Gradle
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.DS_Store
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+
+# Test resources
+src/test/
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# OS
+Thumbs.db
