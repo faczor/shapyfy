@@ -4,12 +4,27 @@ services:
     container_name: shapyfy-core
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "40086:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 1536m
+        reservations:
+          memory: 1024m
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-production}
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://psql01.mikr.us:5432/db_adrian247?currentSchema=shapyfy
-      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      # Database configuration (used by application.yaml)
+      - DB_SERVER=${DB_SERVER}
+      - DB_NAME=${DB_NAME}
+      - DB_SCHEMA=${DB_SCHEMA}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      # Firebase configuration
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_JWK_SET_URI=${FIREBASE_JWK_SET_URI}
+      # Anthropic API
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      # Sentry monitoring
       - SENTRY_DSN=${SENTRY_DSN}
       - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-production}
     env_file:
