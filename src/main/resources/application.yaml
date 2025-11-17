@@ -6,6 +6,12 @@ spring:
   application:
     name: shapyfy-core
 
+  # Datasource configuration (uses environment variables)
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
   # Flyway database migrations
   flyway:
     locations: classpath:db/migration

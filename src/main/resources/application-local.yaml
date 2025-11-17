@@ -3,12 +3,8 @@
 # Run with: ./gradlew bootRun --args='--spring.profiles.active=local'
 
 spring:
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
-    show-sql: true
+    show-sql: true  # Show SQL queries in console
 
 # Firebase (local testing)
 firebase:
