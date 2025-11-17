@@ -4,11 +4,11 @@ spring:
   jpa:
     show-sql: true
   flyway:
-    locations: classpath:db/migration/common,classpath:db/migration
+    locations: classpath:db/migration
   datasource:
-    url: jdbc:postgresql://psql01.mikr.us:5432/db_adrian247?schema=shapyfy
-    username: adrian247
-    password: 93C4_1daf1e
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://psql01.mikr.us:5432/db_adrian247?currentSchema=shapyfy}
+    username: ${SPRING_DATASOURCE_USERNAME:adrian247}
+    password: ${SPRING_DATASOURCE_PASSWORD:93C4_1daf1e}
   security:
     oauth2:
       resourceserver:

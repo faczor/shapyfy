@@ -20,16 +20,21 @@
         </encoder>
     </appender>
 
-    <!-- Root logger -->
-    <root level="INFO">
-        <!-- Use human-readable console for local dev, JSON console for production -->
-        <springProfile name="dev,local">
+    <!-- Root logger - profile-specific configs below -->
+
+    <!-- Dev/Local profile: human-readable console -->
+    <springProfile name="dev,local">
+        <root level="INFO">
             <appender-ref ref="CONSOLE"/>
-        </springProfile>
-        <springProfile name="production,staging">
+        </root>
+    </springProfile>
+
+    <!-- Production/Staging profile: JSON console for log aggregation -->
+    <springProfile name="production,staging">
+        <root level="INFO">
             <appender-ref ref="JSON_CONSOLE"/>
-        </springProfile>
-    </root>
+        </root>
+    </springProfile>
 
     <!-- Spring Boot specific loggers -->
     <logger name="org.springframework.web" level="INFO"/>
