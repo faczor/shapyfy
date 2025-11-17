@@ -6,7 +6,7 @@ spring:
   application:
     name: shapyfy-core
 
-  # Datasource configuration (uses environment variables)
+  # Datasource configuration (requires environment variables)
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -23,7 +23,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: ${FIREBASE_JWK_SET_URI:https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com}
+          jwk-set-uri: ${FIREBASE_JWK_SET_URI}
 
   # Jackson JSON configuration
   jackson:
@@ -50,9 +50,9 @@ server:
 
 # Firebase Configuration
 firebase:
-  project-id: ${FIREBASE_PROJECT_ID:shapyfy-dev}
+  project-id: ${FIREBASE_PROJECT_ID}
 
 # Anthropic API
 anthropic:
-  api-key: ${ANTHROPIC_API_KEY:}
+  api-key: ${ANTHROPIC_API_KEY}
 
