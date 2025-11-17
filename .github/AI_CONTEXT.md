@@ -33,3 +33,28 @@ The following external ports are allocated by Mikrus and available for use:
 - Allows room for future services on 40087 and 40088
 
 **Note:** The port mapping in docker-compose.yml must match one of the allocated Mikrus external ports. The internal port (8080) is defined in build.gradle's Jib configuration and should not be changed unless Spring Boot's server.port is also updated.
+
+### Important: Manual docker-compose.yml Deployment
+
+**CRITICAL:** The GitHub Actions workflow (.github/workflows/deploy.yml) does NOT automatically copy docker-compose.yml to the server. It only:
+1. Builds and pushes the Docker image
+2. Pulls the latest image on the server
+3. Runs `docker compose up -d` with the EXISTING docker-compose.yml on the server
+
+**If you modify docker-compose.yml, you MUST manually copy it to the server:**
+
+```bash
+# Copy updated docker-compose.yml to server
+scp -P 10247 docker-compose.yml root@adrian247.mikrus.xyz:/opt/shapyfy/
+
+# SSH to server and restart
+ssh root@adrian247.mikrus.xyz -p 10247
+cd /opt/shapyfy
+docker compose down
+docker compose up -d
+docker ps  # Verify the changes
+```
+
+**Without this manual step, your docker-compose.yml changes will NOT be applied on the server, even after a successful GitHub Actions deployment.**
+
+**TODO:** Consider updating the deploy.yml workflow to automatically copy docker-compose.yml during deployment.

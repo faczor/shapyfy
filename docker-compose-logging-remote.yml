@@ -1,5 +1,5 @@
-# This runs on the LOGGING SERVER (Server 2)
-# Access Grafana at: http://<logging-server-ip>:3000
+# This runs on srv35.mikr.us (same server as the application)
+# Access Grafana at: http://srv35.mikr.us:40087
 
 version: '3.8'
 
@@ -8,7 +8,7 @@ services:
     image: grafana/loki:2.9.3
     container_name: shapyfy-loki
     ports:
-      - "3100:3100"  # Exposed to network for remote Promtail
+      - "3100:3100"  # Internal port for Promtail
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - ./config/loki/loki-config.yaml:/etc/loki/local-config.yaml
@@ -21,12 +21,12 @@ services:
     image: grafana/grafana:10.2.3
     container_name: shapyfy-grafana
     ports:
-      - "3000:3000"  # Grafana UI
+      - "40087:3000"  # Grafana UI on Mikrus port 40087
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=shapyfy123
       - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_SERVER_ROOT_URL=http://<YOUR_LOGGING_SERVER_IP>:3000
+      - GF_SERVER_ROOT_URL=http://srv35.mikr.us:40087
     volumes:
       - grafana-data:/var/lib/grafana
       - ./config/grafana/provisioning:/etc/grafana/provisioning
