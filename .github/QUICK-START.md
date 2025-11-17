@@ -54,15 +54,34 @@ Keep this output - you'll paste it into GitHub in Step 3.
 
 In the `dev` environment, click **"Add secret"** for each:
 
+**Server Connection:**
 | Name | Value |
 |------|-------|
 | `SERVER_HOST` | `adrian247.mikrus.xyz` |
 | `SERVER_PORT` | `10247` |
 | `SERVER_USER` | `root` |
 | `SERVER_SSH_KEY` | (paste from `cat ~/.ssh/shapyfy-dev`) |
+
+**Database:**
+| Name | Value |
+|------|-------|
+| `DB_SERVER` | `psql01.mikr.us:5432` |
+| `DB_NAME` | `db_adrian247` |
+| `DB_SCHEMA` | `shapyfy` |
 | `DB_USERNAME` | your database username |
 | `DB_PASSWORD` | your database password |
-| `SENTRY_DSN` | (optional - leave empty for now) |
+
+**Firebase & API:**
+| Name | Value |
+|------|-------|
+| `FIREBASE_PROJECT_ID` | `shapyfy-dev` |
+| `FIREBASE_JWK_SET_URI` | `https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com` |
+| `ANTHROPIC_API_KEY` | your anthropic API key |
+
+**Optional:**
+| Name | Value |
+|------|-------|
+| `SENTRY_DSN` | (leave empty for now) |
 
 ---
 
@@ -172,7 +191,7 @@ open https://github.com/faczor/shapyfy/actions
 - Check workflow logs: https://github.com/faczor/shapyfy/actions
 
 **Deployment fails?**
-- Verify all 7 secrets are set in GitHub `dev` environment
+- Verify all 14 secrets are set in GitHub `dev` environment
 - Check SSH key is correct (including BEGIN/END lines)
 
 **Container won't start?**

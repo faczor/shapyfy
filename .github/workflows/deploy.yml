@@ -70,8 +70,14 @@ jobs:
       - name: Deploy to Dev Server
         uses: appleboy/ssh-action@v1.0.3
         env:
+          DB_SERVER: ${{ secrets.DB_SERVER }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_SCHEMA: ${{ secrets.DB_SCHEMA }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_JWK_SET_URI: ${{ secrets.FIREBASE_JWK_SET_URI }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           SENTRY_ENVIRONMENT: development
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -81,7 +87,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
-          envs: DB_USERNAME,DB_PASSWORD,SENTRY_DSN,SENTRY_ENVIRONMENT,GITHUB_REPOSITORY,SPRING_PROFILES_ACTIVE
+          envs: DB_SERVER,DB_NAME,DB_SCHEMA,DB_USERNAME,DB_PASSWORD,FIREBASE_PROJECT_ID,FIREBASE_JWK_SET_URI,ANTHROPIC_API_KEY,SENTRY_DSN,SENTRY_ENVIRONMENT,GITHUB_REPOSITORY,SPRING_PROFILES_ACTIVE
           script: |
             cd /opt/shapyfy
 
@@ -90,8 +96,14 @@ jobs:
 
             # Create/update .env file with secrets from GitHub
             cat > .env << EOF
+            DB_SERVER=${DB_SERVER}
+            DB_NAME=${DB_NAME}
+            DB_SCHEMA=${DB_SCHEMA}
             DB_USERNAME=${DB_USERNAME}
             DB_PASSWORD=${DB_PASSWORD}
+            FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+            FIREBASE_JWK_SET_URI=${FIREBASE_JWK_SET_URI}
+            ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
             SENTRY_DSN=${SENTRY_DSN}
             SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
             GITHUB_REPOSITORY=${GITHUB_REPOSITORY}

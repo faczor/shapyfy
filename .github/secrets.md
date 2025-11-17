@@ -31,13 +31,24 @@ These secrets are **environment-dependent** and must be configured separately fo
 
 | Secret Name | Description | Environment | Example Value | Required |
 |------------|-------------|-------------|---------------|----------|
-| `DB_USERNAME` | PostgreSQL database username | Per-env | `dev_user` / `prod_user` | ✅ Yes |
-| `DB_PASSWORD` | PostgreSQL database password | Per-env | `strong_password_123` | ✅ Yes |
+| `DB_SERVER` | PostgreSQL server host:port | Per-env | `psql01.mikr.us:5432` | ✅ Yes |
+| `DB_NAME` | PostgreSQL database name | Per-env | `db_adrian247` | ✅ Yes |
+| `DB_SCHEMA` | PostgreSQL schema name | Per-env | `shapyfy` | ✅ Yes |
+| `DB_USERNAME` | PostgreSQL username | Per-env | `dev_user` / `prod_user` | ✅ Yes |
+| `DB_PASSWORD` | PostgreSQL password | Per-env | `strong_password_123` | ✅ Yes |
 
 **Notes:**
+- URL is built as: `jdbc:postgresql://${DB_SERVER}/${DB_NAME}?currentSchema=${DB_SCHEMA}`
 - Use **different credentials** for dev and production
 - Production passwords should be stronger and rotated regularly
-- Database schema is configured in docker-compose.yml: `shapyfy` schema in `db_adrian247` database
+
+### Firebase & API Secrets
+
+| Secret Name | Description | Environment | Example Value | Required |
+|------------|-------------|-------------|---------------|----------|
+| `FIREBASE_PROJECT_ID` | Firebase project identifier | Per-env | `shapyfy-dev` / `shapyfy-prod` | ✅ Yes |
+| `FIREBASE_JWK_SET_URI` | Firebase JWT verification URL | Shared | `https://www.googleapis.com/.../securetoken@...` | ✅ Yes |
+| `ANTHROPIC_API_KEY` | Anthropic Claude API key | Per-env | `sk-ant-...` | ✅ Yes |
 
 ### Monitoring Secrets
 
@@ -152,12 +163,25 @@ cat ~/.ssh/shapyfy-prod
 Navigate to: `Settings` → `Environments` → `dev` → `Add secret`
 
 ```
+# Server Connection
 SERVER_HOST     = adrian247.mikrus.xyz
 SERVER_PORT     = 10247
 SERVER_USER     = root
 SERVER_SSH_KEY  = (output from: cat ~/.ssh/shapyfy-dev)
+
+# Database
+DB_SERVER       = psql01.mikr.us:5432
+DB_NAME         = db_adrian247
+DB_SCHEMA       = shapyfy
 DB_USERNAME     = your_dev_db_username
 DB_PASSWORD     = your_dev_db_password
+
+# Firebase & API
+FIREBASE_PROJECT_ID      = shapyfy-dev
+FIREBASE_JWK_SET_URI     = https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com
+ANTHROPIC_API_KEY        = your_anthropic_key
+
+# Optional
 SENTRY_DSN      = (optional - your dev Sentry DSN or leave empty)
 ```
 

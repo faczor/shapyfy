@@ -3,6 +3,9 @@
 # Run with: ./gradlew bootRun --args='--spring.profiles.active=local'
 
 spring:
+  config:
+    import: optional:file:.env[.properties]
+
   jpa:
     show-sql: true  # Show SQL queries in console
 
