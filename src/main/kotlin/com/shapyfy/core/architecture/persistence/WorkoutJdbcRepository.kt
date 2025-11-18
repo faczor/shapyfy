@@ -6,9 +6,10 @@ import com.shapyfy.core.domain.UserId
 import com.shapyfy.core.domain.WorkoutExerciseId
 import com.shapyfy.core.domain.WorkoutId
 import com.shapyfy.core.domain.WorkoutSetId
-import com.shapyfy.core.domain.workout.WorkoutRepository
+import com.shapyfy.core.domain.workout.ExerciseStatus
 import com.shapyfy.core.domain.workout.Workout
 import com.shapyfy.core.domain.workout.WorkoutExercise
+import com.shapyfy.core.domain.workout.WorkoutRepository
 import com.shapyfy.core.domain.workout.WorkoutSet
 import com.shapyfy.core.domain.workout.WorkoutStatus
 import org.slf4j.LoggerFactory
@@ -49,7 +50,8 @@ class WorkoutJdbcRepository(
                     id = exercise.id.value,
                     workoutId = workout.id.value,
                     exerciseId = exercise.exerciseId.value,
-                    orderIndex = exercise.orderIndex
+                    orderIndex = exercise.orderIndex,
+                    status = exercise.status.name
                 )
                 workoutExerciseCrudRepository.save(exerciseEntity)
 
@@ -99,6 +101,7 @@ class WorkoutJdbcRepository(
                     id = WorkoutExerciseId.from(exerciseEntity.getId()),
                     exerciseId = ExerciseId.from(exerciseEntity.exerciseId),
                     orderIndex = exerciseEntity.orderIndex,
+                    status = ExerciseStatus.valueOf(exerciseEntity.status),
                     sets = sets
                 )
             }.sortedBy { it.orderIndex }
@@ -152,6 +155,7 @@ class WorkoutJdbcRepository(
                         id = WorkoutExerciseId.from(exerciseEntity.getId()),
                         exerciseId = ExerciseId.from(exerciseEntity.exerciseId),
                         orderIndex = exerciseEntity.orderIndex,
+                        status = ExerciseStatus.valueOf(exerciseEntity.status),
                         sets = sets
                     )
                 }.sortedBy { it.orderIndex }

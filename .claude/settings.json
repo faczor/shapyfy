@@ -19,7 +19,8 @@
       "Bash(./gradlew clean test:*)",
       "Bash(./gradlew build:*)",
       "WebFetch(domain:github.com)",
-      "Bash(./gradlew compileKotlin:*)"
+      "Bash(./gradlew compileKotlin:*)",
+      "Bash(./gradlew compileTestKotlin:*)"
     ],
     "deny": [
       "Read(./.evc)"

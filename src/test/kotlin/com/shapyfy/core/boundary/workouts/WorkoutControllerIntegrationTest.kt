@@ -28,6 +28,7 @@ class WorkoutControllerIntegrationTest : IntegrationTestBase() {
                 WorkoutExerciseRequest(
                     exerciseId = exerciseId,
                     orderIndex = 0,
+                    status = "COMPLETED",
                     sets = listOf(
                         WorkoutSetRequest(
                             setNumber = 1,
@@ -76,6 +77,7 @@ class WorkoutControllerIntegrationTest : IntegrationTestBase() {
                 WorkoutExerciseRequest(
                     exerciseId = squatId,
                     orderIndex = 0,
+                    status = "COMPLETED",
                     sets = listOf(
                         WorkoutSetRequest(setNumber = 1, weight = 100.0, reps = 10, timestamp = now.minusSeconds(3500).toEpochMilli())
                     )
@@ -83,6 +85,7 @@ class WorkoutControllerIntegrationTest : IntegrationTestBase() {
                 WorkoutExerciseRequest(
                     exerciseId = benchPressId,
                     orderIndex = 1,
+                    status = "COMPLETED",
                     sets = listOf(
                         WorkoutSetRequest(setNumber = 1, weight = 80.0, reps = 10, timestamp = now.minusSeconds(3000).toEpochMilli())
                     )
@@ -114,6 +117,7 @@ class WorkoutControllerIntegrationTest : IntegrationTestBase() {
                 WorkoutExerciseRequest(
                     exerciseId = nonExistentExerciseId,
                     orderIndex = 0,
+                    status = "COMPLETED",
                     sets = listOf(
                         WorkoutSetRequest(setNumber = 1, weight = 100.0, reps = 10, timestamp = now.toEpochMilli())
                     )
@@ -141,7 +145,7 @@ class WorkoutControllerIntegrationTest : IntegrationTestBase() {
     }
 
     @Test
-    fun `should fail validation when sets list is empty`() {
+    fun `should fail validation when sets list is empty for completed exercise`() {
         val exerciseId = createExercise("Squat")
         val now = Instant.now()
         val request = LogWorkoutRequest(
@@ -151,6 +155,7 @@ class WorkoutControllerIntegrationTest : IntegrationTestBase() {
                 WorkoutExerciseRequest(
                     exerciseId = exerciseId,
                     orderIndex = 0,
+                    status = "COMPLETED",
                     sets = emptyList()
                 )
             )
@@ -158,6 +163,118 @@ class WorkoutControllerIntegrationTest : IntegrationTestBase() {
 
         logWorkout(request, testUserId)
             .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `should allow empty sets for skipped exercise`() {
+        val exerciseId = createExercise("Squat")
+        val now = Instant.now()
+        val request = LogWorkoutRequest(
+            startTime = now.minusSeconds(3600).toEpochMilli(),
+            endTime = now.toEpochMilli(),
+            exercises = listOf(
+                WorkoutExerciseRequest(
+                    exerciseId = exerciseId,
+                    orderIndex = 0,
+                    status = "SKIPPED",
+                    sets = emptyList()
+                )
+            )
+        )
+
+        logWorkout(request, testUserId)
+            .andExpect(status().isCreated)
+            .andExpect(jsonPath("$.exercises[0].status").value("SKIPPED"))
+            .andExpect(jsonPath("$.exercises[0].sets.length()").value(0))
+    }
+
+    @Test
+    fun `should allow empty sets for queued exercise`() {
+        val exerciseId = createExercise("Squat")
+        val now = Instant.now()
+        val request = LogWorkoutRequest(
+            startTime = now.minusSeconds(3600).toEpochMilli(),
+            endTime = now.toEpochMilli(),
+            exercises = listOf(
+                WorkoutExerciseRequest(
+                    exerciseId = exerciseId,
+                    orderIndex = 0,
+                    status = "QUEUED",
+                    sets = emptyList()
+                )
+            )
+        )
+
+        logWorkout(request, testUserId)
+            .andExpect(status().isCreated)
+            .andExpect(jsonPath("$.exercises[0].status").value("QUEUED"))
+            .andExpect(jsonPath("$.exercises[0].sets.length()").value(0))
+    }
+
+    @Test
+    fun `should allow empty sets for in_progress exercise`() {
+        val exerciseId = createExercise("Squat")
+        val now = Instant.now()
+        val request = LogWorkoutRequest(
+            startTime = now.minusSeconds(3600).toEpochMilli(),
+            endTime = now.toEpochMilli(),
+            exercises = listOf(
+                WorkoutExerciseRequest(
+                    exerciseId = exerciseId,
+                    orderIndex = 0,
+                    status = "IN_PROGRESS",
+                    sets = emptyList()
+                )
+            )
+        )
+
+        logWorkout(request, testUserId)
+            .andExpect(status().isCreated)
+            .andExpect(jsonPath("$.exercises[0].status").value("IN_PROGRESS"))
+            .andExpect(jsonPath("$.exercises[0].sets.length()").value(0))
+    }
+
+    @Test
+    fun `should allow mixed exercise statuses in same workout`() {
+        val squatId = createExercise("Squat")
+        val benchPressId = createExercise("Bench Press")
+        val deadliftId = createExercise("Deadlift")
+        val now = Instant.now()
+        val request = LogWorkoutRequest(
+            startTime = now.minusSeconds(3600).toEpochMilli(),
+            endTime = now.toEpochMilli(),
+            exercises = listOf(
+                WorkoutExerciseRequest(
+                    exerciseId = squatId,
+                    orderIndex = 0,
+                    status = "COMPLETED",
+                    sets = listOf(
+                        WorkoutSetRequest(setNumber = 1, weight = 100.0, reps = 10, timestamp = now.toEpochMilli())
+                    )
+                ),
+                WorkoutExerciseRequest(
+                    exerciseId = benchPressId,
+                    orderIndex = 1,
+                    status = "SKIPPED",
+                    sets = emptyList()
+                ),
+                WorkoutExerciseRequest(
+                    exerciseId = deadliftId,
+                    orderIndex = 2,
+                    status = "QUEUED",
+                    sets = emptyList()
+                )
+            )
+        )
+
+        logWorkout(request, testUserId)
+            .andExpect(status().isCreated)
+            .andExpect(jsonPath("$.exercises[0].status").value("COMPLETED"))
+            .andExpect(jsonPath("$.exercises[0].sets.length()").value(1))
+            .andExpect(jsonPath("$.exercises[1].status").value("SKIPPED"))
+            .andExpect(jsonPath("$.exercises[1].sets.length()").value(0))
+            .andExpect(jsonPath("$.exercises[2].status").value("QUEUED"))
+            .andExpect(jsonPath("$.exercises[2].sets.length()").value(0))
     }
 
     @Test
@@ -171,6 +288,7 @@ class WorkoutControllerIntegrationTest : IntegrationTestBase() {
                 WorkoutExerciseRequest(
                     exerciseId = exerciseId,
                     orderIndex = 0,
+                    status = "COMPLETED",
                     sets = listOf(
                         WorkoutSetRequest(setNumber = 1, weight = -10.0, reps = 10, timestamp = now.toEpochMilli())
                     )
@@ -194,6 +312,7 @@ class WorkoutControllerIntegrationTest : IntegrationTestBase() {
                 WorkoutExerciseRequest(
                     exerciseId = exerciseId,
                     orderIndex = 0,
+                    status = "COMPLETED",
                     sets = listOf(
                         WorkoutSetRequest(setNumber = 1, weight = 100.0, reps = 10, timestamp = now.toEpochMilli())
                     )
@@ -238,6 +357,7 @@ class WorkoutControllerIntegrationTest : IntegrationTestBase() {
                     WorkoutExerciseRequest(
                         exerciseId = exerciseId,
                         orderIndex = 0,
+                        status = "COMPLETED",
                         sets = listOf(
                             WorkoutSetRequest(setNumber = 1, weight = 100.0, reps = 10, timestamp = now.toEpochMilli())
                         )
@@ -279,6 +399,7 @@ class WorkoutControllerIntegrationTest : IntegrationTestBase() {
                     WorkoutExerciseRequest(
                         exerciseId = exerciseId,
                         orderIndex = 0,
+                        status = "COMPLETED",
                         sets = listOf(
                             WorkoutSetRequest(setNumber = 1, weight = 100.0, reps = 10, timestamp = now.toEpochMilli())
                         )
@@ -306,6 +427,7 @@ class WorkoutControllerIntegrationTest : IntegrationTestBase() {
                 WorkoutExerciseRequest(
                     exerciseId = exerciseId,
                     orderIndex = 0,
+                    status = "COMPLETED",
                     sets = listOf(
                         WorkoutSetRequest(setNumber = 1, weight = 100.0, reps = 10, timestamp = now.toEpochMilli())
                     )

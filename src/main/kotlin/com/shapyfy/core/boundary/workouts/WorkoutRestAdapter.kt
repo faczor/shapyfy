@@ -3,12 +3,13 @@ package com.shapyfy.core.boundary.workouts
 import com.shapyfy.core.domain.ExerciseId
 import com.shapyfy.core.domain.UserId
 import com.shapyfy.core.domain.WorkoutId
-import com.shapyfy.core.domain.workout.WorkoutFetcher
-import com.shapyfy.core.domain.workout.WorkoutLogger
 import com.shapyfy.core.domain.workout.ExerciseLoggingData
+import com.shapyfy.core.domain.workout.ExerciseStatus
 import com.shapyfy.core.domain.workout.SetLoggingData
 import com.shapyfy.core.domain.workout.Workout
 import com.shapyfy.core.domain.workout.WorkoutExercise
+import com.shapyfy.core.domain.workout.WorkoutFetcher
+import com.shapyfy.core.domain.workout.WorkoutLogger
 import com.shapyfy.core.domain.workout.WorkoutLoggingCommand
 import com.shapyfy.core.domain.workout.WorkoutSet
 import org.slf4j.LoggerFactory
@@ -34,6 +35,7 @@ class WorkoutRestAdapter(
                 ExerciseLoggingData(
                     exerciseId = ExerciseId.from(exerciseRequest.exerciseId),
                     orderIndex = exerciseRequest.orderIndex,
+                    status = ExerciseStatus.valueOf(exerciseRequest.status.uppercase()),
                     sets = exerciseRequest.sets.map { setRequest ->
                         SetLoggingData(
                             setNumber = setRequest.setNumber,
@@ -83,6 +85,7 @@ class WorkoutRestAdapter(
         id = id.value,
         exerciseId = exerciseId.value,
         orderIndex = orderIndex,
+        status = status.name,
         sets = sets.map { it.toResponse() }
     )
 

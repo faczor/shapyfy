@@ -1,0 +1,3 @@
+ALTER TABLE workout_exercises ADD COLUMN status VARCHAR(50) NOT NULL DEFAULT 'COMPLETED';
+
+ALTER TABLE workout_exercises ALTER COLUMN status DROP DEFAULT;

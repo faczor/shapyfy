@@ -1,8 +1,10 @@
 package com.shapyfy.core.boundary.workouts
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.shapyfy.core.boundary.validation.ValidExerciseSets
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
 import java.util.UUID
@@ -24,6 +26,7 @@ data class LogWorkoutRequest(
     val exercises: List<WorkoutExerciseRequest>
 )
 
+@ValidExerciseSets
 data class WorkoutExerciseRequest(
     @field:NotNull(message = "exercise_id is required")
     @JsonProperty("exercise_id")
@@ -34,9 +37,11 @@ data class WorkoutExerciseRequest(
     @JsonProperty("order_index")
     val orderIndex: Int,
 
-    @field:NotEmpty(message = "sets cannot be empty")
+    @field:NotBlank(message = "status is required")
+    val status: String,
+
     @field:Valid
-    val sets: List<WorkoutSetRequest>
+    val sets: List<WorkoutSetRequest> = emptyList()
 )
 
 data class WorkoutSetRequest(
@@ -91,6 +96,8 @@ data class WorkoutExerciseResponse(
 
     @JsonProperty("order_index")
     val orderIndex: Int,
+
+    val status: String,
 
     val sets: List<WorkoutSetResponse>
 )

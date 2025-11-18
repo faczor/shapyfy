@@ -80,7 +80,10 @@ class WorkoutExerciseEntity(
     val exerciseId: UUID,
 
     @Column("order_index")
-    val orderIndex: Int
+    val orderIndex: Int,
+
+    @Column("status")
+    val status: String
 ) : Persistable<UUID> {
 
     @Transient
@@ -94,12 +97,14 @@ class WorkoutExerciseEntity(
             id: UUID,
             workoutId: UUID,
             exerciseId: UUID,
-            orderIndex: Int
+            orderIndex: Int,
+            status: String
         ): WorkoutExerciseEntity = WorkoutExerciseEntity(
             _id = id,
             workoutId = workoutId,
             exerciseId = exerciseId,
-            orderIndex = orderIndex
+            orderIndex = orderIndex,
+            status = status
         ).apply {
             isNewEntity = true
         }

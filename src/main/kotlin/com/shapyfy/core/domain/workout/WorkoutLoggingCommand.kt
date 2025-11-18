@@ -28,11 +28,14 @@ data class WorkoutLoggingCommand(
 data class ExerciseLoggingData(
     val exerciseId: ExerciseId,
     val orderIndex: Int,
+    val status: ExerciseStatus,
     val sets: List<SetLoggingData>
 ) {
     init {
-        require(sets.isNotEmpty()) { "Exercise must contain at least one set" }
         require(orderIndex >= 0) { "Order index must be non-negative" }
+        if (status.requiresSets()) {
+            require(sets.isNotEmpty()) { "Exercise must contain at least one set when status is $status" }
+        }
     }
 }
 

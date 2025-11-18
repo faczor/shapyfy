@@ -46,6 +46,7 @@ class WorkoutLogger(
             WorkoutExercise.new(
                 exerciseId = exerciseData.exerciseId,
                 orderIndex = exerciseData.orderIndex,
+                status = exerciseData.status,
                 sets = sets
             )
         }
