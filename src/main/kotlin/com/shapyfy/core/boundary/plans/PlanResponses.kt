@@ -1,12 +1,16 @@
 package com.shapyfy.core.boundary.plans
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
+import com.fasterxml.jackson.databind.annotation.JsonNaming
 import java.time.Instant
 import java.time.LocalDate
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class UserPlansResponse(
     val plans: List<PlanDetailsResponse>
 )
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class PlanDetailsResponse(
     val id: String,
     val name: String,
@@ -19,6 +23,7 @@ data class PlanDetailsResponse(
     val updatedAt: Instant?
 )
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class PlanDayResponse(
     val id: String,
     val dayIndex: Int,
@@ -28,6 +33,7 @@ data class PlanDayResponse(
     val notes: String?
 )
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class PlanExerciseResponse(
     val id: String,
     val exerciseId: String,

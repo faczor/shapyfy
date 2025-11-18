@@ -1,5 +1,7 @@
 package com.shapyfy.core.boundary.plans
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
+import com.fasterxml.jackson.databind.annotation.JsonNaming
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
@@ -7,6 +9,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.Positive
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class CreatePlanRequest(
     @field:NotBlank(message = "Plan name is required")
     val name: String,
@@ -18,6 +21,7 @@ data class CreatePlanRequest(
     val days: List<CreatePlanDayRequest>
 )
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class CreatePlanDayRequest(
     @field:Min(0, message = "Day index must be non-negative")
     @field:Max(29, message = "Day index must be less than 30")
@@ -34,6 +38,7 @@ data class CreatePlanDayRequest(
     val notes: String?
 )
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class CreatePlanExerciseRequest(
     @field:NotBlank(message = "Exercise ID is required")
     val exerciseId: String,

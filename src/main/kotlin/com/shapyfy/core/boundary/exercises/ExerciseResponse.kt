@@ -8,6 +8,10 @@ data class ExerciseResponse(
     val translationKey: String
 )
 
+data class GetExercisesResponse(
+    val exercises: List<ExerciseResponse>
+)
+
 data class ExerciseConflictResponse(
     val id: UUID,
     val message: String,

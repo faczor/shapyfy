@@ -2,12 +2,17 @@ package com.shapyfy.core.support
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.shapyfy.core.architecture.security.JwtToken
+import com.shapyfy.core.architecture.translation.AiTranslationClient
+import com.shapyfy.core.architecture.translation.AiTranslationResult
 import com.shapyfy.core.boundary.ApiController
+import com.shapyfy.core.domain.Language
 import com.shapyfy.core.domain.UserId
+import org.mockito.Mockito
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.cache.CacheManager
 import org.springframework.http.MediaType
 import org.springframework.jdbc.core.JdbcTemplate
@@ -42,6 +47,9 @@ abstract class IntegrationTestBase {
     @Autowired
     protected lateinit var cacheManager: CacheManager
 
+    @MockBean
+    protected lateinit var aiTranslationClient: AiTranslationClient
+
     @BeforeEach
     fun resetState() {
         // Delete in correct order due to foreign keys
@@ -55,6 +63,44 @@ abstract class IntegrationTestBase {
         jdbcTemplate.update("DELETE FROM exercises")
         jdbcTemplate.update("DELETE FROM waitlist_signup")
         cacheManager.getCache("translations")?.clear()
+
+        // Setup default AI translation mock behavior
+        setupDefaultAiTranslationMock()
+    }
+
+    /**
+     * Configures the AI translation client mock with a dictionary of known exercise translations.
+     * Tests can override this by calling Mockito.when() again for specific inputs.
+     */
+    private fun setupDefaultAiTranslationMock() {
+        val translations = mapOf(
+            // Polish exercises
+            "przysiady" to AiTranslationResult(Language.PL, "Squat", 0.95),
+            "wyciskanie" to AiTranslationResult(Language.PL, "Bench Press", 0.92),
+            "martwy ciąg" to AiTranslationResult(Language.PL, "Deadlift", 0.94),
+            "podciąganie" to AiTranslationResult(Language.PL, "Pull Up", 0.93),
+            // English exercises
+            "squat" to AiTranslationResult(Language.EN, "Squat", 0.99),
+            "bench press" to AiTranslationResult(Language.EN, "Bench Press", 0.99),
+            "deadlift" to AiTranslationResult(Language.EN, "Deadlift", 0.99),
+            "pull up" to AiTranslationResult(Language.EN, "Pull Up", 0.99)
+        )
+
+        Mockito.`when`(aiTranslationClient.detectAndTranslate(Mockito.anyString())).thenAnswer { invocation ->
+            val input = invocation.getArgument<String>(0).lowercase().trim()
+            translations[input] ?: AiTranslationResult(
+                detectedLanguage = Language.EN,
+                englishName = invocation.getArgument<String>(0).replaceFirstChar { it.titlecase() },
+                confidence = 0.7
+            )
+        }
+    }
+
+    /**
+     * Helper to configure custom AI translation response for a specific input.
+     */
+    protected fun mockAiTranslation(input: String, result: AiTranslationResult) {
+        Mockito.`when`(aiTranslationClient.detectAndTranslate(input)).thenReturn(result)
     }
 
     protected fun postJson(
@@ -85,6 +131,20 @@ abstract class IntegrationTestBase {
             .accept(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(body))
             .principal(createTestJwtToken(userId))
+
+        if (acceptLanguage != null) {
+            requestBuilder.header(ApiController.ACCEPT_LANGUAGE_HEADER, acceptLanguage)
+        }
+
+        return mockMvc.perform(requestBuilder)
+    }
+
+    protected fun getJson(
+        path: String,
+        acceptLanguage: String? = "pl"
+    ): ResultActions {
+        val requestBuilder = get(path)
+            .accept(MediaType.APPLICATION_JSON)
 
         if (acceptLanguage != null) {
             requestBuilder.header(ApiController.ACCEPT_LANGUAGE_HEADER, acceptLanguage)

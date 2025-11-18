@@ -168,6 +168,23 @@ The application has built-in support for multilingual exercise names:
 - `V1__create_exercises.sql` - exercises table
 - `V2__add_translations.sql` - translations catalog table
 
+### JSON Naming Convention
+
+All REST API request and response DTOs must use **snake_case** for JSON property names. Use the `@JsonNaming` annotation on each DTO class:
+
+```kotlin
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
+import com.fasterxml.jackson.databind.annotation.JsonNaming
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
+data class MyRequest(
+    val userId: String,        // JSON: "user_id"
+    val targetWeight: Double   // JSON: "target_weight"
+)
+```
+
+**Important**: Apply `@JsonNaming` to each data class individually (requests and responses). Kotlin property names remain camelCase in code, but serialize/deserialize as snake_case in JSON.
+
 ### Kotlin-specific Configuration
 - JSR-305 strict mode enabled (`-Xjsr305=strict`)
 - Kotlin reflection included for Spring

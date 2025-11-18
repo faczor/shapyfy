@@ -23,7 +23,8 @@ class ExerciseController(
     @GetMapping
     fun getExercises(
         @RequestHeader(ACCEPT_LANGUAGE_HEADER, required = false) acceptLanguage: String?
-    ): List<String> = exerciseRestAdapter
-        .listExercises(acceptLanguage)
-        .map { it.name }
+    ): ResponseEntity<GetExercisesResponse> {
+        val exercises = exerciseRestAdapter.listExercises(acceptLanguage)
+        return ResponseEntity.ok(GetExercisesResponse(exercises))
+    }
 }
