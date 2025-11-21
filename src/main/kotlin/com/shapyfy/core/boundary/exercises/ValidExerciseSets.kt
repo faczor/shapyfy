@@ -1,4 +1,4 @@
-package com.shapyfy.core.boundary.validation
+package com.shapyfy.core.boundary.exercises
 
 import com.shapyfy.core.boundary.workouts.WorkoutExerciseRequest
 import com.shapyfy.core.domain.workout.ExerciseStatus

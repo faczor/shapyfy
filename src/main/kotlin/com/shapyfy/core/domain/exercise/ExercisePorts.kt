@@ -28,3 +28,18 @@ data class CanonicalizationResult(
     val confidence: Double,
     val isExistingTranslation: Boolean
 )
+
+interface ExerciseClassificationPort {
+    fun classify(exerciseName: String): ExerciseProperties
+}
+
+/**
+ * Domain representation of exercise properties determined by classification.
+ */
+data class ExerciseProperties(
+    val primaryMuscleGroup: MuscleGroup,
+    val secondaryMuscleGroups: Set<MuscleGroup>,
+    val equipmentRequired: Set<Equipment>,
+    val difficulty: Difficulty,
+    val movementPattern: MovementPattern
+)

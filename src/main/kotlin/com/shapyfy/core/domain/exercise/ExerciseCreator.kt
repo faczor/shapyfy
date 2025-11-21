@@ -6,7 +6,8 @@ import org.springframework.stereotype.Component
 @Component
 class ExerciseCreator(
     private val exerciseRepository: ExerciseRepository,
-    private val translationPort: ExerciseTranslationPort
+    private val translationPort: ExerciseTranslationPort,
+    private val classificationPort: ExerciseClassificationPort
 ) {
 
     private val log = LoggerFactory.getLogger(javaClass)
@@ -32,15 +33,18 @@ class ExerciseCreator(
             throw ExerciseDuplicateException(existing)
         }
 
-        // TODO: Once exercise library is built, these should come from user input or AI classification
+        // Classify exercise properties using AI
+        log.info("Classifying exercise properties for '{}'", canonicalName)
+        val properties = classificationPort.classify(canonicalName)
+
         val exercise = exerciseRepository.saveNew(
             exercise = Exercise.new(
                 name = canonicalName,
-                primaryMuscleGroup = MuscleGroup.CHEST, // Temporary default
-                secondaryMuscleGroups = emptySet(), // Temporary default
-                equipmentRequired = setOf(Equipment.BODYWEIGHT), // Temporary default
-                difficulty = Difficulty.BEGINNER, // Temporary default
-                movementPattern = MovementPattern.ISOLATION // Temporary default
+                primaryMuscleGroup = properties.primaryMuscleGroup,
+                secondaryMuscleGroups = properties.secondaryMuscleGroups,
+                equipmentRequired = properties.equipmentRequired,
+                difficulty = properties.difficulty,
+                movementPattern = properties.movementPattern
             ),
             language = command.preferredLanguage,
             detectedLanguage = canonicalization.detectedLanguage,

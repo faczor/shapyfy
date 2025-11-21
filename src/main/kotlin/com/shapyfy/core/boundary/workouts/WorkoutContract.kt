@@ -1,7 +1,7 @@
 package com.shapyfy.core.boundary.workouts
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.shapyfy.core.boundary.validation.ValidExerciseSets
+import com.shapyfy.core.boundary.exercises.ValidExerciseSets
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
