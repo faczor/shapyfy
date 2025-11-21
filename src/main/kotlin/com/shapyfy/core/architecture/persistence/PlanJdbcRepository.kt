@@ -29,6 +29,10 @@ class PlanJdbcRepository(
             cycleDays = plan.cycleDays,
             isActive = plan.isActive,
             activationDate = plan.activationDate,
+            isRecommended = plan.isRecommended,
+            recommendationScore = plan.recommendationScore,
+            targetExperienceLevel = plan.targetExperienceLevel?.name,
+            targetGoal = plan.targetGoal?.name,
             createdAt = plan.createdAt,
             updatedAt = plan.updatedAt
         )
@@ -174,6 +178,10 @@ class PlanJdbcRepository(
             days = days,
             isActive = isActive,
             activationDate = activationDate,
+            isRecommended = isRecommended,
+            recommendationScore = recommendationScore,
+            targetExperienceLevel = targetExperienceLevel?.let { ExperienceLevel.valueOf(it) },
+            targetGoal = targetGoal?.let { FitnessGoal.valueOf(it) },
             createdAt = createdAt,
             updatedAt = updatedAt
         )

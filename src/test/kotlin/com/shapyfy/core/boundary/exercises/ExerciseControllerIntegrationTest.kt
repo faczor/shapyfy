@@ -14,7 +14,13 @@ class ExerciseControllerIntegrationTest : IntegrationTestBase() {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").isNotEmpty)
             .andExpect(jsonPath("$.name").value("Przysiady"))
-            .andExpect(jsonPath("$.translationKey").value("exercises.squat"))
+            .andExpect(jsonPath("$.translation_key").value("exercises.squat"))
+            .andExpect(jsonPath("$.primary_muscle_group").value("CHEST"))
+            .andExpect(jsonPath("$.secondary_muscle_groups").isArray)
+            .andExpect(jsonPath("$.equipment_required").isArray)
+            .andExpect(jsonPath("$.equipment_required[0]").value("BODYWEIGHT"))
+            .andExpect(jsonPath("$.difficulty").value("BEGINNER"))
+            .andExpect(jsonPath("$.movement_pattern").value("ISOLATION"))
     }
 
     @Test
@@ -40,7 +46,9 @@ class ExerciseControllerIntegrationTest : IntegrationTestBase() {
         postJson("/api/v1/exercises", CreateExerciseRequest(name = "Squat"), acceptLanguage = null)
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.name").value("Squat"))
-            .andExpect(jsonPath("$.translationKey").value("exercises.squat"))
+            .andExpect(jsonPath("$.translation_key").value("exercises.squat"))
+            .andExpect(jsonPath("$.primary_muscle_group").value("CHEST"))
+            .andExpect(jsonPath("$.difficulty").value("BEGINNER"))
     }
 
     @Test
@@ -54,10 +62,15 @@ class ExerciseControllerIntegrationTest : IntegrationTestBase() {
             .andExpect(jsonPath("$.exercises.length()").value(2))
             .andExpect(jsonPath("$.exercises[0].id").isNotEmpty)
             .andExpect(jsonPath("$.exercises[0].name").isNotEmpty)
-            .andExpect(jsonPath("$.exercises[0].translationKey").isNotEmpty)
+            .andExpect(jsonPath("$.exercises[0].translation_key").isNotEmpty)
+            .andExpect(jsonPath("$.exercises[0].primary_muscle_group").isNotEmpty)
+            .andExpect(jsonPath("$.exercises[0].secondary_muscle_groups").isArray)
+            .andExpect(jsonPath("$.exercises[0].equipment_required").isArray)
+            .andExpect(jsonPath("$.exercises[0].difficulty").isNotEmpty)
+            .andExpect(jsonPath("$.exercises[0].movement_pattern").isNotEmpty)
             .andExpect(jsonPath("$.exercises[1].id").isNotEmpty)
             .andExpect(jsonPath("$.exercises[1].name").isNotEmpty)
-            .andExpect(jsonPath("$.exercises[1].translationKey").isNotEmpty)
+            .andExpect(jsonPath("$.exercises[1].translation_key").isNotEmpty)
     }
 
     @Test

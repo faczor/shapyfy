@@ -24,12 +24,9 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.Instant
 import java.util.UUID
 
-@Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
@@ -185,21 +182,14 @@ abstract class IntegrationTestBase {
     }
 
     companion object {
-        @Container
-        @JvmStatic
-        val postgres: TestPostgresContainer = TestPostgresContainer("postgres:16-alpine").apply {
-            withDatabaseName("core_test")
-            withUsername("core")
-            withPassword("core")
-        }
-
         @JvmStatic
         @DynamicPropertySource
         fun postgresProperties(registry: DynamicPropertyRegistry) {
-            registry.add("spring.datasource.url") { postgres.jdbcUrl }
-            registry.add("spring.datasource.username") { postgres.username }
-            registry.add("spring.datasource.password") { postgres.password }
-            registry.add("spring.datasource.driver-class-name") { postgres.driverClassName }
+            val container = TestPostgresContainer.instance
+            registry.add("spring.datasource.url") { container.jdbcUrl }
+            registry.add("spring.datasource.username") { container.username }
+            registry.add("spring.datasource.password") { container.password }
+            registry.add("spring.datasource.driver-class-name") { container.driverClassName }
         }
     }
 }

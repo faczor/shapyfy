@@ -1,18 +1,21 @@
 package com.shapyfy.core.architecture.metrics
 
 import com.shapyfy.core.domain.Language
-import com.shapyfy.core.domain.exercise.ExerciseMetricsPort
 import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.stereotype.Component
 
+/**
+ * Architecture-level component for recording exercise metrics.
+ * Used directly by architecture adapters (repositories, exception handlers).
+ */
 @Component
 class MicrometerExerciseMetrics(
     private val meterRegistry: MeterRegistry
-) : ExerciseMetricsPort {
+) {
 
     private val confidenceSummary = meterRegistry.summary("exercise_ai_confidence")
 
-    override fun recordCreation(language: Language, detectedLanguage: Language, confidence: Double) {
+    fun recordCreation(language: Language, detectedLanguage: Language, confidence: Double) {
         meterRegistry.counter(
             "exercise_created_total",
             "language", language.code,
@@ -22,7 +25,7 @@ class MicrometerExerciseMetrics(
         confidenceSummary.record(confidence)
     }
 
-    override fun recordConflict(language: Language) {
+    fun recordConflict(language: Language) {
         meterRegistry.counter(
             "exercise_conflict_total",
             "language", language.code

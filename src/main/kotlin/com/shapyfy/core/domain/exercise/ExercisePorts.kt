@@ -4,15 +4,11 @@ import com.shapyfy.core.domain.ExerciseId
 import com.shapyfy.core.domain.Language
 
 interface ExerciseRepository {
-    fun save(exercise: Exercise): Exercise
+    fun saveNew(exercise: Exercise, language: Language, detectedLanguage: Language, confidence: Double): Exercise
+
     fun findByName(name: String): Exercise?
     fun findAll(): List<Exercise>
     fun existsById(id: ExerciseId): Boolean
-}
-
-interface ExerciseMetricsPort {
-    fun recordCreation(language: Language, detectedLanguage: Language, confidence: Double)
-    fun recordConflict(language: Language)
 }
 
 interface ExerciseTranslationPort {

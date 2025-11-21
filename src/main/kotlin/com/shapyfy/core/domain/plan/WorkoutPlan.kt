@@ -15,6 +15,10 @@ data class WorkoutPlan(
     val days: List<PlanDay>,
     val isActive: Boolean,
     val activationDate: LocalDate?,
+    val isRecommended: Boolean,
+    val recommendationScore: Double?,
+    val targetExperienceLevel: ExperienceLevel?,
+    val targetGoal: FitnessGoal?,
     val createdAt: Instant,
     val updatedAt: Instant?
 ) {
@@ -107,6 +111,10 @@ data class WorkoutPlan(
                 days = days,
                 isActive = false,
                 activationDate = null,
+                isRecommended = false,
+                recommendationScore = null,
+                targetExperienceLevel = null,
+                targetGoal = null,
                 createdAt = Instant.now(),
                 updatedAt = null
             )
@@ -115,7 +123,11 @@ data class WorkoutPlan(
         fun createTemplate(
             name: String,
             description: String?,
-            days: List<PlanDay>
+            days: List<PlanDay>,
+            isRecommended: Boolean = false,
+            recommendationScore: Double? = null,
+            targetExperienceLevel: ExperienceLevel? = null,
+            targetGoal: FitnessGoal? = null
         ): WorkoutPlan {
             val cycleDays = days.size
             return WorkoutPlan(
@@ -127,6 +139,10 @@ data class WorkoutPlan(
                 days = days,
                 isActive = false,
                 activationDate = null,
+                isRecommended = isRecommended,
+                recommendationScore = recommendationScore,
+                targetExperienceLevel = targetExperienceLevel,
+                targetGoal = targetGoal,
                 createdAt = Instant.now(),
                 updatedAt = null
             )

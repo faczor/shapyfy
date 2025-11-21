@@ -12,17 +12,22 @@ class ExerciseFetcher(
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    fun fetchAll(language: Language): List<ExerciseSummary> {
+    fun fetchAll(language: Language): List<ExerciseDetails> {
         log.info("Attempt to fetch all domain exercises for language {}", language.code)
         val exercises = exerciseRepository.findAll()
         log.info("Fetched {} exercises from repository", exercises.size)
 
         return exercises.map { exercise ->
             val localizedName = translationPort.localize(exercise, language)
-            ExerciseSummary(
+            ExerciseDetails(
                 id = exercise.id,
                 localizedName = localizedName,
-                translationKey = TranslationKeyFactory.forExercise(exercise.name)
+                translationKey = TranslationKeyFactory.forExercise(exercise.name),
+                primaryMuscleGroup = exercise.primaryMuscleGroup,
+                secondaryMuscleGroups = exercise.secondaryMuscleGroups,
+                equipmentRequired = exercise.equipmentRequired,
+                difficulty = exercise.difficulty,
+                movementPattern = exercise.movementPattern
             )
         }
     }

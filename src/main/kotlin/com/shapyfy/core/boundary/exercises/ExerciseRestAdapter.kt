@@ -33,11 +33,7 @@ class ExerciseRestAdapter(
             )
         )
 
-        val response = ExerciseResponse(
-            id = result.id.value,
-            name = result.localizedName,
-            translationKey = result.translationKey.value
-        )
+        val response = ExerciseResponse.from(result);
         log.info(
             "Returning exercise creation response: id={}, translationKey={}",
             response.id,
@@ -51,13 +47,7 @@ class ExerciseRestAdapter(
         val language = Language.from(acceptLanguage)
         val exercises = exerciseFetcher.fetchAll(language)
 
-        val responses = exercises.map { exercise ->
-            ExerciseResponse(
-                id = exercise.id.value,
-                name = exercise.localizedName,
-                translationKey = exercise.translationKey.value
-            )
-        }
+        val responses = exercises.map { ExerciseResponse.from(it) }
         log.info(
             "Returning {} exercise records (accept-language={})",
             responses.size,

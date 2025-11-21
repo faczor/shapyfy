@@ -1,24 +1,36 @@
 package com.shapyfy.core.architecture.persistence
 
-import com.shapyfy.core.domain.exercise.Exercise
+import com.shapyfy.core.architecture.metrics.MicrometerExerciseMetrics
 import com.shapyfy.core.domain.ExerciseId
-import com.shapyfy.core.domain.exercise.ExerciseRepository
+import com.shapyfy.core.domain.Language
+import com.shapyfy.core.domain.exercise.*
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataAccessException
 import org.springframework.stereotype.Repository
 
 @Repository
 class ExerciseJdbcRepository(
-    private val exerciseCrudRepository: ExerciseCrudRepository
+    private val exerciseCrudRepository: ExerciseCrudRepository,
+    private val exerciseMetrics: MicrometerExerciseMetrics
 ) : ExerciseRepository {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun save(exercise: Exercise): Exercise {
-        log.info("Attempt to persist exercise '{}' with id {}", exercise.name, exercise.id)
+    override fun saveNew(
+        exercise: Exercise,
+        language: Language,
+        detectedLanguage: Language,
+        confidence: Double
+    ): Exercise {
+        log.info("Attempt to persist new exercise '{}' with id {}", exercise.name, exercise.id)
         val entity = ExerciseEntity.new(
             id = exercise.id.value,
             name = exercise.name,
+            primaryMuscleGroup = exercise.primaryMuscleGroup.name,
+            secondaryMuscleGroups = exercise.secondaryMuscleGroups.map { it.name }.toTypedArray(),
+            equipmentRequired = exercise.equipmentRequired.map { it.name }.toTypedArray(),
+            difficulty = exercise.difficulty.name,
+            movementPattern = exercise.movementPattern.name,
             createdAt = exercise.createdAt,
             updatedAt = exercise.updatedAt
         )
@@ -26,6 +38,13 @@ class ExerciseJdbcRepository(
         try {
             exerciseCrudRepository.save(entity)
             log.info("Exercise '{}' persisted successfully", exercise.id)
+
+            // Record metrics after successful persistence (architecture concern)
+            exerciseMetrics.recordCreation(language, detectedLanguage, confidence)
+            log.info(
+                "Exercise creation metrics recorded for '{}' (lang: {}, detected: {}, confidence: {})",
+                exercise.id, language.code, detectedLanguage.code, confidence
+            )
         } catch (ex: DataAccessException) {
             log.error("Failed to persist exercise '{}' to database", exercise.id, ex)
             throw ex
@@ -72,6 +91,11 @@ class ExerciseJdbcRepository(
         Exercise(
             id = ExerciseId.from(getId()),
             name = name,
+            primaryMuscleGroup = MuscleGroup.valueOf(primaryMuscleGroup),
+            secondaryMuscleGroups = secondaryMuscleGroups.map { MuscleGroup.valueOf(it) }.toSet(),
+            equipmentRequired = equipmentRequired.map { Equipment.valueOf(it) }.toSet(),
+            difficulty = Difficulty.valueOf(difficulty),
+            movementPattern = MovementPattern.valueOf(movementPattern),
             createdAt = createdAt,
             updatedAt = updatedAt
         )

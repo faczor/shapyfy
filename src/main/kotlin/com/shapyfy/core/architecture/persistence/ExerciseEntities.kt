@@ -17,6 +17,21 @@ class ExerciseEntity(
     @Column("translation_key")
     val name: String,
 
+    @Column("primary_muscle_group")
+    val primaryMuscleGroup: String,
+
+    @Column("secondary_muscle_groups")
+    val secondaryMuscleGroups: Array<String>,
+
+    @Column("equipment_required")
+    val equipmentRequired: Array<String>,
+
+    @Column("difficulty")
+    val difficulty: String,
+
+    @Column("movement_pattern")
+    val movementPattern: String,
+
     @Column("created_at")
     val createdAt: Instant,
 
@@ -34,11 +49,21 @@ class ExerciseEntity(
         fun new(
             id: UUID,
             name: String,
+            primaryMuscleGroup: String,
+            secondaryMuscleGroups: Array<String>,
+            equipmentRequired: Array<String>,
+            difficulty: String,
+            movementPattern: String,
             createdAt: Instant,
             updatedAt: Instant?
         ): ExerciseEntity = ExerciseEntity(
             _id = id,
             name = name,
+            primaryMuscleGroup = primaryMuscleGroup,
+            secondaryMuscleGroups = secondaryMuscleGroups,
+            equipmentRequired = equipmentRequired,
+            difficulty = difficulty,
+            movementPattern = movementPattern,
             createdAt = createdAt,
             updatedAt = updatedAt
         ).apply {

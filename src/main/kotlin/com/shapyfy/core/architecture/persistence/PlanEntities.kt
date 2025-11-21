@@ -33,6 +33,18 @@ class PlanEntity(
     @Column("activation_date")
     val activationDate: LocalDate?,
 
+    @Column("is_recommended")
+    val isRecommended: Boolean,
+
+    @Column("recommendation_score")
+    val recommendationScore: Double?,
+
+    @Column("target_experience_level")
+    val targetExperienceLevel: String?,
+
+    @Column("target_goal")
+    val targetGoal: String?,
+
     @Column("created_at")
     val createdAt: Instant,
 
@@ -55,6 +67,10 @@ class PlanEntity(
             cycleDays: Int,
             isActive: Boolean,
             activationDate: LocalDate?,
+            isRecommended: Boolean,
+            recommendationScore: Double?,
+            targetExperienceLevel: String?,
+            targetGoal: String?,
             createdAt: Instant,
             updatedAt: Instant?
         ): PlanEntity = PlanEntity(
@@ -65,6 +81,10 @@ class PlanEntity(
             cycleDays = cycleDays,
             isActive = isActive,
             activationDate = activationDate,
+            isRecommended = isRecommended,
+            recommendationScore = recommendationScore,
+            targetExperienceLevel = targetExperienceLevel,
+            targetGoal = targetGoal,
             createdAt = createdAt,
             updatedAt = updatedAt
         ).apply {

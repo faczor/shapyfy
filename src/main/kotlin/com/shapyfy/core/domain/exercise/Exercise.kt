@@ -7,15 +7,37 @@ import java.time.Instant
 data class Exercise(
     val id: ExerciseId,
     val name: String,
+    val primaryMuscleGroup: MuscleGroup,
+    val secondaryMuscleGroups: Set<MuscleGroup>,
+    val equipmentRequired: Set<Equipment>,
+    val difficulty: Difficulty,
+    val movementPattern: MovementPattern,
     val createdAt: Instant,
     val updatedAt: Instant?
 ) {
+    init {
+        require(name.isNotBlank()) { "Exercise name cannot be blank" }
+        require(equipmentRequired.isNotEmpty()) { "Exercise must specify equipment (use BODYWEIGHT if none)" }
+        require(!secondaryMuscleGroups.contains(primaryMuscleGroup)) { "Primary muscle group cannot be in secondary muscle groups" }
+    }
+
     companion object {
-        fun new(name: String): Exercise {
-            require(name.isNotBlank()) { "Exercise name cannot be blank" }
+        fun new(
+            name: String,
+            primaryMuscleGroup: MuscleGroup,
+            secondaryMuscleGroups: Set<MuscleGroup>,
+            equipmentRequired: Set<Equipment>,
+            difficulty: Difficulty,
+            movementPattern: MovementPattern
+        ): Exercise {
             return Exercise(
                 id = ExerciseId.Companion.generate(),
                 name = name,
+                primaryMuscleGroup = primaryMuscleGroup,
+                secondaryMuscleGroups = secondaryMuscleGroups,
+                equipmentRequired = equipmentRequired,
+                difficulty = difficulty,
+                movementPattern = movementPattern,
                 createdAt = Instant.now(),
                 updatedAt = null
             )
@@ -32,14 +54,13 @@ data class ExerciseCreationCommand(
     }
 }
 
-data class ExerciseCreationResult(
+data class ExerciseDetails(
     val id: ExerciseId,
     val localizedName: String,
-    val translationKey: TranslationKey
-)
-
-data class ExerciseSummary(
-    val id: ExerciseId,
-    val localizedName: String,
-    val translationKey: TranslationKey
+    val translationKey: TranslationKey,
+    val primaryMuscleGroup: MuscleGroup,
+    val secondaryMuscleGroups: Set<MuscleGroup>,
+    val equipmentRequired: Set<Equipment>,
+    val difficulty: Difficulty,
+    val movementPattern: MovementPattern
 )

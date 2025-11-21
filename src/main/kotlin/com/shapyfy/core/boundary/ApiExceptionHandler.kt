@@ -1,7 +1,7 @@
 package com.shapyfy.core.boundary
 
+import com.shapyfy.core.architecture.metrics.MicrometerExerciseMetrics
 import com.shapyfy.core.domain.exercise.ExerciseDuplicateException
-import com.shapyfy.core.domain.exercise.ExerciseMetricsPort
 import com.shapyfy.core.domain.exercise.ExerciseTranslationPort
 import com.shapyfy.core.domain.Language
 import com.shapyfy.core.domain.exercise.TranslationCategory
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice
 class ApiExceptionHandler(
     private val translationPort: ExerciseTranslationPort,
-    private val exerciseMetrics: ExerciseMetricsPort
+    private val exerciseMetrics: MicrometerExerciseMetrics
 ) {
 
     private val log = LoggerFactory.getLogger(javaClass)

@@ -3,9 +3,7 @@ package com.shapyfy.core.architecture.translation
 import com.shapyfy.core.domain.exercise.Exercise
 import com.shapyfy.core.domain.ExerciseId
 import com.shapyfy.core.domain.Language
-import com.shapyfy.core.domain.exercise.TranslationCategory
-import com.shapyfy.core.domain.exercise.TranslationKey
-import com.shapyfy.core.domain.exercise.TranslationRecord
+import com.shapyfy.core.domain.exercise.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.Instant
@@ -20,6 +18,11 @@ class ExerciseNameTranslatorTest {
         val exercise = Exercise(
             id = ExerciseId.generate(),
             name = "bench_press",
+            primaryMuscleGroup = MuscleGroup.CHEST,
+            secondaryMuscleGroups = setOf(MuscleGroup.TRICEPS, MuscleGroup.SHOULDERS),
+            equipmentRequired = setOf(Equipment.BARBELL, Equipment.BENCH),
+            difficulty = Difficulty.BEGINNER,
+            movementPattern = MovementPattern.PUSH,
             createdAt = Instant.now(),
             updatedAt = null
         )

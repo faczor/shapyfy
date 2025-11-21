@@ -6,13 +6,12 @@ import org.springframework.stereotype.Component
 @Component
 class ExerciseCreator(
     private val exerciseRepository: ExerciseRepository,
-    private val metricsPort: ExerciseMetricsPort,
     private val translationPort: ExerciseTranslationPort
 ) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    fun create(command: ExerciseCreationCommand): ExerciseCreationResult {
+    fun create(command: ExerciseCreationCommand): ExerciseDetails {
         log.info("Attempt to create domain exercise with raw name '{}'", command.rawName)
 
         val canonicalization = translationPort.canonicalize(command.rawName, command.preferredLanguage)
@@ -33,8 +32,20 @@ class ExerciseCreator(
             throw ExerciseDuplicateException(existing)
         }
 
-        val exercise = exerciseRepository.save(Exercise.new(canonicalName))
-        metricsPort.recordCreation(command.preferredLanguage, canonicalization.detectedLanguage, canonicalization.confidence)
+        // TODO: Once exercise library is built, these should come from user input or AI classification
+        val exercise = exerciseRepository.saveNew(
+            exercise = Exercise.new(
+                name = canonicalName,
+                primaryMuscleGroup = MuscleGroup.CHEST, // Temporary default
+                secondaryMuscleGroups = emptySet(), // Temporary default
+                equipmentRequired = setOf(Equipment.BODYWEIGHT), // Temporary default
+                difficulty = Difficulty.BEGINNER, // Temporary default
+                movementPattern = MovementPattern.ISOLATION // Temporary default
+            ),
+            language = command.preferredLanguage,
+            detectedLanguage = canonicalization.detectedLanguage,
+            confidence = canonicalization.confidence
+        )
 
         if (!canonicalization.isExistingTranslation) {
             translationPort.storeTranslations(
@@ -46,13 +57,19 @@ class ExerciseCreator(
         }
 
         val localizedName = translationPort.localize(exercise, command.preferredLanguage)
+
         val translationKey = TranslationKeyFactory.forExercise(exercise.name)
 
         log.info("Exercise '{}' created with id {}", canonicalName, exercise.id)
-        return ExerciseCreationResult(
+        return ExerciseDetails(
             id = exercise.id,
             localizedName = localizedName,
-            translationKey = translationKey
+            translationKey = translationKey,
+            primaryMuscleGroup = exercise.primaryMuscleGroup,
+            secondaryMuscleGroups = exercise.secondaryMuscleGroups,
+            equipmentRequired = exercise.equipmentRequired,
+            difficulty = exercise.difficulty,
+            movementPattern = exercise.movementPattern
         )
     }
 }
