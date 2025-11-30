@@ -46,8 +46,9 @@ management:
     distribution:
       percentiles-histogram:
         http.server.requests: true
-    export:
-      prometheus:
+  prometheus:
+    metrics:
+      export:
         enabled: true
 
 # Server configuration

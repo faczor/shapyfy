@@ -84,8 +84,6 @@ data class TranslationEntity(
 
     val value: String,
 
-    val category: String,
-
     @Column("normalized_value")
     val normalizedValue: String,
 

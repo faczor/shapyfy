@@ -17,9 +17,17 @@ object NameNormalizer {
             .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
             .lowercase(Locale.ROOT)
 
-        return unsafeCharacters
+        val normalized = unsafeCharacters
             .replace(lowerCased, "_")
             .trim('_')
             .replace(Regex("_+"), "_")
+
+        // Canonical names must start with a letter (domain validation rule)
+        // If it starts with a number, prefix with 'ex_'
+        return if (normalized.isNotEmpty() && normalized[0].isDigit()) {
+            "ex_$normalized"
+        } else {
+            normalized
+        }
     }
 }

@@ -17,7 +17,7 @@ class ExerciseNameTranslatorTest {
     fun `should not attribute translation to preferred language when detector disagrees`() {
         val exercise = Exercise(
             id = ExerciseId.generate(),
-            name = "bench_press",
+            canonicalName = CanonicalExerciseName("bench_press"),
             primaryMuscleGroup = MuscleGroup.CHEST,
             secondaryMuscleGroups = setOf(MuscleGroup.TRICEPS, MuscleGroup.SHOULDERS),
             equipmentRequired = setOf(Equipment.BARBELL, Equipment.BENCH),
@@ -34,19 +34,28 @@ class ExerciseNameTranslatorTest {
             detectedLanguage = Language.EN
         )
 
-        assertThat(catalog.savedRecords).hasSize(1)
-        val record = catalog.savedRecords.first()
-        assertThat(record.language).isEqualTo(Language.EN)
-        assertThat(record.value).isEqualTo("Bench Press")
+        // Should store translations for ALL languages (EN + PL)
+        // But should NOT use user's raw input "Bankdrücken" because detector disagrees
+        assertThat(catalog.savedRecords).hasSize(2)
+
+        val enRecord = catalog.savedRecords.find { it.language == Language.EN }
+        assertThat(enRecord).isNotNull
+        assertThat(enRecord!!.value).isEqualTo("Bench Press")
+
+        val plRecord = catalog.savedRecords.find { it.language == Language.PL }
+        assertThat(plRecord).isNotNull
+        // Should be AI-translated, not user's raw input "Bankdrücken"
+        assertThat(plRecord!!.value).isNotEqualTo("Bankdrücken")
+        assertThat(plRecord.value).isEqualTo("Polski: Bench Press")  // From mock
     }
 
     private class RecordingTranslationCatalog : TranslationCatalogPort {
         var savedRecords: List<TranslationRecord> = emptyList()
 
-        override fun findByNormalizedValue(category: TranslationCategory, normalizedValue: String): TranslationRecord? =
+        override fun findByNormalizedValue(normalizedValue: String): TranslationRecord? =
             null
 
-        override fun findAllByKey(category: TranslationCategory, translationKey: TranslationKey): List<TranslationRecord> =
+        override fun findAllByKey(translationKey: TranslationKey): List<TranslationRecord> =
             emptyList()
 
         override fun save(record: TranslationRecord) {
@@ -58,7 +67,6 @@ class ExerciseNameTranslatorTest {
         }
 
         override fun fetchValues(
-            category: TranslationCategory,
             language: Language,
             keys: Collection<TranslationKey>
         ): Map<TranslationKey, String> = emptyMap()
@@ -67,5 +75,12 @@ class ExerciseNameTranslatorTest {
     private object UnusedAiTranslationClient : AiTranslationClient {
         override fun detectAndTranslate(name: String): AiTranslationResult =
             throw UnsupportedOperationException("not required for this test")
+
+        override fun translate(englishName: String, targetLanguage: Language): String {
+            return when (targetLanguage) {
+                Language.EN -> englishName
+                Language.PL -> "Polski: $englishName"  // Simple placeholder
+            }
+        }
     }
 }

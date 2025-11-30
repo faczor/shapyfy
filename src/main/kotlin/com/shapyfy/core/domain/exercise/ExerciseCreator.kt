@@ -16,30 +16,17 @@ class ExerciseCreator(
         log.info("Attempt to create domain exercise with raw name '{}'", command.rawName)
 
         val canonicalization = translationPort.canonicalize(command.rawName, command.preferredLanguage)
-        if (canonicalization.detectedLanguage != command.preferredLanguage) {
-            log.error(
-                "Provided language {} mismatch with detected {} for exercise name '{}'",
-                command.preferredLanguage.code,
-                canonicalization.detectedLanguage.code,
-                command.rawName
-            )
-        }
         val canonicalName = canonicalization.canonicalName
+        val translationKey = TranslationKeyFactory.forExercise(canonicalName)
 
-        val existing = exerciseRepository.findByName(canonicalName)
+        throwDuplicateIfIsAlreadyExisting(translationKey, canonicalName)
 
-        if (existing != null) {
-            log.error("Duplicate exercise detected for canonical name '{}'", canonicalName)
-            throw ExerciseDuplicateException(existing)
-        }
-
-        // Classify exercise properties using AI
         log.info("Classifying exercise properties for '{}'", canonicalName)
         val properties = classificationPort.classify(canonicalName)
 
         val exercise = exerciseRepository.saveNew(
             exercise = Exercise.new(
-                name = canonicalName,
+                canonicalName = CanonicalExerciseName(canonicalName),
                 primaryMuscleGroup = properties.primaryMuscleGroup,
                 secondaryMuscleGroups = properties.secondaryMuscleGroups,
                 equipmentRequired = properties.equipmentRequired,
@@ -51,18 +38,12 @@ class ExerciseCreator(
             confidence = canonicalization.confidence
         )
 
-        if (!canonicalization.isExistingTranslation) {
-            translationPort.storeTranslations(
-                exercise = exercise,
-                rawName = command.rawName,
-                preferredLanguage = command.preferredLanguage,
-                detectedLanguage = canonicalization.detectedLanguage
-            )
-        }
-
-        val localizedName = translationPort.localize(exercise, command.preferredLanguage)
-
-        val translationKey = TranslationKeyFactory.forExercise(exercise.name)
+        val localizedName = translationPort.storeTranslations(
+            exercise = exercise,
+            rawName = command.rawName,
+            preferredLanguage = command.preferredLanguage,
+            detectedLanguage = canonicalization.detectedLanguage
+        )
 
         log.info("Exercise '{}' created with id {}", canonicalName, exercise.id)
         return ExerciseDetails(
@@ -75,5 +56,13 @@ class ExerciseCreator(
             difficulty = exercise.difficulty,
             movementPattern = exercise.movementPattern
         )
+    }
+
+    private fun throwDuplicateIfIsAlreadyExisting(translationKey: TranslationKey, canonicalName: String) {
+        val existing = exerciseRepository.findByName(translationKey.value)
+        if (existing != null) {
+            log.error("Duplicate exercise detected for canonical name '{}'", canonicalName)
+            throw ExerciseDuplicateException(existing)
+        }
     }
 }

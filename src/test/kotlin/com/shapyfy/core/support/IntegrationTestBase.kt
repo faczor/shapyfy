@@ -8,12 +8,13 @@ import com.shapyfy.core.boundary.ApiController
 import com.shapyfy.core.domain.Language
 import com.shapyfy.core.domain.UserId
 import org.mockito.Mockito
+import org.mockito.ArgumentMatchers
 import org.junit.jupiter.api.BeforeEach
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.cache.CacheManager
 import org.springframework.http.MediaType
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.oauth2.jwt.Jwt
@@ -26,6 +27,15 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import java.time.Instant
 import java.util.UUID
+
+/**
+ * Helper function for Mockito eq() matcher that works with Kotlin non-null types.
+ * Registers the matcher and returns the actual value to satisfy Kotlin's null checks.
+ */
+private fun <T : Any> eqKt(value: T): T {
+    ArgumentMatchers.eq(value)
+    return value
+}
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc(addFilters = false)
@@ -40,9 +50,6 @@ abstract class IntegrationTestBase {
 
     @Autowired
     protected lateinit var jdbcTemplate: JdbcTemplate
-
-    @Autowired
-    protected lateinit var cacheManager: CacheManager
 
     @MockBean
     protected lateinit var aiTranslationClient: AiTranslationClient
@@ -59,7 +66,6 @@ abstract class IntegrationTestBase {
         jdbcTemplate.update("DELETE FROM translations")
         jdbcTemplate.update("DELETE FROM exercises")
         jdbcTemplate.update("DELETE FROM waitlist_signup")
-        cacheManager.getCache("translations")?.clear()
 
         // Setup default AI translation mock behavior
         setupDefaultAiTranslationMock()
@@ -83,13 +89,37 @@ abstract class IntegrationTestBase {
             "pull up" to AiTranslationResult(Language.EN, "Pull Up", 0.99)
         )
 
-        Mockito.`when`(aiTranslationClient.detectAndTranslate(Mockito.anyString())).thenAnswer { invocation ->
+        // EN -> PL translation dictionary
+        val enToPlTranslations = mapOf(
+            "squat" to "Przysiady",
+            "bench press" to "Wyciskanie",
+            "deadlift" to "Martwy Ciąg",
+            "pull up" to "Podciąganie",
+            "leg press" to "Wyciskanie Nóg",
+            "leg curl" to "Uginanie Nóg"
+        )
+
+        Mockito.lenient().`when`(aiTranslationClient.detectAndTranslate(ArgumentMatchers.anyString())).thenAnswer { invocation ->
             val input = invocation.getArgument<String>(0).lowercase().trim()
             translations[input] ?: AiTranslationResult(
                 detectedLanguage = Language.EN,
                 englishName = invocation.getArgument<String>(0).replaceFirstChar { it.titlecase() },
                 confidence = 0.7
             )
+        }
+
+        // Stub translate() for each language separately to avoid nullable issues
+        Mockito.lenient().`when`(
+            aiTranslationClient.translate(ArgumentMatchers.anyString(), eqKt(Language.PL))
+        ).thenAnswer { invocation ->
+            val englishName = invocation.getArgument<String>(0)
+            enToPlTranslations[englishName.lowercase()] ?: englishName
+        }
+
+        Mockito.lenient().`when`(
+            aiTranslationClient.translate(ArgumentMatchers.anyString(), eqKt(Language.EN))
+        ).thenAnswer { invocation ->
+            invocation.getArgument<String>(0)  // Return English as-is
         }
     }
 

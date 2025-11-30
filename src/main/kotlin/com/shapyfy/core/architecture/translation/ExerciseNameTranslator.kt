@@ -5,7 +5,6 @@ import com.shapyfy.core.domain.exercise.ExerciseTranslationPort
 import com.shapyfy.core.domain.exercise.Exercise
 import com.shapyfy.core.domain.Language
 import com.shapyfy.core.boundary.exercises.NameNormalizer
-import com.shapyfy.core.domain.exercise.TranslationCategory
 import com.shapyfy.core.domain.exercise.TranslationKey
 import com.shapyfy.core.domain.exercise.TranslationKeyFactory
 import com.shapyfy.core.domain.exercise.TranslationRecord
@@ -27,10 +26,7 @@ class ExerciseNameTranslator(
             preferredLanguage.code
         )
 
-        val directMatch = translationCatalog.findByNormalizedValue(
-            TranslationCategory.EXERCISES,
-            rawName
-        )
+        val directMatch = translationCatalog.findByNormalizedValue(rawName)
 
         if (directMatch != null) {
             log.info(
@@ -39,12 +35,11 @@ class ExerciseNameTranslator(
                 directMatch.language.code
             )
 
-            val canonicalName = directMatch.translationKey.value.substringAfter("${TranslationCategory.EXERCISES.value}.")
+            val canonicalName = directMatch.translationKey.value.substringAfter("exercises.")
             return CanonicalizationResult(
                 canonicalName = canonicalName,
                 detectedLanguage = directMatch.language,
-                confidence = 1.0,
-                isExistingTranslation = true
+                confidence = 1.0
             )
         }
 
@@ -62,8 +57,7 @@ class ExerciseNameTranslator(
         return CanonicalizationResult(
             canonicalName = canonicalName,
             detectedLanguage = aiResult.detectedLanguage,
-            confidence = aiResult.confidence,
-            isExistingTranslation = false
+            confidence = aiResult.confidence
         )
     }
 
@@ -72,18 +66,18 @@ class ExerciseNameTranslator(
         rawName: String,
         preferredLanguage: Language,
         detectedLanguage: Language
-    ) {
+    ): String {
         log.info(
             "Storing translations for exercise '{}' (preferred={}, detected={})",
             exercise.id,
             preferredLanguage.code,
             detectedLanguage.code
         )
-        val translationKey = TranslationKeyFactory.forExercise(exercise.name)
+        val translationKey = TranslationKeyFactory.forExercise(exercise.canonicalName)
 
         val translations = buildTranslations(
             translationKey = translationKey,
-            canonicalName = exercise.name,
+            canonicalName = exercise.canonicalName.value,
             rawName = rawName,
             preferredLanguage = preferredLanguage,
             detectedLanguage = detectedLanguage
@@ -95,6 +89,22 @@ class ExerciseNameTranslator(
             translations.size,
             translationKey.value
         )
+
+        // Return the localized name for the preferred language from what we just stored
+        val localizedName = translations
+            .find { it.language == preferredLanguage }
+            ?.value
+            ?: translations.find { it.language == Language.EN }?.value
+            ?: exercise.canonicalName.value.replace("_", " ").replaceFirstChar { it.uppercase() }
+
+        log.info(
+            "Returning localized name '{}' for exercise '{}' in language {}",
+            localizedName,
+            exercise.id,
+            preferredLanguage.code
+        )
+
+        return localizedName
     }
 
     override fun localize(exercise: Exercise, language: Language): String {
@@ -103,15 +113,14 @@ class ExerciseNameTranslator(
             exercise.id,
             language.code
         )
-        val translationKey = TranslationKeyFactory.forExercise(exercise.name)
+        val translationKey = TranslationKeyFactory.forExercise(exercise.canonicalName)
         val translations = translationCatalog.fetchValues(
-            TranslationCategory.EXERCISES,
             language,
             setOf(translationKey)
         )
 
         return translations[translationKey]
-            ?: exercise.name.replace("_", " ").replaceFirstChar { it.uppercase() }
+            ?: exercise.canonicalName.value.replace("_", " ").replaceFirstChar { it.uppercase() }
                 .also {
                     log.info(
                         "Fallback localization used for exercise '{}' and language {}",
@@ -130,8 +139,8 @@ class ExerciseNameTranslator(
     ): List<TranslationRecord> {
         val translations = mutableListOf<TranslationRecord>()
         val normalizedCanonical = NameNormalizer.normalize(canonicalName)
+        val rawIsDifferentFromCanonical = rawName != normalizedCanonical
 
-        // Always store English
         val englishDisplayName = canonicalName.replace("_", " ")
             .split(" ")
             .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
@@ -140,37 +149,45 @@ class ExerciseNameTranslator(
             translationKey = translationKey,
             language = Language.EN,
             value = englishDisplayName,
-            normalizedValue = normalizedCanonical,
-            category = TranslationCategory.EXERCISES
+            normalizedValue = normalizedCanonical
         )
 
-        // Store preferred language only when detector agrees with the caller
-        val shouldStorePreferred =
-            preferredLanguage != Language.EN &&
-                preferredLanguage == detectedLanguage &&
-                rawName != normalizedCanonical
+        // 2. Determine which language(s) we need AI to translate to
+        val allLanguages = Language.values().toSet()
+        val languagesAlreadyHave = mutableSetOf(Language.EN)  // We always have English
 
-        if (shouldStorePreferred) {
+        // If user provided a non-English input and AI agrees, use their original input
+        val userProvidedValidTranslation =
+            preferredLanguage != Language.EN &&
+            preferredLanguage == detectedLanguage &&
+            rawIsDifferentFromCanonical
+
+        if (userProvidedValidTranslation) {
             translations += TranslationRecord(
                 translationKey = translationKey,
                 language = preferredLanguage,
                 value = rawName,
-                normalizedValue = rawName,
-                category = TranslationCategory.EXERCISES
+                normalizedValue = rawName
             )
+            languagesAlreadyHave += preferredLanguage
         }
 
-        // Store detected language if different
-        if (detectedLanguage != Language.EN &&
-            detectedLanguage != preferredLanguage &&
-            rawName != normalizedCanonical
-        ) {
+        val languagesToTranslate = allLanguages - languagesAlreadyHave
+
+        // Iterate through each language and translate one at a time
+        languagesToTranslate.forEach { language ->
+            log.info("Translating '{}' to {}", englishDisplayName, language.code)
+
+            val translatedName = aiTranslationClient.translate(
+                englishName = englishDisplayName,
+                targetLanguage = language
+            )
+
             translations += TranslationRecord(
                 translationKey = translationKey,
-                language = detectedLanguage,
-                value = rawName,
-                normalizedValue = rawName,
-                category = TranslationCategory.EXERCISES
+                language = language,
+                value = translatedName,
+                normalizedValue = NameNormalizer.normalize(translatedName)
             )
         }
 

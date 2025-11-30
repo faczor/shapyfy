@@ -22,10 +22,11 @@ class ExerciseJdbcRepository(
         detectedLanguage: Language,
         confidence: Double
     ): Exercise {
-        log.info("Attempt to persist new exercise '{}' with id {}", exercise.name, exercise.id)
+        log.info("Attempt to persist new exercise '{}' with id {}", exercise.canonicalName.value, exercise.id)
+        val translationKey = TranslationKeyFactory.forExercise(exercise.canonicalName)
         val entity = ExerciseEntity.new(
             id = exercise.id.value,
-            name = exercise.name,
+            name = translationKey.value,
             primaryMuscleGroup = exercise.primaryMuscleGroup.name,
             secondaryMuscleGroups = exercise.secondaryMuscleGroups.map { it.name }.toTypedArray(),
             equipmentRequired = exercise.equipmentRequired.map { it.name }.toTypedArray(),
@@ -87,10 +88,17 @@ class ExerciseJdbcRepository(
         }
     }
 
-    private fun ExerciseEntity.toDomain(): Exercise =
-        Exercise(
+    private fun ExerciseEntity.toDomain(): Exercise {
+        // Extract canonical name from translation key (e.g., "exercises.squat" -> "squat")
+        val canonicalName = if (name.startsWith("exercises.")) {
+            name.substringAfter("exercises.")
+        } else {
+            // Fallback for legacy data or incorrect format
+            name
+        }
+        return Exercise(
             id = ExerciseId.from(getId()),
-            name = name,
+            canonicalName = CanonicalExerciseName(canonicalName),
             primaryMuscleGroup = MuscleGroup.valueOf(primaryMuscleGroup),
             secondaryMuscleGroups = secondaryMuscleGroups.map { MuscleGroup.valueOf(it) }.toSet(),
             equipmentRequired = equipmentRequired.map { Equipment.valueOf(it) }.toSet(),
@@ -99,4 +107,5 @@ class ExerciseJdbcRepository(
             createdAt = createdAt,
             updatedAt = updatedAt
         )
+    }
 }

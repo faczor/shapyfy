@@ -12,12 +12,7 @@ interface ExerciseCrudRepository : CrudRepository<ExerciseEntity, UUID> {
 
 @Repository
 interface TranslationCrudRepository : CrudRepository<TranslationEntity, Long> {
-    fun findByCategoryAndNormalizedValue(category: String, normalizedValue: String): TranslationEntity?
+    fun findByNormalizedValue(normalizedValue: String): TranslationEntity?
     fun findAllByTranslationKey(translationKey: String): List<TranslationEntity>
-    fun findAllByCategoryAndLanguage(category: String, language: String): List<TranslationEntity>
-    fun findAllByCategoryAndLanguageAndTranslationKeyIn(
-        category: String,
-        language: String,
-        translationKeys: Collection<String>
-    ): List<TranslationEntity>
+    fun findAllByLanguage(language: String): List<TranslationEntity>
 }

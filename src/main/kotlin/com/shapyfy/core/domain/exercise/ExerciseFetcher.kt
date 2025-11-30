@@ -22,7 +22,7 @@ class ExerciseFetcher(
             ExerciseDetails(
                 id = exercise.id,
                 localizedName = localizedName,
-                translationKey = TranslationKeyFactory.forExercise(exercise.name),
+                translationKey = TranslationKeyFactory.forExercise(exercise.canonicalName),
                 primaryMuscleGroup = exercise.primaryMuscleGroup,
                 secondaryMuscleGroups = exercise.secondaryMuscleGroups,
                 equipmentRequired = exercise.equipmentRequired,

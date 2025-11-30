@@ -7,17 +7,14 @@ value class TranslationKey(val value: String) {
     }
 }
 
-enum class TranslationCategory(val value: String) {
-    EXERCISES("exercises");
-
-    companion object {
-        fun fromValue(value: String): TranslationCategory =
-            entries.first { it.value == value }
-    }
-}
-
 object TranslationKeyFactory {
+    private const val EXERCISE_PREFIX = "exercises"
+
     fun forExercise(canonicalName: String): TranslationKey {
-        return TranslationKey("${TranslationCategory.EXERCISES.value}.$canonicalName")
+        return TranslationKey("$EXERCISE_PREFIX.$canonicalName")
+    }
+
+    fun forExercise(canonicalName: CanonicalExerciseName): TranslationKey {
+        return TranslationKey("$EXERCISE_PREFIX.${canonicalName.value}")
     }
 }

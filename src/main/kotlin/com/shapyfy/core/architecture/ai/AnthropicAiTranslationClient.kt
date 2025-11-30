@@ -11,10 +11,6 @@ import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
 
-/**
- * Anthropic-backed implementation that relies on Claude to detect the input language
- * and provide an English exercise name. The AnthropicClient already enforces JSON-only responses.
- */
 @Component
 class AnthropicAiTranslationClient(
     private val anthropicClient: AnthropicClient
@@ -27,6 +23,15 @@ class AnthropicAiTranslationClient(
         return runCatching { aiTranslate(name) }
             .onFailure { logger.error("Anthropic translation failed for '{}', using heuristic fallback", name, it) }
             .getOrElse { heuristicFallback(name) }
+    }
+
+    override fun translate(englishName: String, targetLanguage: Language): String {
+        logger.info("Attempt to translate '{}' to {}", englishName, targetLanguage.code)
+        return runCatching { aiTranslateSingle(englishName, targetLanguage) }
+            .onFailure {
+                logger.error("Anthropic translation failed for '{}' to {}, using heuristic fallback", englishName, targetLanguage.code, it)
+            }
+            .getOrElse { heuristicTranslateSingle(englishName, targetLanguage) }
     }
 
     private fun aiTranslate(name: String): AiTranslationResult {
@@ -103,6 +108,50 @@ class AnthropicAiTranslationClient(
             englishName = englishName,
             confidence = confidence
         )
+    }
+
+    private fun aiTranslateSingle(englishName: String, targetLanguage: Language): String {
+        val prompt = buildSingleLanguagePrompt(englishName, targetLanguage)
+        val response = anthropicClient.sendPrompt<SingleLanguageTranslationResponse>(prompt)
+        return response.translation.ifBlank { englishName }
+    }
+
+    private fun buildSingleLanguagePrompt(englishName: String, targetLanguage: Language): String {
+        val languageName = when (targetLanguage) {
+            Language.EN -> "English"
+            Language.PL -> "Polish"
+        }
+
+        return """
+            You are an expert multilingual fitness coach. Translate the following English exercise name
+            to $languageName. Provide the natural, commonly-used translation that trainers would recognize.
+
+            Return a JSON object with a "translation" field containing the translated name.
+            The translated name should be title-cased (e.g., "Bench Press").
+
+            Example response for Polish:
+            {
+              "translation": "Przysiady"
+            }
+
+            Exercise name: "$englishName"
+            Target language: $languageName (${targetLanguage.code})
+        """.trimIndent()
+    }
+
+    private data class SingleLanguageTranslationResponse(
+        val translation: String
+    )
+
+    private fun heuristicTranslateSingle(englishName: String, targetLanguage: Language): String {
+        return when (targetLanguage) {
+            Language.EN -> englishName
+            Language.PL -> {
+                // Check reverse dictionary (EN -> PL)
+                FALLBACK_DICTIONARY.entries.find { it.value.equals(englishName, ignoreCase = true) }?.key
+                    ?: englishName  // Fallback to English if no translation found
+            }
+        }
     }
 
     private companion object {

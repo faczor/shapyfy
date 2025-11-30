@@ -15,12 +15,12 @@ class ExerciseControllerIntegrationTest : IntegrationTestBase() {
             .andExpect(jsonPath("$.id").isNotEmpty)
             .andExpect(jsonPath("$.name").value("Przysiady"))
             .andExpect(jsonPath("$.translation_key").value("exercises.squat"))
-            .andExpect(jsonPath("$.primary_muscle_group").value("CHEST"))
+            .andExpect(jsonPath("$.primary_muscle_group").value("QUADS"))
             .andExpect(jsonPath("$.secondary_muscle_groups").isArray)
             .andExpect(jsonPath("$.equipment_required").isArray)
             .andExpect(jsonPath("$.equipment_required[0]").value("BODYWEIGHT"))
             .andExpect(jsonPath("$.difficulty").value("BEGINNER"))
-            .andExpect(jsonPath("$.movement_pattern").value("ISOLATION"))
+            .andExpect(jsonPath("$.movement_pattern").value("SQUAT"))
     }
 
     @Test
@@ -47,7 +47,7 @@ class ExerciseControllerIntegrationTest : IntegrationTestBase() {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.name").value("Squat"))
             .andExpect(jsonPath("$.translation_key").value("exercises.squat"))
-            .andExpect(jsonPath("$.primary_muscle_group").value("CHEST"))
+            .andExpect(jsonPath("$.primary_muscle_group").value("QUADS"))
             .andExpect(jsonPath("$.difficulty").value("BEGINNER"))
     }
 

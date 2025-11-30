@@ -6,6 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Shapyfy Core is a Spring Boot 3.5.7 backend service written in Kotlin 1.9.25, using Java 21. It's a REST API with PostgreSQL database, secured with Spring Security, and includes monitoring via Sentry and Spring Boot Actuator.
 
+## Knowledge storage is placed in the
+`../shapyfy-docs/`
+
 ## Build & Development Commands
 
 ### Building

@@ -4,9 +4,23 @@ import com.shapyfy.core.domain.ExerciseId
 import com.shapyfy.core.domain.Language
 import java.time.Instant
 
+/**
+ * Canonical exercise name - normalized, lowercase identifier with underscores.
+ * Examples: "squats", "bench_press", "deadlift"
+ */
+@JvmInline
+value class CanonicalExerciseName(val value: String) {
+    init {
+        require(value.isNotBlank()) { "Canonical exercise name cannot be blank" }
+        require(value == value.lowercase()) { "Canonical exercise name must be lowercase" }
+    }
+
+    override fun toString(): String = value
+}
+
 data class Exercise(
     val id: ExerciseId,
-    val name: String,
+    val canonicalName: CanonicalExerciseName,
     val primaryMuscleGroup: MuscleGroup,
     val secondaryMuscleGroups: Set<MuscleGroup>,
     val equipmentRequired: Set<Equipment>,
@@ -16,14 +30,13 @@ data class Exercise(
     val updatedAt: Instant?
 ) {
     init {
-        require(name.isNotBlank()) { "Exercise name cannot be blank" }
         require(equipmentRequired.isNotEmpty()) { "Exercise must specify equipment (use BODYWEIGHT if none)" }
         require(!secondaryMuscleGroups.contains(primaryMuscleGroup)) { "Primary muscle group cannot be in secondary muscle groups" }
     }
 
     companion object {
         fun new(
-            name: String,
+            canonicalName: CanonicalExerciseName,
             primaryMuscleGroup: MuscleGroup,
             secondaryMuscleGroups: Set<MuscleGroup>,
             equipmentRequired: Set<Equipment>,
@@ -32,7 +45,7 @@ data class Exercise(
         ): Exercise {
             return Exercise(
                 id = ExerciseId.Companion.generate(),
-                name = name,
+                canonicalName = canonicalName,
                 primaryMuscleGroup = primaryMuscleGroup,
                 secondaryMuscleGroups = secondaryMuscleGroups,
                 equipmentRequired = equipmentRequired,

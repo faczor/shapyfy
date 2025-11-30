@@ -3,8 +3,8 @@ package com.shapyfy.core.boundary
 import com.shapyfy.core.architecture.metrics.MicrometerExerciseMetrics
 import com.shapyfy.core.domain.exercise.ExerciseDuplicateException
 import com.shapyfy.core.domain.exercise.ExerciseTranslationPort
+import com.shapyfy.core.domain.exercise.TranslationKeyFactory
 import com.shapyfy.core.domain.Language
-import com.shapyfy.core.domain.exercise.TranslationCategory
 import com.shapyfy.core.domain.plan.InvalidExerciseReferenceException as PlanInvalidExerciseReferenceException
 import com.shapyfy.core.domain.plan.NoActivePlanException
 import com.shapyfy.core.domain.plan.PlanNotFoundException
@@ -49,10 +49,11 @@ class ApiExceptionHandler(
             lang.code to translationPort.localize(exercise, lang)
         }
 
+        val translationKey = TranslationKeyFactory.forExercise(exercise.canonicalName)
         val syncException = SyncException(
             status = HttpStatus.CONFLICT,
             id = exercise.id.value,
-            translationKey = "${TranslationCategory.EXERCISES.value}.${exercise.name}",
+            translationKey = translationKey.value,
             availableTranslations = allTranslations,
             errorMessage = "Exercise with the same name already exists"
         )

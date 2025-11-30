@@ -1,0 +1,37 @@
+-- Seed exercise library: CALVES
+-- Total exercises: 5 (most popular)
+
+-- 1. Standing Calf Raises (Machine)
+INSERT INTO exercises (id, translation_key, primary_muscle_group, secondary_muscle_groups, equipment_required,
+                       difficulty, movement_pattern, created_at)
+VALUES (gen_random_uuid(), 'exercises.standing_calf_raises', 'CALVES', '{}', '{"MACHINE"}',
+        'BEGINNER', 'ISOLATION', NOW())
+ON CONFLICT (translation_key) DO NOTHING;
+
+-- 2. Seated Calf Raise
+INSERT INTO exercises (id, translation_key, primary_muscle_group, secondary_muscle_groups, equipment_required,
+                       difficulty, movement_pattern, created_at)
+VALUES (gen_random_uuid(), 'exercises.seated_calf_raise', 'CALVES', '{}', '{"MACHINE"}',
+        'BEGINNER', 'ISOLATION', NOW())
+ON CONFLICT (translation_key) DO NOTHING;
+
+-- 3. Calf Press on Leg Press
+INSERT INTO exercises (id, translation_key, primary_muscle_group, secondary_muscle_groups, equipment_required,
+                       difficulty, movement_pattern, created_at)
+VALUES (gen_random_uuid(), 'exercises.calf_press_on_leg_press', 'CALVES', '{}', '{"MACHINE"}',
+        'BEGINNER', 'ISOLATION', NOW())
+ON CONFLICT (translation_key) DO NOTHING;
+
+-- 4. Donkey Calf Raises
+INSERT INTO exercises (id, translation_key, primary_muscle_group, secondary_muscle_groups, equipment_required,
+                       difficulty, movement_pattern, created_at)
+VALUES (gen_random_uuid(), 'exercises.donkey_calf_raises', 'CALVES', '{}', '{"MACHINE"}',
+        'BEGINNER', 'ISOLATION', NOW())
+ON CONFLICT (translation_key) DO NOTHING;
+
+-- 5. Standing Dumbbell Calf Raise
+INSERT INTO exercises (id, translation_key, primary_muscle_group, secondary_muscle_groups, equipment_required,
+                       difficulty, movement_pattern, created_at)
+VALUES (gen_random_uuid(), 'exercises.standing_dumbbell_calf_raise', 'CALVES', '{}', '{"DUMBBELLS"}',
+        'BEGINNER', 'ISOLATION', NOW())
+ON CONFLICT (translation_key) DO NOTHING;

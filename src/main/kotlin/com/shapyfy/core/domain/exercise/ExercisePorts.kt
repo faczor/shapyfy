@@ -13,20 +13,21 @@ interface ExerciseRepository {
 
 interface ExerciseTranslationPort {
     fun canonicalize(rawName: String, preferredLanguage: Language): CanonicalizationResult
+
     fun storeTranslations(
         exercise: Exercise,
         rawName: String,
         preferredLanguage: Language,
         detectedLanguage: Language
-    )
+    ): String
+
     fun localize(exercise: Exercise, language: Language): String
 }
 
 data class CanonicalizationResult(
     val canonicalName: String,
     val detectedLanguage: Language,
-    val confidence: Double,
-    val isExistingTranslation: Boolean
+    val confidence: Double
 )
 
 interface ExerciseClassificationPort {
