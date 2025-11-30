@@ -2,10 +2,16 @@ package com.shapyfy.core.support
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.shapyfy.core.architecture.security.JwtToken
+import com.shapyfy.core.architecture.classification.ExerciseClassification
+import com.shapyfy.core.architecture.classification.ExerciseClassificationClient
 import com.shapyfy.core.architecture.translation.AiTranslationClient
 import com.shapyfy.core.architecture.translation.AiTranslationResult
 import com.shapyfy.core.boundary.ApiController
 import com.shapyfy.core.domain.Language
+import com.shapyfy.core.domain.exercise.Difficulty
+import com.shapyfy.core.domain.exercise.Equipment
+import com.shapyfy.core.domain.exercise.MovementPattern
+import com.shapyfy.core.domain.exercise.MuscleGroup
 import com.shapyfy.core.domain.UserId
 import org.mockito.Mockito
 import org.mockito.ArgumentMatchers
@@ -54,6 +60,9 @@ abstract class IntegrationTestBase {
     @MockBean
     protected lateinit var aiTranslationClient: AiTranslationClient
 
+    @MockBean
+    protected lateinit var exerciseClassificationClient: ExerciseClassificationClient
+
     @BeforeEach
     fun resetState() {
         // Delete in correct order due to foreign keys
@@ -69,6 +78,7 @@ abstract class IntegrationTestBase {
 
         // Setup default AI translation mock behavior
         setupDefaultAiTranslationMock()
+        setupDefaultClassificationMock()
     }
 
     /**
@@ -120,6 +130,56 @@ abstract class IntegrationTestBase {
             aiTranslationClient.translate(ArgumentMatchers.anyString(), eqKt(Language.EN))
         ).thenAnswer { invocation ->
             invocation.getArgument<String>(0)  // Return English as-is
+        }
+    }
+
+    /**
+     * Configures the exercise classification client mock with known exercise classifications.
+     */
+    private fun setupDefaultClassificationMock() {
+        val classifications = mapOf(
+            "squat" to ExerciseClassification(
+                primaryMuscleGroup = MuscleGroup.QUADS,
+                secondaryMuscleGroups = setOf(MuscleGroup.GLUTES, MuscleGroup.HAMSTRINGS, MuscleGroup.CORE),
+                equipmentRequired = setOf(Equipment.BODYWEIGHT),
+                difficulty = Difficulty.BEGINNER,
+                movementPattern = MovementPattern.SQUAT
+            ),
+            "bench press" to ExerciseClassification(
+                primaryMuscleGroup = MuscleGroup.CHEST,
+                secondaryMuscleGroups = setOf(MuscleGroup.TRICEPS, MuscleGroup.SHOULDERS),
+                equipmentRequired = setOf(Equipment.BARBELL, Equipment.BENCH),
+                difficulty = Difficulty.BEGINNER,
+                movementPattern = MovementPattern.PUSH
+            ),
+            "deadlift" to ExerciseClassification(
+                primaryMuscleGroup = MuscleGroup.HAMSTRINGS,
+                secondaryMuscleGroups = setOf(MuscleGroup.BACK, MuscleGroup.GLUTES, MuscleGroup.FOREARMS),
+                equipmentRequired = setOf(Equipment.BARBELL),
+                difficulty = Difficulty.BEGINNER,
+                movementPattern = MovementPattern.HINGE
+            ),
+            "pull up" to ExerciseClassification(
+                primaryMuscleGroup = MuscleGroup.BACK,
+                secondaryMuscleGroups = setOf(MuscleGroup.BICEPS),
+                equipmentRequired = setOf(Equipment.PULL_UP_BAR),
+                difficulty = Difficulty.ADVANCED,
+                movementPattern = MovementPattern.PULL
+            )
+        )
+
+        // Default fallback classification for unknown exercises
+        val defaultClassification = ExerciseClassification(
+            primaryMuscleGroup = MuscleGroup.CHEST,
+            secondaryMuscleGroups = emptySet(),
+            equipmentRequired = setOf(Equipment.BODYWEIGHT),
+            difficulty = Difficulty.BEGINNER,
+            movementPattern = MovementPattern.ISOLATION
+        )
+
+        Mockito.lenient().`when`(exerciseClassificationClient.classify(ArgumentMatchers.anyString())).thenAnswer { invocation ->
+            val exerciseName = invocation.getArgument<String>(0).lowercase().trim()
+            classifications[exerciseName] ?: defaultClassification
         }
     }
 
