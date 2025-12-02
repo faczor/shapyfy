@@ -9,5 +9,8 @@ enum class Equipment {
     PULL_UP_BAR,
     BENCH,
     CABLE_MACHINE,
-    SMITH_MACHINE
+    SMITH_MACHINE,
+    MACHINE,
+    EZ_BAR,
+    OTHER
 }
