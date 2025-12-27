@@ -76,6 +76,23 @@ class ExerciseJdbcRepository(
         }
     }
 
+    override fun findByEquipment(equipment: List<Equipment>): List<Exercise> {
+        log.info("Attempt to load exercises by equipment: {}", equipment)
+        return try {
+            if (equipment.isEmpty()) {
+                log.info("Empty equipment list provided, returning empty list")
+                return emptyList()
+            }
+            val equipmentNames = equipment.map { it.name }.toTypedArray()
+            val result = exerciseCrudRepository.findByEquipmentIn(equipmentNames).map { it.toDomain() }
+            log.info("Loaded {} exercises matching equipment {}", result.size, equipment)
+            result
+        } catch (ex: DataAccessException) {
+            log.error("Failed to load exercises by equipment", ex)
+            throw ex
+        }
+    }
+
     override fun existsById(id: ExerciseId): Boolean {
         log.info("Checking if exercise exists with id '{}'", id)
         return try {

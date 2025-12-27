@@ -25,3 +25,9 @@ interface PlanExerciseCrudRepository : CrudRepository<PlanExerciseEntity, UUID> 
     fun findByPlanDayId(planDayId: UUID): List<PlanExerciseEntity>
     fun findByPlanDayIdIn(planDayIds: List<UUID>): List<PlanExerciseEntity>
 }
+
+@Repository
+interface ExerciseSetCrudRepository : CrudRepository<ExerciseSetEntity, UUID> {
+    fun findByPlanExerciseId(planExerciseId: UUID): List<ExerciseSetEntity>
+    fun findByPlanExerciseIdIn(planExerciseIds: List<UUID>): List<ExerciseSetEntity>
+}

@@ -12,5 +12,9 @@ enum class Equipment {
     SMITH_MACHINE,
     MACHINE,
     EZ_BAR,
-    OTHER
+    OTHER;
+
+    companion object {
+        fun all(): List<Equipment> = entries.filter { it != OTHER }
+    }
 }

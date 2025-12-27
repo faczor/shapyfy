@@ -8,6 +8,7 @@ interface ExerciseRepository {
 
     fun findByName(name: String): Exercise?
     fun findAll(): List<Exercise>
+    fun findByEquipment(equipment: List<Equipment>): List<Exercise>
     fun existsById(id: ExerciseId): Boolean
 }
 

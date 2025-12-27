@@ -41,9 +41,12 @@ class PlanRestAdapter(
                     ExerciseCreationData(
                         exerciseId = ExerciseId.from(exerciseRequest.exerciseId),
                         orderIndex = exerciseRequest.orderIndex,
-                        targetSets = exerciseRequest.targetSets,
-                        targetReps = exerciseRequest.targetReps,
-                        targetWeight = exerciseRequest.targetWeight,
+                        sets = exerciseRequest.sets.map { setRequest ->
+                            SetCreationData(
+                                reps = setRequest.reps,
+                                weight = setRequest.weight
+                            )
+                        },
                         notes = exerciseRequest.notes
                     )
                 },

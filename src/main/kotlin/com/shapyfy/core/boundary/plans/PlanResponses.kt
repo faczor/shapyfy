@@ -2,6 +2,7 @@ package com.shapyfy.core.boundary.plans
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
+import com.shapyfy.core.domain.plan.ExerciseSet
 import com.shapyfy.core.domain.plan.PlanDay
 import com.shapyfy.core.domain.plan.PlanExercise
 import com.shapyfy.core.domain.plan.WorkoutPlan
@@ -41,11 +42,15 @@ data class PlanExerciseResponse(
     val id: String,
     val exerciseId: String,
     val orderIndex: Int,
-    val targetSets: Int,
-    val targetReps: Int?,
-    val targetWeight: Double?,
+    val sets: List<ExerciseSetResponse>,
     val targetFormatted: String,
     val notes: String?
+)
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
+data class ExerciseSetResponse(
+    val reps: Int?,
+    val weight: Double?
 )
 
 // Extension functions to convert domain models to responses
@@ -77,9 +82,13 @@ fun PlanExercise.toResponse(): PlanExerciseResponse =
         id = id.toString(),
         exerciseId = exerciseId.toString(),
         orderIndex = orderIndex,
-        targetSets = targetSets,
-        targetReps = targetReps,
-        targetWeight = targetWeight,
+        sets = sets.map { it.toResponse() },
         targetFormatted = formatTarget(),
         notes = notes
+    )
+
+fun ExerciseSet.toResponse(): ExerciseSetResponse =
+    ExerciseSetResponse(
+        reps = reps,
+        weight = weight
     )

@@ -46,14 +46,18 @@ data class CreatePlanExerciseRequest(
     @field:Min(0, message = "Order index must be non-negative")
     val orderIndex: Int,
 
-    @field:Positive(message = "Target sets must be positive")
-    val targetSets: Int,
-
-    @field:Positive(message = "Target reps must be positive if specified")
-    val targetReps: Int?,
-
-    @field:Min(0, message = "Target weight must be non-negative")
-    val targetWeight: Double?,
+    @field:NotEmpty(message = "Exercise must have at least one set")
+    @field:Valid
+    val sets: List<CreateSetRequest>,
 
     val notes: String?
+)
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
+data class CreateSetRequest(
+    @field:Positive(message = "Reps must be positive if specified")
+    val reps: Int?,
+
+    @field:Min(0, message = "Weight must be non-negative if specified")
+    val weight: Double?
 )

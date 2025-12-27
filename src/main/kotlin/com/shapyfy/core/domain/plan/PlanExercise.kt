@@ -7,22 +7,23 @@ data class PlanExercise(
     val id: PlanExerciseId,
     val exerciseId: ExerciseId,
     val orderIndex: Int,
-    val targetSets: Int,
-    val targetReps: Int?,
-    val targetWeight: Double?,
+    val sets: List<ExerciseSet>,
     val notes: String?
 ) {
     init {
         require(orderIndex >= 0) { "Order index must be non-negative" }
-        require(targetSets > 0) { "Target sets must be positive" }
-        require(targetReps == null || targetReps > 0) { "Target reps must be positive" }
-        require(targetWeight == null || targetWeight >= 0) { "Target weight must be non-negative" }
+        require(sets.isNotEmpty()) { "Exercise must have at least one set" }
     }
 
+    fun totalSets(): Int = sets.size
+
     fun formatTarget(): String = buildString {
-        append("${targetSets}x${targetReps ?: "?"}")
-        if (targetWeight != null) {
-            append(" @ ${targetWeight}kg")
+        if (sets.isEmpty()) return ""
+
+        if (sets.all { it.reps == sets.first().reps && it.weight == sets.first().weight }) {
+            append("${sets.size}x${sets.first().format()}")
+        } else {
+            append(sets.joinToString(", ") { it.format() })
         }
     }
 
@@ -30,20 +31,28 @@ data class PlanExercise(
         fun new(
             exerciseId: ExerciseId,
             orderIndex: Int,
-            targetSets: Int,
-            targetReps: Int? = null,
-            targetWeight: Double? = null,
+            sets: List<ExerciseSet>,
             notes: String? = null
         ): PlanExercise {
             return PlanExercise(
                 id = PlanExerciseId.generate(),
                 exerciseId = exerciseId,
                 orderIndex = orderIndex,
-                targetSets = targetSets,
-                targetReps = targetReps,
-                targetWeight = targetWeight,
+                sets = sets,
                 notes = notes
             )
+        }
+
+        fun withUniformSets(
+            exerciseId: ExerciseId,
+            orderIndex: Int,
+            numberOfSets: Int,
+            repsPerSet: Int,
+            weightPerSet: Double? = null,
+            notes: String? = null
+        ): PlanExercise {
+            val sets = List(numberOfSets) { ExerciseSet(repsPerSet, weightPerSet) }
+            return new(exerciseId, orderIndex, sets, notes)
         }
     }
 }

@@ -20,7 +20,7 @@ data class PlanDay(
         }
     }
 
-    fun totalSets(): Int = exercises.sumOf { it.targetSets }
+    fun totalSets(): Int = exercises.sumOf { it.totalSets() }
 
     fun isWorkoutDay(): Boolean = type == DayType.WORKOUT
 

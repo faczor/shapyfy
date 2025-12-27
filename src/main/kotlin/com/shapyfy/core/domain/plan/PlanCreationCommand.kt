@@ -42,15 +42,21 @@ data class DayCreationData(
 data class ExerciseCreationData(
     val exerciseId: ExerciseId,
     val orderIndex: Int,
-    val targetSets: Int,
-    val targetReps: Int?,
-    val targetWeight: Double?,
+    val sets: List<SetCreationData>,
     val notes: String?
 ) {
     init {
         require(orderIndex >= 0) { "Order index must be non-negative" }
-        require(targetSets > 0) { "Target sets must be positive" }
-        require(targetReps == null || targetReps > 0) { "Target reps must be positive" }
-        require(targetWeight == null || targetWeight >= 0) { "Target weight must be non-negative" }
+        require(sets.isNotEmpty()) { "Exercise must have at least one set" }
+    }
+}
+
+data class SetCreationData(
+    val reps: Int?,
+    val weight: Double?
+) {
+    init {
+        require(reps == null || reps > 0) { "Reps must be positive if specified" }
+        require(weight == null || weight >= 0) { "Weight must be non-negative if specified" }
     }
 }

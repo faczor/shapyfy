@@ -28,12 +28,16 @@ class PlanCreator(
 
         val planDays = command.days.map { dayData ->
             val exercises = dayData.exercises.map { exerciseData ->
+                val sets = exerciseData.sets.map { setData ->
+                    ExerciseSet(
+                        reps = setData.reps,
+                        weight = setData.weight
+                    )
+                }
                 PlanExercise.new(
                     exerciseId = exerciseData.exerciseId,
                     orderIndex = exerciseData.orderIndex,
-                    targetSets = exerciseData.targetSets,
-                    targetReps = exerciseData.targetReps,
-                    targetWeight = exerciseData.targetWeight,
+                    sets = sets,
                     notes = exerciseData.notes
                 )
             }

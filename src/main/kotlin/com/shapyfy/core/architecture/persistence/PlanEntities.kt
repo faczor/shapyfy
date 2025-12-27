@@ -157,15 +157,6 @@ class PlanExerciseEntity(
     @Column("order_index")
     val orderIndex: Int,
 
-    @Column("target_sets")
-    val targetSets: Int,
-
-    @Column("target_reps")
-    val targetReps: Int?,
-
-    @Column("target_weight")
-    val targetWeight: Double?,
-
     @Column("notes")
     val notes: String?
 ) : Persistable<UUID> {
@@ -182,19 +173,57 @@ class PlanExerciseEntity(
             planDayId: UUID,
             exerciseId: UUID,
             orderIndex: Int,
-            targetSets: Int,
-            targetReps: Int?,
-            targetWeight: Double?,
             notes: String?
         ): PlanExerciseEntity = PlanExerciseEntity(
             _id = id,
             planDayId = planDayId,
             exerciseId = exerciseId,
             orderIndex = orderIndex,
-            targetSets = targetSets,
-            targetReps = targetReps,
-            targetWeight = targetWeight,
             notes = notes
+        ).apply {
+            isNewEntity = true
+        }
+    }
+}
+
+@Table("exercise_sets")
+class ExerciseSetEntity(
+    @Id
+    @Column("id")
+    private val _id: UUID,
+
+    @Column("plan_exercise_id")
+    val planExerciseId: UUID,
+
+    @Column("set_index")
+    val setIndex: Int,
+
+    @Column("reps")
+    val reps: Int?,
+
+    @Column("weight")
+    val weight: Double?
+) : Persistable<UUID> {
+
+    @Transient
+    private var isNewEntity: Boolean = false
+
+    override fun getId(): UUID = _id
+    override fun isNew(): Boolean = isNewEntity
+
+    companion object {
+        fun new(
+            id: UUID,
+            planExerciseId: UUID,
+            setIndex: Int,
+            reps: Int?,
+            weight: Double?
+        ): ExerciseSetEntity = ExerciseSetEntity(
+            _id = id,
+            planExerciseId = planExerciseId,
+            setIndex = setIndex,
+            reps = reps,
+            weight = weight
         ).apply {
             isNewEntity = true
         }
