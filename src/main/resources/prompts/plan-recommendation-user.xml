@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<user_input>
+  <goal>{{goal}}</goal>
+  <experience_level>{{experience}}</experience_level>
+  <location>{{location}}</location>
+  <training_frequency>{{frequency}} days per week</training_frequency>
+
+  <available_exercises>
+{{exerciseList}}
+  </available_exercises>
+</user_input>

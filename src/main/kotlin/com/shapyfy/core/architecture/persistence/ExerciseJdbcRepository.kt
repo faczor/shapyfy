@@ -83,8 +83,12 @@ class ExerciseJdbcRepository(
                 log.info("Empty equipment list provided, returning empty list")
                 return emptyList()
             }
-            val equipmentNames = equipment.map { it.name }.toTypedArray()
-            val result = exerciseCrudRepository.findByEquipmentIn(equipmentNames).map { it.toDomain() }
+            val equipmentNames = equipment.map { it.name }.toSet()
+
+            val result = exerciseCrudRepository.findAllBy()
+                .filter { entity -> entity.equipmentRequired.any { it in equipmentNames } }
+                .map { it.toDomain() }
+
             log.info("Loaded {} exercises matching equipment {}", result.size, equipment)
             result
         } catch (ex: DataAccessException) {

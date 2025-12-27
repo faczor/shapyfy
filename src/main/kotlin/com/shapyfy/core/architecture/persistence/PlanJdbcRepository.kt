@@ -6,13 +6,17 @@ import com.shapyfy.core.domain.plan.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
+import java.util.UUID
 
 @Repository
 class PlanJdbcRepository(
     private val planCrudRepository: PlanCrudRepository,
     private val planDayCrudRepository: PlanDayCrudRepository,
     private val planExerciseCrudRepository: PlanExerciseCrudRepository,
-    private val planMetrics: PlanMetrics
+    private val exerciseSetCrudRepository: ExerciseSetCrudRepository,
+    private val planMetrics: PlanMetrics,
+    private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 ) : PlanRepository {
 
     private val log = LoggerFactory.getLogger(javaClass)
@@ -55,12 +59,20 @@ class PlanJdbcRepository(
                     planDayId = day.id.value,
                     exerciseId = exercise.exerciseId.value,
                     orderIndex = exercise.orderIndex,
-                    targetSets = exercise.targetSets,
-                    targetReps = exercise.targetReps,
-                    targetWeight = exercise.targetWeight,
                     notes = exercise.notes
                 )
                 planExerciseCrudRepository.save(exerciseEntity)
+
+                exercise.sets.forEachIndexed { index, set ->
+                    val setEntity = ExerciseSetEntity.new(
+                        id = UUID.randomUUID(),
+                        planExerciseId = exercise.id.value,
+                        setIndex = index,
+                        reps = set.reps,
+                        weight = set.weight
+                    )
+                    exerciseSetCrudRepository.save(setEntity)
+                }
             }
         }
 
@@ -78,10 +90,11 @@ class PlanJdbcRepository(
     }
 
     override fun findById(id: PlanId): WorkoutPlan? {
-        log.info("Attempting to load plan by id '{}'", id)
-
-        val planEntity = planCrudRepository.findById(id.value).orElse(null)
-            ?: return null.also { log.info("Plan '{}' not found", id) }
+        log.info("Attempting to load plan with id '{}'", id)
+        val planEntity = planCrudRepository.findById(id.value).orElse(null) ?: run {
+            log.info("Plan '{}' not found", id)
+            return null
+        }
 
         val plan = loadPlanWithDays(planEntity)
         log.info("Plan '{}' loaded successfully", id)
@@ -90,7 +103,6 @@ class PlanJdbcRepository(
 
     override fun findAllByUserId(userId: UserId): List<WorkoutPlan> {
         log.info("Attempting to load all plans for user '{}'", userId)
-
         val planEntities = planCrudRepository.findAllByUserId(userId.value)
         val plans = loadPlansWithDays(planEntities)
         log.info("Loaded {} plans for user '{}'", plans.size, userId)
@@ -99,9 +111,10 @@ class PlanJdbcRepository(
 
     override fun findActiveByUserId(userId: UserId): WorkoutPlan? {
         log.info("Attempting to load active plan for user '{}'", userId)
-
-        val planEntity = planCrudRepository.findByUserIdAndIsActive(userId.value, true)
-            ?: return null.also { log.info("No active plan found for user '{}'", userId) }
+        val planEntity = planCrudRepository.findByUserIdAndIsActive(userId.value, true) ?: run {
+            log.info("No active plan found for user '{}'", userId)
+            return null
+        }
 
         val plan = loadPlanWithDays(planEntity)
         log.info("Active plan '{}' loaded for user '{}'", plan.id, userId)
@@ -118,19 +131,25 @@ class PlanJdbcRepository(
     }
 
     override fun existsById(id: PlanId): Boolean {
-        return planCrudRepository.existsById(id.value)
+        log.info("Checking if plan exists with id '{}'", id)
+        val exists = planCrudRepository.existsById(id.value)
+        log.info("Plan '{}' exists: {}", id, exists)
+        return exists
     }
 
     private fun loadPlanWithDays(planEntity: PlanEntity): WorkoutPlan {
         val dayEntities = planDayCrudRepository.findByPlanId(planEntity.getId())
         val dayIds = dayEntities.map { it.getId() }
         val exerciseEntities = planExerciseCrudRepository.findByPlanDayIdIn(dayIds)
+        val exerciseIds = exerciseEntities.map { it.getId() }
+        val setEntities = exerciseSetCrudRepository.findByPlanExerciseIdIn(exerciseIds)
 
+        val setsByExerciseId = setEntities.groupBy { it.planExerciseId }
         val exercisesByDayId = exerciseEntities.groupBy { it.planDayId }
 
         val days = dayEntities.map { dayEntity ->
             val exercises = exercisesByDayId[dayEntity.getId()]
-                ?.map { it.toDomain() }
+                ?.map { it.toDomain(setsByExerciseId[it.getId()] ?: emptyList()) }
                 ?.sortedBy { it.orderIndex }
                 ?: emptyList()
 
@@ -147,7 +166,10 @@ class PlanJdbcRepository(
         val allDayEntities = planDayCrudRepository.findByPlanIdIn(planIds)
         val dayIds = allDayEntities.map { it.getId() }
         val allExerciseEntities = planExerciseCrudRepository.findByPlanDayIdIn(dayIds)
+        val exerciseIds = allExerciseEntities.map { it.getId() }
+        val allSetEntities = exerciseSetCrudRepository.findByPlanExerciseIdIn(exerciseIds)
 
+        val setsByExerciseId = allSetEntities.groupBy { it.planExerciseId }
         val exercisesByDayId = allExerciseEntities.groupBy { it.planDayId }
         val daysByPlanId = allDayEntities.groupBy { it.planId }
 
@@ -157,7 +179,7 @@ class PlanJdbcRepository(
 
             val days = dayEntities.map { dayEntity ->
                 val exercises = exercisesByDayId[dayEntity.getId()]
-                    ?.map { it.toDomain() }
+                    ?.map { it.toDomain(setsByExerciseId[it.getId()] ?: emptyList()) }
                     ?.sortedBy { it.orderIndex }
                     ?: emptyList()
 
@@ -196,14 +218,17 @@ class PlanJdbcRepository(
             notes = notes
         )
 
-    private fun PlanExerciseEntity.toDomain(): PlanExercise =
-        PlanExercise(
+    private fun PlanExerciseEntity.toDomain(setEntities: List<ExerciseSetEntity>): PlanExercise {
+        val sets = setEntities
+            .sortedBy { it.setIndex }
+            .map { ExerciseSet(reps = it.reps, weight = it.weight) }
+
+        return PlanExercise(
             id = PlanExerciseId.from(getId()),
             exerciseId = ExerciseId.from(exerciseId),
             orderIndex = orderIndex,
-            targetSets = targetSets,
-            targetReps = targetReps,
-            targetWeight = targetWeight,
+            sets = sets,
             notes = notes
         )
+    }
 }

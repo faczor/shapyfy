@@ -11,20 +11,5 @@
         ]
       }
     ]
-  },
-  "permissions": {
-    "allow": [
-      "Bash(mvn clean compile:*)",
-      "Bash(./gradlew test:*)",
-      "Bash(./gradlew clean test:*)",
-      "Bash(./gradlew build:*)",
-      "WebFetch(domain:github.com)",
-      "Bash(./gradlew compileKotlin:*)",
-      "Bash(./gradlew compileTestKotlin:*)"
-    ],
-    "deny": [
-      "Read(./.evc)"
-    ],
-    "ask": []
   }
 }

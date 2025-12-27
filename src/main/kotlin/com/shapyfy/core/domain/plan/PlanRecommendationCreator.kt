@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 @Service
 class PlanRecommendationCreator(
     private val exerciseRepository: ExerciseRepository,
-    private val aiPlanRecommendationPort: AiPlanRecommendationPort,
+    private val planRecommendationEnginePort: PlanRecommendationEnginePort,
     private val planRepository: PlanRepository
 ) {
     fun create(
@@ -25,7 +25,7 @@ class PlanRecommendationCreator(
             return emptyList()
         }
 
-        val recommendation = aiPlanRecommendationPort.generateRecommendation(
+        val recommendation = planRecommendationEnginePort.generateRecommendation(
             availableExercises = applicableExercises,
             goal = goal,
             experience = experience,

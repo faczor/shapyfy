@@ -2,7 +2,7 @@ package com.shapyfy.core.architecture.persistence
 
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
-import java.util.UUID
+import java.util.*
 
 @Repository
 interface ExerciseCrudRepository : CrudRepository<ExerciseEntity, UUID> {

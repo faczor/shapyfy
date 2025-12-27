@@ -8,7 +8,6 @@ interface PlanRepository {
     fun findById(id: PlanId): WorkoutPlan?
     fun findAllByUserId(userId: UserId): List<WorkoutPlan>
     fun findActiveByUserId(userId: UserId): WorkoutPlan?
-    fun findRecommendedPlans(goal: FitnessGoal?, experience: ExperienceLevel?): List<WorkoutPlan>
     fun findAllTemplates(): List<WorkoutPlan>
     fun existsById(id: PlanId): Boolean
 }
