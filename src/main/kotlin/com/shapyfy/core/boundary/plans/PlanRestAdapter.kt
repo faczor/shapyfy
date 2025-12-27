@@ -58,39 +58,4 @@ class PlanRestAdapter(
             days = dayCreationData
         )
     }
-
-    private fun WorkoutPlan.toDetailsResponse(): PlanDetailsResponse =
-        PlanDetailsResponse(
-            id = id.toString(),
-            name = name,
-            description = description,
-            cycleDays = cycleDays,
-            isActive = isActive,
-            activationDate = activationDate,
-            days = days.map { it.toResponse() },
-            createdAt = createdAt,
-            updatedAt = updatedAt
-        )
-
-    private fun PlanDay.toResponse(): PlanDayResponse =
-        PlanDayResponse(
-            id = id.toString(),
-            dayIndex = dayIndex,
-            name = name,
-            type = type.name,
-            exercises = exercises.map { it.toResponse() },
-            notes = notes
-        )
-
-    private fun PlanExercise.toResponse(): PlanExerciseResponse =
-        PlanExerciseResponse(
-            id = id.toString(),
-            exerciseId = exerciseId.toString(),
-            orderIndex = orderIndex,
-            targetSets = targetSets,
-            targetReps = targetReps,
-            targetWeight = targetWeight,
-            targetFormatted = formatTarget(),
-            notes = notes
-        )
 }

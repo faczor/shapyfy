@@ -1,7 +1,5 @@
 package com.shapyfy.core.architecture.config
 
-import com.shapyfy.core.architecture.logging.IncomingRequestLoggingFilter
-import com.shapyfy.core.architecture.security.CustomAuthenticationConverter
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

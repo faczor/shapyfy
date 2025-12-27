@@ -1,4 +1,4 @@
-package com.shapyfy.core.architecture.security
+package com.shapyfy.core.architecture.config
 
 import com.shapyfy.core.domain.UserId
 import org.springframework.core.convert.converter.Converter

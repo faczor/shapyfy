@@ -1,6 +1,6 @@
 package com.shapyfy.core.boundary.plans
 
-import com.shapyfy.core.architecture.security.JwtToken
+import com.shapyfy.core.architecture.config.JwtToken
 import com.shapyfy.core.boundary.ApiController
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus

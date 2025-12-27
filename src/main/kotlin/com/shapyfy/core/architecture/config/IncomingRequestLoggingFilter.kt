@@ -1,4 +1,4 @@
-package com.shapyfy.core.architecture.logging
+package com.shapyfy.core.architecture.config
 
 import com.nimbusds.jwt.SignedJWT
 import jakarta.servlet.FilterChain

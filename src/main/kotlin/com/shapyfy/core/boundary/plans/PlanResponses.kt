@@ -2,6 +2,9 @@ package com.shapyfy.core.boundary.plans
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
+import com.shapyfy.core.domain.plan.PlanDay
+import com.shapyfy.core.domain.plan.PlanExercise
+import com.shapyfy.core.domain.plan.WorkoutPlan
 import java.time.Instant
 import java.time.LocalDate
 
@@ -44,3 +47,39 @@ data class PlanExerciseResponse(
     val targetFormatted: String,
     val notes: String?
 )
+
+// Extension functions to convert domain models to responses
+fun WorkoutPlan.toDetailsResponse(): PlanDetailsResponse =
+    PlanDetailsResponse(
+        id = id.toString(),
+        name = name,
+        description = description,
+        cycleDays = cycleDays,
+        isActive = isActive,
+        activationDate = activationDate,
+        days = days.map { it.toResponse() },
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
+
+fun PlanDay.toResponse(): PlanDayResponse =
+    PlanDayResponse(
+        id = id.toString(),
+        dayIndex = dayIndex,
+        name = name,
+        type = type.name,
+        exercises = exercises.map { it.toResponse() },
+        notes = notes
+    )
+
+fun PlanExercise.toResponse(): PlanExerciseResponse =
+    PlanExerciseResponse(
+        id = id.toString(),
+        exerciseId = exerciseId.toString(),
+        orderIndex = orderIndex,
+        targetSets = targetSets,
+        targetReps = targetReps,
+        targetWeight = targetWeight,
+        targetFormatted = formatTarget(),
+        notes = notes
+    )

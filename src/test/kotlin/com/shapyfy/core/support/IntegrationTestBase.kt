@@ -1,7 +1,7 @@
 package com.shapyfy.core.support
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.shapyfy.core.architecture.security.JwtToken
+import com.shapyfy.core.architecture.config.JwtToken
 import com.shapyfy.core.architecture.classification.ExerciseClassification
 import com.shapyfy.core.architecture.classification.ExerciseClassificationClient
 import com.shapyfy.core.architecture.translation.AiTranslationClient

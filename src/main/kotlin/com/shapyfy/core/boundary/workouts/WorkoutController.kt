@@ -1,6 +1,6 @@
 package com.shapyfy.core.boundary.workouts
 
-import com.shapyfy.core.architecture.security.JwtToken
+import com.shapyfy.core.architecture.config.JwtToken
 import com.shapyfy.core.boundary.ApiController
 import com.shapyfy.core.domain.WorkoutId
 import jakarta.validation.Valid
