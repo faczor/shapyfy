@@ -18,11 +18,11 @@ class PlanRecommendationCreator(
         location: WorkoutLocation,
         frequency: Int,
         availableAccessories: List<Equipment>
-    ): List<WorkoutPlan> {
+    ): WorkoutPlan? {
         val applicableExercises = exerciseRepository.findByEquipment(availableAccessories)
 
         if (applicableExercises.isEmpty()) {
-            return emptyList()
+            return null
         }
 
         val recommendation = planRecommendationEnginePort.generateRecommendation(
@@ -36,7 +36,7 @@ class PlanRecommendationCreator(
         val workoutPlan = mapToWorkoutPlan(recommendation, goal, experience)
         val savedPlan = planRepository.save(workoutPlan)
 
-        return listOf(savedPlan)
+        return savedPlan
     }
 
     private fun mapToWorkoutPlan(

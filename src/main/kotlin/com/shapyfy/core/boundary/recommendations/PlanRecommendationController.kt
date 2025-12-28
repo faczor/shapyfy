@@ -1,6 +1,5 @@
 package com.shapyfy.core.boundary.recommendations
 
-import com.shapyfy.core.boundary.plans.PlanDetailsResponse
 import com.shapyfy.core.boundary.plans.toDetailsResponse
 import com.shapyfy.core.domain.exercise.Equipment
 import com.shapyfy.core.domain.plan.PlanRecommendationCreator
@@ -20,9 +19,9 @@ class PlanRecommendationController(
     @PostMapping
     fun getRecommendedPlans(
         @Valid @RequestBody request: CreatePlanRecommendationRequest
-    ): ResponseEntity<List<PlanDetailsResponse>> {
+    ): ResponseEntity<PlanRecommendationResponse> {
 
-        val plans = planRecommendationCreator.create(
+        val plan = planRecommendationCreator.create(
             goal = request.goal,
             experience = request.experience,
             location = request.location,
@@ -30,6 +29,12 @@ class PlanRecommendationController(
             availableAccessories = request.availableAccessories?.takeIf { it.isNotEmpty() } ?: Equipment.all()
         )
 
-        return ResponseEntity.ok(plans.map { it.toDetailsResponse() })
+        val response = if (plan != null) {
+            PlanRecommendationResponse.success(plan.toDetailsResponse())
+        } else {
+            PlanRecommendationResponse.unavailable("no_matching_exercises")
+        }
+
+        return ResponseEntity.ok(response)
     }
 }
