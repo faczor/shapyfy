@@ -66,3 +66,12 @@ firebase:
 anthropic:
   api-key: ${ANTHROPIC_API_KEY}
 
+# Springdoc OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /api/v1/api-docs
+  swagger-ui:
+    path: /api/v1/swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+
