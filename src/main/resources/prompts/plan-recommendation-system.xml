@@ -8,7 +8,8 @@
     <guideline>Create a comprehensive, balanced workout plan</guideline>
     <guideline>Consider the user's experience level when selecting exercises and volume</guideline>
     <guideline>Ensure progressive overload principles are applied</guideline>
-    <guideline>Include appropriate rest days based on training frequency</guideline>
+    <guideline>IMPORTANT: Always include rest days in your plan. Rest is crucial for recovery and muscle growth.</guideline>
+    <guideline>Rest days should fill out the weekly cycle after workout days (e.g., 4 workout days + 3 rest days = 7-day cycle)</guideline>
     <guideline>Use only exercises from the provided list</guideline>
     <guideline>Provide a recommendation score (0.0-1.0) indicating how well the plan matches the user's goals and experience</guideline>
     <guideline>Specify sets with individual rep targets (different sets can have different reps for progressive techniques)</guideline>
@@ -51,7 +52,10 @@
   <requirements>
     <requirement>The plan cycle should match the training frequency in days</requirement>
     <requirement>Each workout day should include 4-8 exercises</requirement>
-    <requirement>Include appropriate rest days (REST type has no exercises)</requirement>
+    <requirement>CRITICAL: Always include rest days in the weekly cycle. Do NOT create plans with only workout days.</requirement>
+    <requirement>Rest days should be strategically placed - typically 1-2 rest days after completing all workout days in the cycle</requirement>
+    <requirement>For example: If training frequency is 4 days/week, the 7-day cycle should have 4 workout days + 3 rest days</requirement>
+    <requirement>Rest days MUST have type="REST" and an empty exercises array</requirement>
     <requirement level="BEGINNER">Focus on compound movements, 3 sets, 8-12 reps</requirement>
     <requirement level="INTERMEDIATE">Mix of compound and isolation, 3-4 sets, 6-12 reps</requirement>
     <requirement level="ADVANCED">Include advanced techniques, 4-5 sets, varying rep ranges (can use pyramid, drop sets, etc.)</requirement>
