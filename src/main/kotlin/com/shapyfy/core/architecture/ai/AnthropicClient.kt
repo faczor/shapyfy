@@ -5,15 +5,21 @@ import com.anthropic.models.messages.Message
 import com.anthropic.models.messages.MessageCreateParams
 import com.anthropic.models.messages.Model
 import com.fasterxml.jackson.databind.ObjectMapper
+import lombok.extern.slf4j.Slf4j
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import kotlin.math.log
 import com.anthropic.client.AnthropicClient as AnthropicSdkClient
 
+@Slf4j
 @Component
 class AnthropicClient(
     @param:Value("\${anthropic.api-key}") private val apiKey: String,
     private val objectMapper: ObjectMapper
 ) {
+
+    private val log = LoggerFactory.getLogger(javaClass)
 
     companion object {
         val DEFAULT_MODEL: Model = Model.CLAUDE_HAIKU_4_5
@@ -36,6 +42,8 @@ class AnthropicClient(
         val systemPrompt =
             "You must respond ONLY with valid JSON. Do not include any explanatory text, markdown formatting, or code blocks. Return only the raw JSON object."
 
+        log.info("Anthropic API Input - Model: {}, System: {}, User: {}", model, systemPrompt, prompt)
+
         val params = MessageCreateParams.builder()
             .model(model)
             .maxTokens(maxTokens.toLong())
@@ -46,6 +54,9 @@ class AnthropicClient(
 
         val message = client.messages().create(params)
         val jsonResponse = extractTextContent(message)
+
+        log.info("Anthropic API Output - Response: {}", jsonResponse)
+
         return parseJsonResponse(jsonResponse, responseType)
     }
 
@@ -63,6 +74,8 @@ class AnthropicClient(
             IMPORTANT: You must respond ONLY with valid JSON. Do not include any explanatory text, markdown formatting, or code blocks. Return only the raw JSON object.
         """.trimIndent()
 
+        log.info("Anthropic API Input - Model: {}, System: {}, User: {}", model, enhancedSystemPrompt, userPrompt)
+
         val params = MessageCreateParams.builder()
             .model(model)
             .maxTokens(maxTokens.toLong())
@@ -73,6 +86,9 @@ class AnthropicClient(
 
         val message = client.messages().create(params)
         val jsonResponse = extractTextContent(message)
+
+        log.info("Anthropic API Output - Response: {}", jsonResponse)
+
         return parseJsonResponse(jsonResponse, responseType)
     }
 

@@ -25,6 +25,14 @@
     <input name="location" type="WorkoutLocation">
       Where the user will train. Possible values: GYM, HOME, OUTDOOR
     </input>
+    <input name="gender" type="Gender">
+      User's gender for training personalization. Possible values: MALE, FEMALE
+      Default: MALE
+
+      Consider gender-specific programming when appropriate:
+      - FEMALE: May benefit from more glute/hip emphasis, varied exercise selection for lower body
+      - MALE: Traditional programming works well, may emphasize upper body volume
+    </input>
     <input name="frequency" type="Int">
       Number of training days per week (typically 3-6 days)
     </input>
@@ -304,4 +312,1195 @@
     <note>Ensure the plan cycle matches the training frequency</note>
     <note>Each exercise in your plan MUST reference an exercise_id that exists in the provided available exercises list</note>
   </important_notes>
+
+  <complete_example>
+    <description>
+      This section demonstrates the complete input-to-output flow. You will receive user preferences and available exercises,
+      then generate a plan using the exercise IDs from the provided list.
+    </description>
+
+    <example_input>
+Goal: MUSCLE_BUILDING
+Experience Level: ADVANCED
+Location: GYM
+Training Frequency: 6 days per week
+
+Available Exercises:
+- ID: 11111111-1111-1111-1111-111111111111, Name: Barbell Bench Press (Primary: CHEST, Equipment: [BARBELL, BENCH], Difficulty: INTERMEDIATE)
+- ID: 22222222-2222-2222-2222-222222222222, Name: Incline Barbell Press (Primary: CHEST, Equipment: [BARBELL, BENCH], Difficulty: INTERMEDIATE)
+- ID: 33333333-3333-3333-3333-333333333333, Name: Cable Fly Upper (Primary: CHEST, Equipment: [CABLE], Difficulty: BEGINNER)
+- ID: 44444444-4444-4444-4444-444444444444, Name: Overhead Press (Primary: SHOULDERS, Equipment: [BARBELL], Difficulty: INTERMEDIATE)
+- ID: 55555555-5555-5555-5555-555555555555, Name: Dumbbell Lateral Raise (Primary: SHOULDERS, Equipment: [DUMBBELL], Difficulty: BEGINNER)
+- ID: 66666666-6666-6666-6666-666666666666, Name: Dumbbell Skull Crusher (Primary: TRICEPS, Equipment: [DUMBBELL, BENCH], Difficulty: INTERMEDIATE)
+- ID: 77777777-7777-7777-7777-777777777777, Name: Barbell Row (Primary: BACK, Equipment: [BARBELL], Difficulty: INTERMEDIATE)
+- ID: 88888888-8888-8888-8888-888888888888, Name: Close Grip Lat Pulldown (Primary: LATS, Equipment: [CABLE], Difficulty: BEGINNER)
+- ID: 99999999-9999-9999-9999-999999999999, Name: Face Pull (Primary: REAR_DELTS, Equipment: [CABLE], Difficulty: BEGINNER)
+- ID: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Name: EZ Bar Curl (Primary: BICEPS, Equipment: [EZ_BAR], Difficulty: BEGINNER)
+- ID: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb, Name: Dumbbell Curl (Primary: BICEPS, Equipment: [DUMBBELL], Difficulty: BEGINNER)
+- ID: cccccccc-cccc-cccc-cccc-cccccccccccc, Name: Barbell Wrist Curl (Primary: FOREARMS, Equipment: [BARBELL], Difficulty: BEGINNER)
+- ID: dddddddd-dddd-dddd-dddd-dddddddddddd, Name: Barbell Back Squat (Primary: QUADRICEPS, Equipment: [BARBELL, RACK], Difficulty: ADVANCED)
+- ID: eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee, Name: Leg Curl (Primary: HAMSTRINGS, Equipment: [MACHINE], Difficulty: BEGINNER)
+- ID: ffffffff-ffff-ffff-ffff-ffffffffffff, Name: Romanian Deadlift (Primary: HAMSTRINGS, Equipment: [BARBELL], Difficulty: INTERMEDIATE)
+- ID: 10101010-1010-1010-1010-101010101010, Name: Standing Calf Raise (Primary: CALVES, Equipment: [DUMBBELL], Difficulty: BEGINNER)
+- ID: 20202020-2020-2020-2020-202020202020, Name: Plank (Primary: CORE, Equipment: [BODYWEIGHT], Difficulty: BEGINNER)
+- ID: 30303030-3030-3030-3030-303030303030, Name: Hip Adductor Machine (Primary: ADDUCTORS, Equipment: [MACHINE], Difficulty: BEGINNER)
+- ID: 40404040-4040-4040-4040-404040404040, Name: Dumbbell Bench Press (Primary: CHEST, Equipment: [DUMBBELL, BENCH], Difficulty: INTERMEDIATE)
+- ID: 50505050-5050-5050-5050-505050505050, Name: Incline Dumbbell Press (Primary: CHEST, Equipment: [DUMBBELL, BENCH], Difficulty: INTERMEDIATE)
+- ID: 60606060-6060-6060-6060-606060606060, Name: Cable Fly Lower (Primary: CHEST, Equipment: [CABLE], Difficulty: BEGINNER)
+- ID: 70707070-7070-7070-7070-707070707070, Name: Cable Lateral Raise (Primary: SHOULDERS, Equipment: [CABLE], Difficulty: BEGINNER)
+- ID: 80808080-8080-8080-8080-808080808080, Name: Cable Crossover (Primary: CHEST, Equipment: [CABLE], Difficulty: BEGINNER)
+- ID: 90909090-9090-9090-9090-909090909090, Name: Tricep Rope Pushdown (Primary: TRICEPS, Equipment: [CABLE], Difficulty: BEGINNER)
+- ID: a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0, Name: Incline Dumbbell Row (Primary: BACK, Equipment: [DUMBBELL, BENCH], Difficulty: INTERMEDIATE)
+- ID: b0b0b0b0-b0b0-b0b0-b0b0-b0b0b0b0b0b0, Name: Single Arm Lat Pulldown (Primary: LATS, Equipment: [CABLE], Difficulty: INTERMEDIATE)
+- ID: c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0, Name: Cable Pull Through (Primary: GLUTES, Equipment: [CABLE], Difficulty: INTERMEDIATE)
+- ID: d0d0d0d0-d0d0-d0d0-d0d0-d0d0d0d0d0d0, Name: Incline Dumbbell Curl (Primary: BICEPS, Equipment: [DUMBBELL, BENCH], Difficulty: BEGINNER)
+- ID: e0e0e0e0-e0e0-e0e0-e0e0-e0e0e0e0e0e0, Name: Preacher Curl (Primary: BICEPS, Equipment: [EZ_BAR, BENCH], Difficulty: BEGINNER)
+- ID: f0f0f0f0-f0f0-f0f0-f0f0-f0f0f0f0f0f0, Name: Conventional Deadlift (Primary: BACK, Equipment: [BARBELL], Difficulty: ADVANCED)
+- ID: 01010101-0101-0101-0101-010101010101, Name: Bulgarian Split Squat (Primary: QUADRICEPS, Equipment: [DUMBBELL], Difficulty: INTERMEDIATE)
+- ID: 02020202-0202-0202-0202-020202020202, Name: Leg Extension (Primary: QUADRICEPS, Equipment: [MACHINE], Difficulty: BEGINNER)
+- ID: 03030303-0303-0303-0303-030303030303, Name: Seated Calf Raise (Primary: CALVES, Equipment: [MACHINE], Difficulty: BEGINNER)
+- ID: 04040404-0404-0404-0404-040404040404, Name: Hip Abductor Machine (Primary: ABDUCTORS, Equipment: [MACHINE], Difficulty: BEGINNER)
+    </example_input>
+
+    <example_output>
+{
+  "plans": [
+    {
+      "name": "Advanced PPL - Push/Pull/Legs Split",
+      "description": "A 6-day advanced push/pull/legs program designed for muscle building with high volume and intensity. Features two variations of each split (A and B days) for comprehensive muscle development.",
+      "recommendation_score": 0.95,
+      "days": [
+        {
+          "name": "Day 1 - Push A",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "11111111-1111-1111-1111-111111111111",
+              "sets": [
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null}
+              ],
+              "notes": "Heavy compound pressing. 2:30 rest between sets."
+            },
+            {
+              "exercise_id": "22222222-2222-2222-2222-222222222222",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Upper chest focus. 2:30 rest between sets."
+            },
+            {
+              "exercise_id": "33333333-3333-3333-3333-333333333333",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Upper cable angle for chest stretch. 2:00 rest."
+            },
+            {
+              "exercise_id": "44444444-4444-4444-4444-444444444444",
+              "sets": [
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null}
+              ],
+              "notes": "Primary shoulder builder. 2:30 rest between sets."
+            },
+            {
+              "exercise_id": "55555555-5555-5555-5555-555555555555",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Lateral delt isolation. 2:00 rest."
+            },
+            {
+              "exercise_id": "66666666-6666-6666-6666-666666666666",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Tricep mass builder. 2:00 rest."
+            }
+          ]
+        },
+        {
+          "name": "Day 2 - Pull A",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "77777777-7777-7777-7777-777777777777",
+              "sets": [
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null}
+              ],
+              "notes": "Heavy back builder. 2:30 rest between sets."
+            },
+            {
+              "exercise_id": "88888888-8888-8888-8888-888888888888",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Close grip for thickness. 2:00 rest."
+            },
+            {
+              "exercise_id": "99999999-9999-9999-9999-999999999999",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Rear delt and upper back health. 2:00 rest."
+            },
+            {
+              "exercise_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+              "sets": [
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null}
+              ],
+              "notes": "Heavy bicep work. 2:30 rest."
+            },
+            {
+              "exercise_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Supinate at the top for peak contraction. 2:00 rest."
+            },
+            {
+              "exercise_id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Forearm development. 2:00 rest."
+            }
+          ]
+        },
+        {
+          "name": "Day 3 - Legs A",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+              "sets": [
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null}
+              ],
+              "notes": "Heavy squat day. 3:00 rest between sets."
+            },
+            {
+              "exercise_id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Hamstring isolation. 2:00 rest."
+            },
+            {
+              "exercise_id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Hamstring and glute focus. 2:00 rest."
+            },
+            {
+              "exercise_id": "10101010-1010-1010-1010-101010101010",
+              "sets": [
+                {"reps": 10, "weight": null},
+                {"reps": 10, "weight": null},
+                {"reps": 10, "weight": null}
+              ],
+              "notes": "Calf development. 2:30 rest."
+            },
+            {
+              "exercise_id": "20202020-2020-2020-2020-202020202020",
+              "sets": [
+                {"reps": null, "weight": null},
+                {"reps": null, "weight": null},
+                {"reps": null, "weight": null}
+              ],
+              "notes": "Core stability. Hold to failure."
+            },
+            {
+              "exercise_id": "30303030-3030-3030-3030-303030303030",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Inner thigh work. 1:30 rest."
+            }
+          ]
+        },
+        {
+          "name": "Day 4 - Rest",
+          "type": "REST",
+          "exercises": []
+        },
+        {
+          "name": "Day 5 - Push B",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "40404040-4040-4040-4040-404040404040",
+              "sets": [
+                {"reps": 10, "weight": null},
+                {"reps": 10, "weight": null},
+                {"reps": 10, "weight": null}
+              ],
+              "notes": "Hypertrophy focused pressing. 2:00 rest."
+            },
+            {
+              "exercise_id": "50505050-5050-5050-5050-505050505050",
+              "sets": [
+                {"reps": 10, "weight": null},
+                {"reps": 10, "weight": null},
+                {"reps": 10, "weight": null}
+              ],
+              "notes": "Upper chest volume. 30-45 degree angle. 2:00 rest."
+            },
+            {
+              "exercise_id": "60606060-6060-6060-6060-606060606060",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Lower cable angle for lower chest. 1:30 rest."
+            },
+            {
+              "exercise_id": "70707070-7070-7070-7070-707070707070",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Lateral delt pump. 1:30 rest."
+            },
+            {
+              "exercise_id": "80808080-8080-8080-8080-808080808080",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Inner chest focus. 2:00 rest."
+            },
+            {
+              "exercise_id": "90909090-9090-9090-9090-909090909090",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Tricep pump work. 1:30 rest."
+            }
+          ]
+        },
+        {
+          "name": "Day 6 - Pull B",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0",
+              "sets": [
+                {"reps": 10, "weight": null},
+                {"reps": 10, "weight": null},
+                {"reps": 10, "weight": null}
+              ],
+              "notes": "45 degree incline for upper back thickness. 2:00 rest."
+            },
+            {
+              "exercise_id": "b0b0b0b0-b0b0-b0b0-b0b0-b0b0b0b0b0b0",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Unilateral lat work. 1:30 rest."
+            },
+            {
+              "exercise_id": "c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Glute and hamstring activation. 1:30 rest."
+            },
+            {
+              "exercise_id": "d0d0d0d0-d0d0-d0d0-d0d0-d0d0d0d0d0d0",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Seated at 75 degree angle for long head stretch. 1:30 rest."
+            },
+            {
+              "exercise_id": "e0e0e0e0-e0e0-e0e0-e0e0-e0e0e0e0e0e0",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Preacher bench at 45 degrees. Strict form. 1:30 rest."
+            }
+          ]
+        },
+        {
+          "name": "Day 7 - Legs B",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "f0f0f0f0-f0f0-f0f0-f0f0-f0f0f0f0f0f0",
+              "sets": [
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null},
+                {"reps": 6, "weight": null}
+              ],
+              "notes": "Heavy deadlift day. 3:00 rest between sets."
+            },
+            {
+              "exercise_id": "01010101-0101-0101-0101-010101010101",
+              "sets": [
+                {"reps": 10, "weight": null},
+                {"reps": 10, "weight": null},
+                {"reps": 10, "weight": null}
+              ],
+              "notes": "Unilateral leg work. 2:00 rest."
+            },
+            {
+              "exercise_id": "02020202-0202-0202-0202-020202020202",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Quad isolation. 1:30 rest."
+            },
+            {
+              "exercise_id": "03030303-0303-0303-0303-030303030303",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Soleus focus. 1:30 rest."
+            },
+            {
+              "exercise_id": "04040404-0404-0404-0404-040404040404",
+              "sets": [
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null},
+                {"reps": 12, "weight": null}
+              ],
+              "notes": "Abductor work for hip stability. 1:30 rest."
+            },
+            {
+              "exercise_id": "20202020-2020-2020-2020-202020202020",
+              "sets": [
+                {"reps": null, "weight": null},
+                {"reps": null, "weight": null},
+                {"reps": null, "weight": null}
+              ],
+              "notes": "Core finisher. Hold to failure."
+            }
+          ]
+        },
+        {
+          "name": "Day 8 - Rest",
+          "type": "REST",
+          "exercises": []
+        }
+      ]
+    }
+  ]
+}
+    </example_output>
+  </complete_example>
+
+  <complete_example>
+    <description>
+      Example 2: Women's Strength Training Program
+      This demonstrates a strength-focused program for female trainees using the 5x5 method with emphasis on glute and hip development.
+    </description>
+
+    <example_input>
+Goal: STRENGTH
+Experience Level: INTERMEDIATE
+Location: GYM
+Gender: FEMALE
+Training Frequency: 4 days per week
+
+Available Exercises:
+- ID: 11111111-aaaa-aaaa-aaaa-111111111111, Name: Barbell Back Squat (Primary: QUADRICEPS, Equipment: [BARBELL, RACK], Difficulty: INTERMEDIATE)
+- ID: 22222222-aaaa-aaaa-aaaa-222222222222, Name: Barbell Bench Press (Primary: CHEST, Equipment: [BARBELL, BENCH], Difficulty: INTERMEDIATE)
+- ID: 33333333-aaaa-aaaa-aaaa-333333333333, Name: Barbell Row (Primary: BACK, Equipment: [BARBELL], Difficulty: INTERMEDIATE)
+- ID: 44444444-aaaa-aaaa-aaaa-444444444444, Name: Dumbbell Lateral Raise (Primary: SHOULDERS, Equipment: [DUMBBELL], Difficulty: BEGINNER)
+- ID: 55555555-aaaa-aaaa-aaaa-555555555555, Name: Hip Thrust (Primary: GLUTES, Equipment: [BARBELL, BENCH], Difficulty: INTERMEDIATE)
+- ID: 66666666-aaaa-aaaa-aaaa-666666666666, Name: Hip Abductor Machine (Primary: ABDUCTORS, Equipment: [MACHINE], Difficulty: BEGINNER)
+- ID: 77777777-aaaa-aaaa-aaaa-777777777777, Name: Standing Calf Raise (Primary: CALVES, Equipment: [MACHINE], Difficulty: BEGINNER)
+- ID: 88888888-aaaa-aaaa-aaaa-888888888888, Name: Conventional Deadlift (Primary: BACK, Equipment: [BARBELL], Difficulty: ADVANCED)
+- ID: 99999999-aaaa-aaaa-aaaa-999999999999, Name: Overhead Press (Primary: SHOULDERS, Equipment: [BARBELL], Difficulty: INTERMEDIATE)
+- ID: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa, Name: Close Grip Lat Pulldown (Primary: LATS, Equipment: [CABLE], Difficulty: BEGINNER)
+- ID: bbbbbbbb-aaaa-aaaa-aaaa-bbbbbbbbbbbb, Name: Walking Lunges (Primary: QUADRICEPS, Equipment: [DUMBBELL], Difficulty: INTERMEDIATE)
+- ID: cccccccc-aaaa-aaaa-aaaa-cccccccccccc, Name: Hip Adductor Machine (Primary: ADDUCTORS, Equipment: [MACHINE], Difficulty: BEGINNER)
+- ID: dddddddd-aaaa-aaaa-aaaa-dddddddddddd, Name: Plank (Primary: CORE, Equipment: [BODYWEIGHT], Difficulty: BEGINNER)
+    </example_input>
+
+    <example_output>
+{
+  "plans": [
+    {
+      "name": "Women's 5x5 Strength Program",
+      "description": "A strength-focused program for intermediate female trainees emphasizing compound lifts with additional glute and hip development. Alternates between Training A and Training B over 4 days per week.",
+      "recommendation_score": 0.93,
+      "days": [
+        {
+          "name": "Training A",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "11111111-aaaa-aaaa-aaaa-111111111111",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Core strength builder. Focus on depth and form."
+            },
+            {
+              "exercise_id": "22222222-aaaa-aaaa-aaaa-222222222222",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Upper body strength. Control the descent."
+            },
+            {
+              "exercise_id": "33333333-aaaa-aaaa-aaaa-333333333333",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Back thickness. Pull to lower chest."
+            },
+            {
+              "exercise_id": "44444444-aaaa-aaaa-aaaa-444444444444",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Shoulder development. Controlled tempo."
+            },
+            {
+              "exercise_id": "55555555-aaaa-aaaa-aaaa-555555555555",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Glute activation. Drive through heels."
+            },
+            {
+              "exercise_id": "66666666-aaaa-aaaa-aaaa-666666666666",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Hip stability and outer glute work."
+            },
+            {
+              "exercise_id": "77777777-aaaa-aaaa-aaaa-777777777777",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Calf development. Full range of motion."
+            }
+          ]
+        },
+        {
+          "name": "Rest Day",
+          "type": "REST",
+          "exercises": []
+        },
+        {
+          "name": "Training B",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "88888888-aaaa-aaaa-aaaa-888888888888",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Total body strength. Maintain neutral spine."
+            },
+            {
+              "exercise_id": "99999999-aaaa-aaaa-aaaa-999999999999",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Shoulder strength. Keep core tight."
+            },
+            {
+              "exercise_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Back width. Close grip for thickness."
+            },
+            {
+              "exercise_id": "bbbbbbbb-aaaa-aaaa-aaaa-bbbbbbbbbbbb",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Unilateral leg work. 8 reps per leg."
+            },
+            {
+              "exercise_id": "cccccccc-aaaa-aaaa-aaaa-cccccccccccc",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Inner thigh stability."
+            },
+            {
+              "exercise_id": "dddddddd-aaaa-aaaa-aaaa-dddddddddddd",
+              "sets": [
+                {"reps": null, "weight": null},
+                {"reps": null, "weight": null},
+                {"reps": null, "weight": null}
+              ],
+              "notes": "Core endurance. Hold to failure."
+            },
+            {
+              "exercise_id": "77777777-aaaa-aaaa-aaaa-777777777777",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Calf development. Full range of motion."
+            }
+          ]
+        },
+        {
+          "name": "Rest Day",
+          "type": "REST",
+          "exercises": []
+        },
+        {
+          "name": "Training A",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "11111111-aaaa-aaaa-aaaa-111111111111",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Core strength builder. Progressive overload."
+            },
+            {
+              "exercise_id": "22222222-aaaa-aaaa-aaaa-222222222222",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Upper body strength. Add weight when possible."
+            },
+            {
+              "exercise_id": "33333333-aaaa-aaaa-aaaa-333333333333",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Back thickness and strength."
+            },
+            {
+              "exercise_id": "44444444-aaaa-aaaa-aaaa-444444444444",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Shoulder accessory work."
+            },
+            {
+              "exercise_id": "55555555-aaaa-aaaa-aaaa-555555555555",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Glute focus. Squeeze at the top."
+            },
+            {
+              "exercise_id": "66666666-aaaa-aaaa-aaaa-666666666666",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Hip stability work."
+            },
+            {
+              "exercise_id": "77777777-aaaa-aaaa-aaaa-777777777777",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Calf training."
+            }
+          ]
+        },
+        {
+          "name": "Rest Day",
+          "type": "REST",
+          "exercises": []
+        },
+        {
+          "name": "Training B",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "88888888-aaaa-aaaa-aaaa-888888888888",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Heavy deadlift day. Progressive loading."
+            },
+            {
+              "exercise_id": "99999999-aaaa-aaaa-aaaa-999999999999",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Overhead pressing strength."
+            },
+            {
+              "exercise_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Vertical pulling strength."
+            },
+            {
+              "exercise_id": "bbbbbbbb-aaaa-aaaa-aaaa-bbbbbbbbbbbb",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Accessory leg work."
+            },
+            {
+              "exercise_id": "cccccccc-aaaa-aaaa-aaaa-cccccccccccc",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Hip adductor strength."
+            },
+            {
+              "exercise_id": "dddddddd-aaaa-aaaa-aaaa-dddddddddddd",
+              "sets": [
+                {"reps": null, "weight": null},
+                {"reps": null, "weight": null},
+                {"reps": null, "weight": null}
+              ],
+              "notes": "Core stability work."
+            },
+            {
+              "exercise_id": "77777777-aaaa-aaaa-aaaa-777777777777",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Calf finisher."
+            }
+          ]
+        },
+        {
+          "name": "Rest Day",
+          "type": "REST",
+          "exercises": []
+        },
+        {
+          "name": "Rest Day",
+          "type": "REST",
+          "exercises": []
+        }
+      ]
+    }
+  ]
+}
+    </example_output>
+  </complete_example>
+
+  <complete_example>
+    <description>
+      Example 3: Men's Strength Training Program
+      This demonstrates a strength-focused program for male trainees using the 5x5 method with balanced development and emphasis on arms.
+    </description>
+
+    <example_input>
+Goal: STRENGTH
+Experience Level: INTERMEDIATE
+Location: GYM
+Gender: MALE
+Training Frequency: 4 days per week
+
+Available Exercises:
+- ID: 11111111-bbbb-bbbb-bbbb-111111111111, Name: Barbell Back Squat (Primary: QUADRICEPS, Equipment: [BARBELL, RACK], Difficulty: INTERMEDIATE)
+- ID: 22222222-bbbb-bbbb-bbbb-222222222222, Name: Barbell Bench Press (Primary: CHEST, Equipment: [BARBELL, BENCH], Difficulty: INTERMEDIATE)
+- ID: 33333333-bbbb-bbbb-bbbb-333333333333, Name: Barbell Row (Primary: BACK, Equipment: [BARBELL], Difficulty: INTERMEDIATE)
+- ID: 44444444-bbbb-bbbb-bbbb-444444444444, Name: Dumbbell Lateral Raise (Primary: SHOULDERS, Equipment: [DUMBBELL], Difficulty: BEGINNER)
+- ID: 55555555-bbbb-bbbb-bbbb-555555555555, Name: Barbell Curl (Primary: BICEPS, Equipment: [BARBELL], Difficulty: BEGINNER)
+- ID: 66666666-bbbb-bbbb-bbbb-666666666666, Name: Tricep Rope Pushdown (Primary: TRICEPS, Equipment: [CABLE], Difficulty: BEGINNER)
+- ID: 77777777-bbbb-bbbb-bbbb-777777777777, Name: Hip Abductor Machine (Primary: ABDUCTORS, Equipment: [MACHINE], Difficulty: BEGINNER)
+- ID: 88888888-bbbb-bbbb-bbbb-888888888888, Name: Standing Calf Raise (Primary: CALVES, Equipment: [MACHINE], Difficulty: BEGINNER)
+- ID: 99999999-bbbb-bbbb-bbbb-999999999999, Name: Conventional Deadlift (Primary: BACK, Equipment: [BARBELL], Difficulty: ADVANCED)
+- ID: aaaaaaaa-bbbb-bbbb-bbbb-aaaaaaaaaaaa, Name: Overhead Press (Primary: SHOULDERS, Equipment: [BARBELL], Difficulty: INTERMEDIATE)
+- ID: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb, Name: Close Grip Lat Pulldown (Primary: LATS, Equipment: [CABLE], Difficulty: BEGINNER)
+- ID: cccccccc-bbbb-bbbb-bbbb-cccccccccccc, Name: Close Grip Bench Press (Primary: TRICEPS, Equipment: [BARBELL, BENCH], Difficulty: INTERMEDIATE)
+- ID: dddddddd-bbbb-bbbb-bbbb-dddddddddddd, Name: Plank (Primary: CORE, Equipment: [BODYWEIGHT], Difficulty: BEGINNER)
+    </example_input>
+
+    <example_output>
+{
+  "plans": [
+    {
+      "name": "Men's 5x5 Strength Program",
+      "description": "A strength-focused program for intermediate male trainees emphasizing compound lifts with additional arm development. Alternates between Training A and Training B over 4 days per week.",
+      "recommendation_score": 0.93,
+      "days": [
+        {
+          "name": "Training A",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "11111111-bbbb-bbbb-bbbb-111111111111",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Core strength builder. Focus on depth and form."
+            },
+            {
+              "exercise_id": "22222222-bbbb-bbbb-bbbb-222222222222",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Upper body strength. Control the descent."
+            },
+            {
+              "exercise_id": "33333333-bbbb-bbbb-bbbb-333333333333",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Back thickness. Pull to lower chest."
+            },
+            {
+              "exercise_id": "44444444-bbbb-bbbb-bbbb-444444444444",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Shoulder development. Controlled tempo."
+            },
+            {
+              "exercise_id": "55555555-bbbb-bbbb-bbbb-555555555555",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Bicep mass. Avoid swinging."
+            },
+            {
+              "exercise_id": "66666666-bbbb-bbbb-bbbb-666666666666",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Tricep isolation. Keep elbows stationary."
+            },
+            {
+              "exercise_id": "77777777-bbbb-bbbb-bbbb-777777777777",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Hip stability."
+            },
+            {
+              "exercise_id": "88888888-bbbb-bbbb-bbbb-888888888888",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Calf development. Full range of motion."
+            }
+          ]
+        },
+        {
+          "name": "Rest Day",
+          "type": "REST",
+          "exercises": []
+        },
+        {
+          "name": "Training B",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "99999999-bbbb-bbbb-bbbb-999999999999",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Total body strength. Maintain neutral spine."
+            },
+            {
+              "exercise_id": "aaaaaaaa-bbbb-bbbb-bbbb-aaaaaaaaaaaa",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Shoulder strength. Keep core tight."
+            },
+            {
+              "exercise_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Back width. Close grip for thickness."
+            },
+            {
+              "exercise_id": "cccccccc-bbbb-bbbb-bbbb-cccccccccccc",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Tricep strength. Narrow grip, elbows tucked."
+            },
+            {
+              "exercise_id": "55555555-bbbb-bbbb-bbbb-555555555555",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Bicep pump work."
+            },
+            {
+              "exercise_id": "dddddddd-bbbb-bbbb-bbbb-dddddddddddd",
+              "sets": [
+                {"reps": null, "weight": null},
+                {"reps": null, "weight": null},
+                {"reps": null, "weight": null}
+              ],
+              "notes": "Core endurance. Hold to failure."
+            },
+            {
+              "exercise_id": "88888888-bbbb-bbbb-bbbb-888888888888",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Calf development."
+            }
+          ]
+        },
+        {
+          "name": "Rest Day",
+          "type": "REST",
+          "exercises": []
+        },
+        {
+          "name": "Training A",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "11111111-bbbb-bbbb-bbbb-111111111111",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Core strength builder. Progressive overload."
+            },
+            {
+              "exercise_id": "22222222-bbbb-bbbb-bbbb-222222222222",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Upper body strength. Add weight when possible."
+            },
+            {
+              "exercise_id": "33333333-bbbb-bbbb-bbbb-333333333333",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Back thickness and strength."
+            },
+            {
+              "exercise_id": "44444444-bbbb-bbbb-bbbb-444444444444",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Shoulder accessory work."
+            },
+            {
+              "exercise_id": "55555555-bbbb-bbbb-bbbb-555555555555",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Bicep development."
+            },
+            {
+              "exercise_id": "66666666-bbbb-bbbb-bbbb-666666666666",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Tricep volume."
+            },
+            {
+              "exercise_id": "77777777-bbbb-bbbb-bbbb-777777777777",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Hip work."
+            },
+            {
+              "exercise_id": "88888888-bbbb-bbbb-bbbb-888888888888",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Calf training."
+            }
+          ]
+        },
+        {
+          "name": "Rest Day",
+          "type": "REST",
+          "exercises": []
+        },
+        {
+          "name": "Training B",
+          "type": "WORKOUT",
+          "exercises": [
+            {
+              "exercise_id": "99999999-bbbb-bbbb-bbbb-999999999999",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Heavy deadlift day. Progressive loading."
+            },
+            {
+              "exercise_id": "aaaaaaaa-bbbb-bbbb-bbbb-aaaaaaaaaaaa",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Overhead pressing strength."
+            },
+            {
+              "exercise_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+              "sets": [
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null},
+                {"reps": 5, "weight": null}
+              ],
+              "notes": "Vertical pulling strength."
+            },
+            {
+              "exercise_id": "cccccccc-bbbb-bbbb-bbbb-cccccccccccc",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Tricep strength work."
+            },
+            {
+              "exercise_id": "55555555-bbbb-bbbb-bbbb-555555555555",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Bicep isolation."
+            },
+            {
+              "exercise_id": "dddddddd-bbbb-bbbb-bbbb-dddddddddddd",
+              "sets": [
+                {"reps": null, "weight": null},
+                {"reps": null, "weight": null},
+                {"reps": null, "weight": null}
+              ],
+              "notes": "Core stability work."
+            },
+            {
+              "exercise_id": "88888888-bbbb-bbbb-bbbb-888888888888",
+              "sets": [
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null},
+                {"reps": 8, "weight": null}
+              ],
+              "notes": "Calf finisher."
+            }
+          ]
+        },
+        {
+          "name": "Rest Day",
+          "type": "REST",
+          "exercises": []
+        },
+        {
+          "name": "Rest Day",
+          "type": "REST",
+          "exercises": []
+        }
+      ]
+    }
+  ]
+}
+    </example_output>
+  </complete_example>
 </prompt>

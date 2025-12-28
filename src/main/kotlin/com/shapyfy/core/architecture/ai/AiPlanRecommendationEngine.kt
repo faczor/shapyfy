@@ -1,10 +1,13 @@
 package com.shapyfy.core.architecture.ai
 
+import com.shapyfy.core.domain.ExerciseId
 import com.shapyfy.core.domain.exercise.Exercise
 import com.shapyfy.core.domain.plan.*
+import lombok.extern.slf4j.Slf4j
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
 
+@Slf4j
 @Component
 class AiPlanRecommendationEngine(
     private val anthropicClient: AnthropicClient
@@ -50,7 +53,7 @@ class AiPlanRecommendationEngine(
         frequency: Int
     ): String {
         val exerciseList = exercises.joinToString("\n") { exercise ->
-            "- ${exercise.canonicalName.value} (Primary: ${exercise.primaryMuscleGroup}, Equipment: ${exercise.equipmentRequired.joinToString()}, Difficulty: ${exercise.difficulty})"
+            "- ID: ${exercise.id.value}, Name: ${exercise.canonicalName.value} (Primary: ${exercise.primaryMuscleGroup}, Equipment: ${exercise.equipmentRequired.joinToString()}, Difficulty: ${exercise.difficulty})"
         }
 
         return userPromptTemplate
@@ -65,7 +68,7 @@ class AiPlanRecommendationEngine(
         aiPlan: AiPlanRecommendationDto,
         availableExercises: List<Exercise>
     ): PlanRecommendation {
-        val exerciseMap = availableExercises.associateBy { it.canonicalName.value }
+        val exerciseMap = availableExercises.associateBy { it.id }
 
         val days = aiPlan.days.map { aiDay ->
             val dayType = when (aiDay.type.uppercase()) {
@@ -78,7 +81,8 @@ class AiPlanRecommendationEngine(
                 emptyList()
             } else {
                 (aiDay.exercises ?: emptyList()).mapNotNull { aiExercise ->
-                    val exercise = exerciseMap[aiExercise.exerciseName]
+                    val exerciseId = ExerciseId(java.util.UUID.fromString(aiExercise.exerciseId))
+                    val exercise = exerciseMap[exerciseId]
                     if (exercise == null) {
                         null
                     } else {

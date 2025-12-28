@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/v1/recommendations/plans")
+@RequestMapping("/api/v1/public/recommendations/plans")
 class PlanRecommendationController(
     private val planRecommendationCreator: PlanRecommendationCreator
 ) {

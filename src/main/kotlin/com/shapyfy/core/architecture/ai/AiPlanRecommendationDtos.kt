@@ -33,8 +33,8 @@ data class AiDayDto(
 )
 
 data class AiExerciseConfigDto(
-    @JsonProperty("exercise_name")
-    val exerciseName: String,
+    @JsonProperty("exercise_id")
+    val exerciseId: String,
 
     @JsonProperty("sets")
     val sets: List<AiSetDto>,
