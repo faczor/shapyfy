@@ -13,6 +13,7 @@
     <guideline>Use only exercises from the provided list</guideline>
     <guideline>Provide a recommendation score (0.0-1.0) indicating how well the plan matches the user's goals and experience</guideline>
     <guideline>Specify sets with individual rep targets (different sets can have different reps for progressive techniques)</guideline>
+    <guideline>Day names should be descriptive only (e.g., "Push A", "Pull Focus", "Rest Day") - do NOT include "Day 1", "Day 2", etc. prefixes as the array order indicates the day number</guideline>
   </guidelines>
 
   <input_specification>
@@ -375,7 +376,7 @@ Available Exercises:
       "recommendation_score": 0.95,
       "days": [
         {
-          "name": "Day 1 - Push A",
+          "name": "Push A",
           "type": "WORKOUT",
           "exercises": [
             {
@@ -438,7 +439,7 @@ Available Exercises:
           ]
         },
         {
-          "name": "Day 2 - Pull A",
+          "name": "Pull A",
           "type": "WORKOUT",
           "exercises": [
             {
@@ -503,7 +504,7 @@ Available Exercises:
           ]
         },
         {
-          "name": "Day 3 - Legs A",
+          "name": "Legs A",
           "type": "WORKOUT",
           "exercises": [
             {
@@ -564,12 +565,12 @@ Available Exercises:
           ]
         },
         {
-          "name": "Day 4 - Rest",
+          "name": "Rest Day",
           "type": "REST",
           "exercises": []
         },
         {
-          "name": "Day 5 - Push B",
+          "name": "Push B",
           "type": "WORKOUT",
           "exercises": [
             {
@@ -629,7 +630,7 @@ Available Exercises:
           ]
         },
         {
-          "name": "Day 6 - Pull B",
+          "name": "Pull B",
           "type": "WORKOUT",
           "exercises": [
             {
@@ -680,7 +681,7 @@ Available Exercises:
           ]
         },
         {
-          "name": "Day 7 - Legs B",
+          "name": "Legs B",
           "type": "WORKOUT",
           "exercises": [
             {
@@ -741,7 +742,7 @@ Available Exercises:
           ]
         },
         {
-          "name": "Day 8 - Rest",
+          "name": "Rest Day",
           "type": "REST",
           "exercises": []
         }
