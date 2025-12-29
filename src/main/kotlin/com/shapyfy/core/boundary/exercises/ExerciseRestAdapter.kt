@@ -47,7 +47,9 @@ class ExerciseRestAdapter(
         val language = Language.from(acceptLanguage)
         val exercises = exerciseFetcher.fetchAll(language)
 
-        val responses = exercises.map { ExerciseResponse.from(it) }
+        val responses = exercises
+            .map { ExerciseResponse.from(it) }
+            .sortedBy { it.name }
         log.info(
             "Returning {} exercise records (accept-language={})",
             responses.size,
